@@ -129,4 +129,50 @@
 
         document.addEventListener('click', (e) => {
             if (!e.target.closest('.search-container')) {
-                document
+                document.getElementById('searchSuggestions').style.display = 'none';
+            }
+        });
+
+        function render() {
+            const catalog = document.getElementById('catalog');
+            const counter = document.getElementById('counter');
+            
+            if (filteredItems.length === 0) {
+                catalog.innerHTML = "<p style='text-align:center; padding: 20px;'>Нікого не знайдено</p>";
+                counter.innerText = "0 / 0";
+                return;
+            }
+
+            const p = filteredItems[idx];
+
+            catalog.innerHTML = `
+                <div class="card">
+                    <div class="photo-box">
+                        <img src="${p[0]}" class="photo" referrerpolicy="no-referrer" onerror="this.src='https://via.placeholder.com/450x400?text=Фото+не+знайдено'">
+                    </div>
+                    <div class="info">
+                        <p class="surname">${p[3]}</p>
+                        <div class="legal">${p[4] || ''}</div>
+                        <div class="details">
+                            <p><b>Хресне ім'я</b> <span class="value">${p[5] || '—'}</span></p>
+                            <p><b>Народження</b> <span class="value">${p[6] || '—'}</span></p>
+                            <p><b>Місце</b> <span class="value">${p[7] || '—'}</span></p>
+                        </div>
+                    </div>
+                </div>`;
+            
+            counter.innerText = `${idx + 1} / ${filteredItems.length}`;
+            document.getElementById('prevBtn').disabled = idx === 0;
+            document.getElementById('nextBtn').disabled = idx === filteredItems.length - 1;
+        }
+
+        function change(d) {
+            idx += d;
+            render();
+            window.scrollTo(0,0);
+        }
+
+        load();
+    </script>
+</body>
+</html>
