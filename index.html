@@ -25,9 +25,28 @@
             color: var(--text-main);
         }
         
-        .header { width: 100%; max-width: 600px; padding: 20px 15px 10px; text-align: center; box-sizing: border-box; }
-        h1 { margin: 0 0 15px 0; color: var(--primary); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; }
-        
+       .header { width: 100%; max-width: 600px; padding: 25px 15px 15px; text-align: center; box-sizing: border-box; }
+    
+    h1 { 
+        margin: 0 0 20px 0; 
+        color: var(--primary); 
+        line-height: 1.4; /* Додаємо простір між рядками */
+        text-transform: uppercase; 
+        letter-spacing: 1px;
+        font-weight: 400; /* Звичайний шрифт для другої частини */
+    }
+
+    .title-main {
+        font-size: 1.1rem; /* Більший розмір для першої частини */
+        font-weight: 800;  /* Напівжирний */
+        display: block;    /* Щоб напис був як окремий блок */
+        margin-bottom: 2px;
+    }
+
+    .title-sub {
+        font-size: 0.85rem; /* Трохи менший розмір для другої частини */
+        display: block;
+    }
         .search-container { position: relative; width: 100%; margin-bottom: 20px; }
         #searchInput { 
             width: 100%; padding: 12px 20px; border-radius: 30px; border: 1px solid #ddd; 
@@ -124,8 +143,11 @@
 </head>
 <body>
 
-    <div class="header">
-        <h1>СХЕМАТИЗМ ПРОВІНЦІЇ СВ. АРХАНГЕЛА МИХАЇЛА</h1>
+<div class="header">
+        <h1>
+            <span class="title-main">СХЕМАТИЗМ ПРОВІНЦІЇ</span>
+            <span class="title-sub">СВ. АРХАНГЕЛА МИХАЇЛА</span>
+        </h1>
         <div class="search-container">
             <input type="text" id="searchInput" placeholder="Пошук..." oninput="handleSearch()" autocomplete="off">
             <div id="searchSuggestions"></div>
