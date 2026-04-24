@@ -119,108 +119,126 @@
 
     <div id="catalog"></div>
 
-    <script>
-        const scriptUrl = 'https://script.google.com/macros/s/AKfycbzYu1iQBGrymGA_nYR1rU3j6quWdGvkHtBrNxQeA7r_2p1v6U06TZNPdBynkB9KHxrk/exec';
-        let allItems = [];
-        let idx = 0;
+   <script>
+    const scriptUrl = 'https://script.google.com/macros/s/AKfycbzYu1iQBGrymGA_nYR1rU3j6quWdGvkHtBrNxQeA7r_2p1v6U06TZNPdBynkB9KHxrk/exec';
+    let allItems = [];
+    let idx = 0;
 
-        function formatDateUk(dateStr) {
-            if (!dateStr || dateStr.toString().trim() === "" || dateStr.toString() === "-") return null;
-            const date = new Date(dateStr);
-            if (isNaN(date)) return dateStr;
-            const months = ["січня", "лютого", "березня", "квітня", "травня", "червня", "липня", "серпня", "вересня", "жовтня", "листопада", "грудня"];
-            return date.getDate() + " " + months[date.getMonth()] + " " + date.getFullYear();
+    // Оновлена функція для ідеального форматування дат
+    function formatDateUk(dateInput) {
+        if (!dateInput || dateInput.toString().trim() === "" || dateInput.toString() === "-") return null;
+        
+        // Створюємо об'єкт дати, що б нам не прийшло (рядок чи об'єкт)
+        const date = new Date(dateInput);
+        
+        // Перевірка на валідність
+        if (isNaN(date.getTime())) return dateInput; 
+
+        const months = ["січня", "лютого", "березня", "квітня", "травня", "червня", "липня", "серпня", "вересня", "жовтня", "листопада", "грудня"];
+        
+        return date.getDate() + " " + months[date.getMonth()] + " " + date.getFullYear();
+    }
+
+    async function load() {
+        try {
+            const r = await fetch(scriptUrl);
+            const d = await r.json();
+            allItems = d.filter(row => row[3] && row[3].toString().trim() !== "");
+            render();
+        } catch (e) { 
+            document.getElementById('catalog').innerHTML = "Помилка завантаження даних."; 
         }
+    }
 
-        async function load() {
-            try {
-                const r = await fetch(scriptUrl);
-                const d = await r.json();
-                allItems = d.filter(row => row[3] && row[3].toString().trim() !== "");
-                render();
-            } catch (e) { 
-                document.getElementById('catalog').innerHTML = "Помилка завантаження даних."; 
-            }
+    function handleSearch() {
+        const term = document.getElementById('searchInput').value.toLowerCase();
+        const suggestions = document.getElementById('searchSuggestions');
+        if (term.length < 1) { suggestions.style.display = 'none'; return; }
+
+        const matches = allItems.filter(item => 
+            item[3].toString().toLowerCase().includes(term) || 
+            item[4].toString().toLowerCase().includes(term)
+        );
+
+        if (matches.length > 0) {
+            suggestions.innerHTML = matches.map(item => `
+                <div class="suggestion-item" onclick="selectPerson('${item[3]}')">
+                    <strong>${item[4]}</strong> ${item[3]}
+                </div>
+            `).join('');
+            suggestions.style.display = 'block';
+        } else { suggestions.style.display = 'none'; }
+    }
+
+    function selectPerson(surname) {
+        document.getElementById('searchInput').value = "";
+        document.getElementById('searchSuggestions').style.display = 'none';
+        const personIdx = allItems.findIndex(item => item[3] === surname);
+        if (personIdx !== -1) { idx = personIdx; render(); }
+    }
+
+    // Допоміжна функція для створення рядків з даними
+    function createDetail(label, value) {
+        // Якщо це одна з дат, пропускаємо через форматувальник
+        const dateLabels = ["День народження", "Новіціат", "Перші обіти", "Вічні обіти", "Дияконат", "Священство"];
+        
+        let displayValue = value;
+        if (dateLabels.includes(label)) {
+            displayValue = formatDateUk(value);
         }
+        
+        if (!displayValue || displayValue === "—" || displayValue === "-") return "";
+        
+        return `
+            <div class="detail-row">
+                <div class="detail-label">${label}</div>
+                <div class="detail-value">${displayValue}</div>
+            </div>`;
+    }
 
-        function handleSearch() {
-            const term = document.getElementById('searchInput').value.toLowerCase();
-            const suggestions = document.getElementById('searchSuggestions');
-            if (term.length < 1) { suggestions.style.display = 'none'; return; }
+    function render() {
+        const catalog = document.getElementById('catalog');
+        if (allItems.length === 0) return;
+        const p = allItems[idx];
 
-            const matches = allItems.filter(item => 
-                item[3].toString().toLowerCase().includes(term) || 
-                item[4].toString().toLowerCase().includes(term)
-            );
-
-            if (matches.length > 0) {
-                suggestions.innerHTML = matches.map(item => `
-                    <div class="suggestion-item" onclick="selectPerson('${item[3]}')">
-                        <strong>${item[4]}</strong> ${item[3]}
+        catalog.innerHTML = `
+            <div class="card">
+                <div class="card-header">
+                    <div class="photo-circle">
+                        <img src="${p[0]}" referrerpolicy="no-referrer" onerror="this.src='https://via.placeholder.com/200?text=Фото'">
                     </div>
-                `).join('');
-                suggestions.style.display = 'block';
-            } else { suggestions.style.display = 'none'; }
-        }
-
-        function selectPerson(surname) {
-            document.getElementById('searchInput').value = "";
-            document.getElementById('searchSuggestions').style.display = 'none';
-            const personIdx = allItems.findIndex(item => item[3] === surname);
-            if (personIdx !== -1) { idx = personIdx; render(); }
-        }
-
-        function createDetail(label, value) {
-            const formattedValue = (label.includes("Дата") || label.includes("обіти") || label.includes("Новіціат") || label.includes("на народження") || label.includes("яконат") || label.includes("нство")) 
-                ? formatDateUk(value) 
-                : value;
-            
-            if (!formattedValue || formattedValue === "—" || formattedValue === "-") return "";
-            return `
-                <div class="detail-row">
-                    <div class="detail-label">${label}</div>
-                    <div class="detail-value">${formattedValue}</div>
-                </div>`;
-        }
-
-        function render() {
-            const catalog = document.getElementById('catalog');
-            if (allItems.length === 0) return;
-            const p = allItems[idx];
-
-            catalog.innerHTML = `
-                <div class="card">
-                    <div class="card-header">
-                        <div class="photo-circle">
-                            <img src="${p[0]}" referrerpolicy="no-referrer" onerror="this.src='https://via.placeholder.com/200?text=Фото'">
-                        </div>
-                        <div class="name-box">
-                            <h2 class="legal-name">${p[4] || '—'}</h2>
-                            <div class="surname-main">${p[3] || '—'}</div>
-                        </div>
+                    <div class="name-box">
+                        <h2 class="legal-name">${p[4] || '—'}</h2>
+                        <div class="surname-main">${p[3] || '—'}</div>
                     </div>
+                </div>
 
-                    <div class="controls">
-                        <button id="prevBtn" onclick="change(-1)" ${idx === 0 ? 'disabled' : ''}>←</button>
-                        <span id="counter">${idx + 1} / ${allItems.length}</span>
-                        <button id="nextBtn" onclick="change(1)" ${idx === allItems.length - 1 ? 'disabled' : ''}>→</button>
-                    </div>
-                    
-                    <div class="details-grid">
-                        ${createDetail("Ім'я з Хрещення", p[5])}
-                        ${createDetail("День народження", p[6])}
-                        ${createDetail("Місце народження", p[7])}
-                        ${createDetail("Новіціат", p[8])}
-                        ${createDetail("Перші обіти", p[9])}
-                        ${createDetail("Вічні обіти", p[10])}
-                        ${createDetail("Дияконат", p[11])}
-                        ${createDetail("Священство", p[12])}
-                    </div>
-                </div>`;
-        }
+                <div class="controls">
+                    <button id="prevBtn" onclick="change(-1)" ${idx === 0 ? 'disabled' : ''}>←</button>
+                    <span id="counter">${idx + 1} / ${allItems.length}</span>
+                    <button id="nextBtn" onclick="change(1)" ${idx === allItems.length - 1 ? 'disabled' : ''}>→</button>
+                </div>
+                
+                <div class="details-grid">
+                    ${createDetail("Ім'я з Хрещення", p[5])}
+                    ${createDetail("День народження", p[6])}
+                    ${createDetail("Місце народження", p[7])}
+                    ${createDetail("Новіціат", p[8])}
+                    ${createDetail("Перші обіти", p[9])}
+                    ${createDetail("Вічні обіти", p[10])}
+                    ${createDetail("Дияконат", p[11])}
+                    ${createDetail("Священство", p[12])}
+                </div>
+            </div>`;
+    }
 
-        function change(d) { idx += d; render(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
-        load();
-    </script>
+    function change(d) { 
+        idx += d; 
+        render(); 
+        window.scrollTo({ top: 0, behavior: 'smooth' }); 
+    }
+    
+    load();
+</script>
 </body>
 </html>
