@@ -40,7 +40,6 @@
             max-height: 250px; overflow-y: auto; display: none; z-index: 1000;
         }
         .suggestion-item { padding: 12px 20px; text-align: left; cursor: pointer; border-bottom: 1px solid #f0f2f5; }
-        .suggestion-item:hover { background-color: #f0f7ff; color: var(--accent); }
 
         #catalog { width: 100%; max-width: 600px; padding: 10px; box-sizing: border-box; }
         
@@ -59,8 +58,8 @@
         }
 
         .photo-circle { 
-            width: 150px; 
-            height: 150px; 
+            width: 140px; 
+            height: 140px; 
             border-radius: 50%; 
             overflow: hidden; 
             border: 4px solid white;
@@ -71,8 +70,8 @@
         .photo-circle img { width: 100%; height: 100%; object-fit: cover; }
 
         .name-box { display: flex; flex-direction: column; text-align: left; }
-        .legal-name { font-size: 2.2rem; font-weight: 800; color: var(--primary); margin: 0; line-height: 1.1; }
-        .surname-main { font-size: 1.6rem; font-weight: 600; color: var(--text-main); margin: 5px 0 0 0; }
+        .legal-name { font-size: 2rem; font-weight: 800; color: var(--primary); margin: 0; line-height: 1.1; }
+        .surname-main { font-size: 1.5rem; font-weight: 600; color: var(--text-main); margin: 5px 0 0 0; }
 
         .controls { 
             display: flex; 
@@ -93,18 +92,18 @@
         .details-grid { 
             width: 100%;
             display: grid; 
-            gap: 18px; 
+            gap: 15px; 
             padding-top: 25px; 
             border-top: 1px solid #f0f2f5;
         }
         .detail-row { display: flex; flex-direction: column; gap: 4px; text-align: left;}
-        .detail-label { font-size: 0.75rem; text-transform: uppercase; color: var(--text-secondary); font-weight: 700; letter-spacing: 0.5px; }
-        .detail-value { font-size: 1.15rem; font-weight: 500; color: var(--text-main); }
+        .detail-label { font-size: 0.7rem; text-transform: uppercase; color: var(--text-secondary); font-weight: 700; letter-spacing: 0.5px; }
+        .detail-value { font-size: 1.1rem; font-weight: 500; color: var(--text-main); }
 
         @media (max-width: 480px) {
             .card-header { flex-direction: column; text-align: center; gap: 15px; }
             .name-box { text-align: center; }
-            .photo-circle { width: 170px; height: 170px; }
+            .photo-circle { width: 160px; height: 160px; }
         }
     </style>
 </head>
@@ -126,7 +125,7 @@
         let idx = 0;
 
         function formatDateUk(dateStr) {
-            if (!dateStr || dateStr.length < 5) return '—';
+            if (!dateStr || dateStr.toString().trim() === "" || dateStr.toString() === "-") return null;
             const date = new Date(dateStr);
             if (isNaN(date)) return dateStr;
             const months = ["січня", "лютого", "березня", "квітня", "травня", "червня", "липня", "серпня", "вересня", "жовтня", "листопада", "грудня"];
@@ -137,7 +136,6 @@
             try {
                 const r = await fetch(scriptUrl);
                 const d = await r.json();
-                // Відфільтровуємо лише рядки, де заповнене Прізвище (D / індекс 3)
                 allItems = d.filter(row => row[3] && row[3].toString().trim() !== "");
                 render();
             } catch (e) { 
@@ -148,11 +146,7 @@
         function handleSearch() {
             const term = document.getElementById('searchInput').value.toLowerCase();
             const suggestions = document.getElementById('searchSuggestions');
-            
-            if (term.length < 1) {
-                suggestions.style.display = 'none';
-                return;
-            }
+            if (term.length < 1) { suggestions.style.display = 'none'; return; }
 
             const matches = allItems.filter(item => 
                 item[3].toString().toLowerCase().includes(term) || 
@@ -166,32 +160,32 @@
                     </div>
                 `).join('');
                 suggestions.style.display = 'block';
-            } else {
-                suggestions.style.display = 'none';
-            }
+            } else { suggestions.style.display = 'none'; }
         }
 
         function selectPerson(surname) {
             document.getElementById('searchInput').value = "";
             document.getElementById('searchSuggestions').style.display = 'none';
-            
             const personIdx = allItems.findIndex(item => item[3] === surname);
-            if (personIdx !== -1) {
-                idx = personIdx;
-                render();
-            }
+            if (personIdx !== -1) { idx = personIdx; render(); }
         }
 
-        document.addEventListener('click', (e) => {
-            if (!e.target.closest('.search-container')) {
-                document.getElementById('searchSuggestions').style.display = 'none';
-            }
-        });
+        function createDetail(label, value) {
+            const formattedValue = (label.includes("Дата") || label.includes("обіти") || label.includes("Новіціат") || label.includes("на народження") || label.includes("яконат") || label.includes("нство")) 
+                ? formatDateUk(value) 
+                : value;
+            
+            if (!formattedValue || formattedValue === "—" || formattedValue === "-") return "";
+            return `
+                <div class="detail-row">
+                    <div class="detail-label">${label}</div>
+                    <div class="detail-value">${formattedValue}</div>
+                </div>`;
+        }
 
         function render() {
             const catalog = document.getElementById('catalog');
             if (allItems.length === 0) return;
-            
             const p = allItems[idx];
 
             catalog.innerHTML = `
@@ -213,28 +207,19 @@
                     </div>
                     
                     <div class="details-grid">
-                        <div class="detail-row">
-                            <div class="detail-label">Ім'я з Хрещення</div>
-                            <div class="detail-value">${p[5] || '—'}</div>
-                        </div>
-                        <div class="detail-row">
-                            <div class="detail-label">День народження</div>
-                            <div class="detail-value">${formatDateUk(p[6])}</div>
-                        </div>
-                        <div class="detail-row">
-                            <div class="detail-label">Місце народження</div>
-                            <div class="detail-value">${p[7] || '—'}</div>
-                        </div>
+                        ${createDetail("Ім'я з Хрещення", p[5])}
+                        ${createDetail("День народження", p[6])}
+                        ${createDetail("Місце народження", p[7])}
+                        ${createDetail("Новіціат", p[8])}
+                        ${createDetail("Перші обіти", p[9])}
+                        ${createDetail("Вічні обіти", p[10])}
+                        ${createDetail("Дияконат", p[11])}
+                        ${createDetail("Священство", p[12])}
                     </div>
                 </div>`;
         }
 
-        function change(d) { 
-            idx += d; 
-            render();
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-        
+        function change(d) { idx += d; render(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
         load();
     </script>
 </body>
