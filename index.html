@@ -82,8 +82,6 @@
         .photo-circle img { width: 100%; height: 100%; object-fit: cover; }
 
         .name-box { display: flex; flex-direction: column; text-align: left; }
-        
-        /* Повертаємо стилі заголовка як були */
         .legal-name { font-size: 2.2rem; font-weight: 800; color: var(--primary); margin: 0; line-height: 1.1; }
         .surname-main { font-size: 1.6rem; font-weight: 500; color: var(--text-main); margin: 5px 0 0 0; }
 
@@ -112,8 +110,6 @@
         }
         .detail-row { display: flex; flex-direction: column; gap: 4px; text-align: left;}
         .detail-label { font-size: 0.75rem; text-transform: uppercase; color: var(--text-secondary); font-weight: 600; letter-spacing: 0.5px; }
-        
-        /* РОБИМО НАПІВЖИРНИМИ ТІЛЬКИ ЦІ ДАНІ */
         .detail-value { font-size: 1.15rem; font-weight: 700; color: var(--text-main); }
 
         @media (max-width: 480px) {
@@ -175,7 +171,7 @@
             if (matches.length > 0) {
                 suggestions.innerHTML = matches.map(item => `
                     <div class="suggestion-item" onclick="selectPerson('${item[3]}', '${item[4]}')">
-                        <strong>${item[4]}</strong> ${item[3]}
+                        <strong>бр. ${item[4]}</strong> ${item[3]}
                     </div>
                 `).join('');
                 suggestions.style.display = 'block';
@@ -193,9 +189,7 @@
             const dateLabels = ["День народження", "Новіціат", "Перші обіти", "Вічні обіти", "Дияконат", "Священство"];
             let displayValue = value;
             if (dateLabels.includes(label)) displayValue = formatDateUk(value);
-            
             if (!displayValue || displayValue === "—" || displayValue === "-") return "";
-            
             return `
                 <div class="detail-row">
                     <div class="detail-label">${label}</div>
@@ -215,7 +209,7 @@
                             <img src="${p[0]}" referrerpolicy="no-referrer" onerror="this.src='https://via.placeholder.com/200?text=Фото'">
                         </div>
                         <div class="name-box">
-                            <h2 class="legal-name">${p[4] || '—'}</h2>
+                            <h2 class="legal-name">бр. ${p[4] || '—'}</h2>
                             <div class="surname-main">${p[3] || '—'}</div>
                         </div>
                     </div>
