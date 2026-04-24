@@ -24,7 +24,7 @@
             color: var(--text-main);
         }
         
-        .header { width: 100%; max-width: 550px; padding: 25px 15px; text-align: center; }
+        .header { width: 100%; max-width: 600px; padding: 25px 15px; text-align: center; }
         h1 { margin: 0 0 20px 0; color: var(--primary); font-size: 1rem; text-transform: uppercase; letter-spacing: 1px; }
         
         .search-container { position: relative; width: 100%; margin-bottom: 20px; }
@@ -42,59 +42,59 @@
         .suggestion-item { padding: 12px 20px; text-align: left; cursor: pointer; border-bottom: 1px solid #f0f2f5; }
         .suggestion-item:hover { background-color: #f0f7ff; color: var(--accent); }
 
-        /* Нова професійна картка */
-        #catalog { width: 100%; max-width: 550px; padding: 15px; }
+        #catalog { width: 100%; max-width: 600px; padding: 15px; }
         .card { 
             background: white; 
-            border-radius: 24px; 
-            padding: 30px;
-            box-shadow: 0 12px 40px rgba(0,0,0,0.12); 
+            border-radius: 28px; 
+            padding: 40px;
+            box-shadow: 0 15px 45px rgba(0,0,0,0.1); 
             display: flex; 
             flex-direction: column;
-            gap: 25px;
+            gap: 30px;
         }
 
-        .card-top { display: flex; align-items: center; gap: 25px; }
+        .card-top { display: flex; align-items: center; gap: 35px; }
 
+        /* Збільшене фото */
         .photo-circle { 
-            width: 120px; 
-            height: 120px; 
+            width: 160px; 
+            height: 160px; 
             border-radius: 50%; 
             overflow: hidden; 
-            border: 3px solid white;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            border: 4px solid white;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.12);
             flex-shrink: 0;
             background: #eee;
         }
         .photo-circle img { width: 100%; height: 100%; object-fit: cover; }
 
         .name-box { display: flex; flex-direction: column; justify-content: center; }
-        .legal-name { font-size: 2rem; font-weight: 800; color: var(--primary); margin: 0; line-height: 1.1; }
-        .surname-main { font-size: 1.3rem; font-weight: 500; color: var(--text-main); margin: 5px 0 0 0; }
+        .legal-name { font-size: 2.4rem; font-weight: 800; color: var(--primary); margin: 0; line-height: 1; }
+        /* Збільшене прізвище */
+        .surname-main { font-size: 1.6rem; font-weight: 600; color: var(--text-main); margin: 8px 0 0 0; letter-spacing: -0.5px; }
         
         .details-grid { 
             display: grid; 
-            gap: 15px; 
-            padding-top: 20px; 
+            gap: 20px; 
+            padding-top: 25px; 
             border-top: 1px solid #f0f2f5;
         }
-        .detail-row { display: flex; flex-direction: column; gap: 4px; }
-        .detail-label { font-size: 0.7rem; text-transform: uppercase; color: var(--text-secondary); font-weight: 700; letter-spacing: 0.5px; }
-        .detail-value { font-size: 1.05rem; font-weight: 500; color: var(--text-main); }
+        .detail-row { display: flex; flex-direction: column; gap: 5px; }
+        .detail-label { font-size: 0.75rem; text-transform: uppercase; color: var(--text-secondary); font-weight: 700; letter-spacing: 0.8px; }
+        .detail-value { font-size: 1.15rem; font-weight: 500; color: var(--text-main); }
 
-        /* Навігація */
         .controls { display: flex; align-items: center; gap: 25px; margin: 20px 0 50px; }
         button { 
-            padding: 12px 30px; font-size: 0.95rem; cursor: pointer; border-radius: 50px; 
+            padding: 12px 35px; font-size: 0.95rem; cursor: pointer; border-radius: 50px; 
             border: none; background-color: var(--primary); color: white; font-weight: 600;
-            transition: opacity 0.2s;
         }
         button:disabled { background-color: #dcdcdc; color: #999; cursor: not-allowed; }
-        #counter { font-weight: 700; color: var(--text-secondary); letter-spacing: 1px; }
+        #counter { font-weight: 700; color: var(--text-secondary); }
 
-        @media (max-width: 480px) {
-            .card-top { flex-direction: column; text-align: center; }
-            .photo-circle { width: 140px; height: 140px; }
+        @media (max-width: 520px) {
+            .card-top { flex-direction: column; text-align: center; gap: 20px; }
+            .photo-circle { width: 150px; height: 150px; }
+            .legal-name { font-size: 2rem; }
         }
     </style>
 </head>
@@ -103,7 +103,7 @@
     <div class="header">
         <h1>Схематизм Провінції св. Архангела Михаїла</h1>
         <div class="search-container">
-            <input type="text" id="searchInput" placeholder="Пошук за іменем чи прізвищем..." oninput="handleSearch()" autocomplete="off">
+            <input type="text" id="searchInput" placeholder="Пошук..." oninput="handleSearch()" autocomplete="off">
             <div id="searchSuggestions"></div>
         </div>
     </div>
@@ -122,17 +122,11 @@
         let filteredItems = [];
         let idx = 0;
 
-        // Функція для гарного форматування дати
         function formatDateUk(dateStr) {
             if (!dateStr || dateStr.length < 5) return '—';
             const date = new Date(dateStr);
             if (isNaN(date)) return dateStr;
-
-            const months = [
-                "січня", "лютого", "березня", "квітня", "травня", "червня",
-                "липня", "серпня", "вересня", "жовтня", "листопада", "грудня"
-            ];
-
+            const months = ["січня", "лютого", "березня", "квітня", "травня", "червня", "липня", "серпня", "вересня", "жовтня", "листопада", "грудня"];
             return `${date.getDate()} ${months[date.getMonth()]} ${date.getFullYear()}`;
         }
 
@@ -140,19 +134,15 @@
             try {
                 const r = await fetch(scriptUrl);
                 const d = await r.json();
-                // Фільтруємо лише заповнені рядки (Прізвище в D стовпці - індекс 3)
                 allItems = d.filter(row => row[3] && row[3].toString().trim() !== "");
                 filteredItems = [...allItems];
                 render();
-            } catch (e) { 
-                document.getElementById('catalog').innerHTML = "<p style='text-align:center'>Помилка завантаження даних.</p>"; 
-            }
+            } catch (e) { document.getElementById('catalog').innerHTML = "Помилка завантаження."; }
         }
 
         function handleSearch() {
             const term = document.getElementById('searchInput').value.toLowerCase();
             const suggestions = document.getElementById('searchSuggestions');
-            
             if (term.length < 1) {
                 suggestions.style.display = 'none';
                 filteredItems = [...allItems];
@@ -160,12 +150,10 @@
                 render();
                 return;
             }
-
             const matches = allItems.filter(item => 
                 item[3].toString().toLowerCase().includes(term) || 
                 item[4].toString().toLowerCase().includes(term)
             );
-
             if (matches.length > 0) {
                 suggestions.innerHTML = matches.map(item => `
                     <div class="suggestion-item" onclick="selectPerson('${item[3]}')">
@@ -173,10 +161,7 @@
                     </div>
                 `).join('');
                 suggestions.style.display = 'block';
-            } else {
-                suggestions.style.display = 'none';
-            }
-            
+            } else { suggestions.style.display = 'none'; }
             filteredItems = matches;
             idx = 0;
             render();
@@ -190,29 +175,21 @@
             render();
         }
 
-        document.addEventListener('click', (e) => {
-            if (!e.target.closest('.search-container')) {
-                document.getElementById('searchSuggestions').style.display = 'none';
-            }
-        });
-
         function render() {
             const catalog = document.getElementById('catalog');
             const counter = document.getElementById('counter');
-            
             if (filteredItems.length === 0) {
-                catalog.innerHTML = "<p style='text-align:center; padding: 20px;'>Нікого не знайдено</p>";
+                catalog.innerHTML = "<p style='text-align:center'>Нікого не знайдено</p>";
                 counter.innerText = "0 / 0";
                 return;
             }
-
             const p = filteredItems[idx];
 
             catalog.innerHTML = `
                 <div class="card">
                     <div class="card-top">
                         <div class="photo-circle">
-                            <img src="${p[0]}" referrerpolicy="no-referrer" onerror="this.src='https://via.placeholder.com/150?text=Фото'">
+                            <img src="${p[0]}" referrerpolicy="no-referrer" onerror="this.src='https://via.placeholder.com/200?text=Фото'">
                         </div>
                         <div class="name-box">
                             <h2 class="legal-name">${p[4] || '—'}</h2>
@@ -222,11 +199,11 @@
                     
                     <div class="details-grid">
                         <div class="detail-row">
-                            <div class="detail-label">Хресне ім'я</div>
+                            <div class="detail-label">Ім'я з Хрещення</div>
                             <div class="detail-value">${p[5] || '—'}</div>
                         </div>
                         <div class="detail-row">
-                            <div class="detail-label">Дата народження</div>
+                            <div class="detail-label">День народження</div>
                             <div class="detail-value">${formatDateUk(p[6])}</div>
                         </div>
                         <div class="detail-row">
@@ -241,12 +218,7 @@
             document.getElementById('nextBtn').disabled = idx === filteredItems.length - 1;
         }
 
-        function change(d) {
-            idx += d;
-            render();
-            window.scrollTo(0,0);
-        }
-
+        function change(d) { idx += d; render(); window.scrollTo(0,0); }
         load();
     </script>
 </body>
