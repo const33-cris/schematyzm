@@ -25,36 +25,14 @@
             color: var(--text-main);
         }
         
-        /* Заголовок */
         .header { width: 100%; max-width: 600px; padding: 25px 15px 10px; text-align: center; box-sizing: border-box; }
         
-        h1 { 
-            margin: 0 0 15px 0; 
-            color: var(--primary); 
-            line-height: 1.3; 
-            text-transform: uppercase; 
-            letter-spacing: 1px;
-        }
+        h1 { margin: 0 0 15px 0; color: var(--primary); line-height: 1.3; text-transform: uppercase; letter-spacing: 1px; }
 
-        .title-main {
-            font-size: 1.2rem;
-            font-weight: 800;
-            display: block;
-            margin-bottom: 2px;
-        }
-
-        .title-sub {
-            font-size: 0.9rem;
-            font-weight: 400;
-            display: block;
-        }
+        .title-main { font-size: 1.2rem; font-weight: 800; display: block; margin-bottom: 2px; }
+        .title-sub { font-size: 0.9rem; font-weight: 400; display: block; }
         
-        /* Пошук */
-        .search-container { 
-            position: relative; 
-            width: 100%; 
-            margin-bottom: 10px;
-        }
+        .search-container { position: relative; width: 100%; margin-bottom: 10px; }
 
         #searchInput { 
             width: 100%; padding: 12px 20px; border-radius: 30px; border: 1px solid #ddd; 
@@ -69,7 +47,6 @@
         }
         .suggestion-item { padding: 12px 20px; text-align: left; cursor: pointer; border-bottom: 1px solid #f0f2f5; }
 
-        /* Контейнер картки */
         #catalog { 
             width: 100%; 
             max-width: 600px; 
@@ -77,6 +54,7 @@
             box-sizing: border-box;
             display: flex;
             justify-content: center;
+            min-height: 200px;
         }
         
         .card { 
@@ -90,23 +68,12 @@
             box-sizing: border-box;
         }
 
-        .card-header {
-            display: flex;
-            align-items: center;
-            gap: 25px;
-            margin-bottom: 5px;
-        }
+        .card-header { display: flex; align-items: center; gap: 25px; margin-bottom: 5px; }
 
-        /* Велике коло фото */
         .photo-circle { 
-            width: 160px; 
-            height: 160px; 
-            border-radius: 50%; 
-            overflow: hidden; 
-            border: 5px solid white; 
-            box-shadow: 0 8px 20px rgba(0,0,0,0.15); 
-            background: #eee;
-            flex-shrink: 0;
+            width: 160px; height: 160px; border-radius: 50%; overflow: hidden; 
+            border: 5px solid white; box-shadow: 0 8px 20px rgba(0,0,0,0.15); 
+            background: #eee; flex-shrink: 0;
         }
         .photo-circle img { width: 100%; height: 100%; object-fit: cover; }
 
@@ -114,38 +81,19 @@
         .legal-name { font-size: 2.2rem; font-weight: 800; color: var(--primary); margin: 0; line-height: 1.1; }
         .surname-main { font-size: 1.6rem; font-weight: 500; color: var(--text-main); margin: 5px 0 0 0; }
 
-        /* Кнопки навігації */
-        .controls { 
-            display: flex; 
-            align-items: center; 
-            justify-content: center;
-            gap: 20px; 
-            margin: 20px 0;
-            width: 100%;
-        }
+        .controls { display: flex; align-items: center; justify-content: center; gap: 20px; margin: 20px 0; width: 100%; }
         button { 
             padding: 10px 30px; font-size: 1.3rem; cursor: pointer; border-radius: 50px; 
-            border: none; background-color: var(--primary); color: white; font-weight: bold;
-            min-width: 90px;
+            border: none; background-color: var(--primary); color: white; font-weight: bold; min-width: 90px;
         }
         button:disabled { background-color: #dcdcdc; color: #999; cursor: not-allowed; }
         #counter { font-weight: 700; color: var(--text-secondary); font-size: 1.1rem; min-width: 80px; text-align: center; }
 
-        /* Сітка даних */
-        .details-grid { 
-            width: 100%;
-            display: grid; 
-            gap: 15px; 
-            padding-top: 20px; 
-            border-top: 1px solid #f0f2f5;
-        }
+        .details-grid { width: 100%; display: grid; gap: 15px; padding-top: 20px; border-top: 1px solid #f0f2f5; }
         .detail-row { display: flex; flex-direction: column; gap: 4px; text-align: left;}
         .detail-label { font-size: 0.75rem; text-transform: uppercase; color: var(--text-secondary); font-weight: 600; letter-spacing: 0.5px; }
-        
-        /* Напівжирні значення даних */
         .detail-value { font-size: 1.15rem; font-weight: 700; color: var(--text-main); }
 
-        /* Адаптація для мобільних */
         @media (max-width: 480px) {
             .header { padding: 15px 10px 5px; }
             #catalog { padding: 0 15px 10px; }
@@ -164,19 +112,22 @@
             <span class="title-sub">СВ. АРХАНГЕЛА МИХАЇЛА</span>
         </h1>
         <div class="search-container">
-            <input type="text" id="searchInput" placeholder="Пошук..." oninput="handleSearch()" autocomplete="off">
+            <input type="text" id="searchInput" placeholder="Пошук за прізвищем..." oninput="handleSearch()" autocomplete="off">
             <div id="searchSuggestions"></div>
         </div>
     </div>
 
-    <div id="catalog"></div>
+    <div id="catalog">
+        <div style="padding: 40px; color: #999;">Завантаження даних...</div>
+    </div>
 
     <script>
-        const scriptUrl = 'https://script.google.com/macros/s/AKfycbzYu1iQBGrymGA_nYR1rU3j6quWdGvkHtBrNxQeA7r_2p1v6U06TZNPdBynkB9KHxrk/exec';
+        // ВСТАВТЕ ВАШЕ ПОСИЛАННЯ ТУТ
+        const scriptUrl = 'ВАШЕ_ПОСИЛАННЯ_ТУТ';
+        
         let allItems = [];
         let idx = 0;
 
-        // Форматування дати на українську
         function formatDateUk(dateInput) {
             if (!dateInput || dateInput.toString().trim() === "" || dateInput.toString() === "-") return null;
             const date = new Date(dateInput);
@@ -185,27 +136,32 @@
             return date.getDate() + " " + months[date.getMonth()] + " " + date.getFullYear();
         }
 
-        // Завантаження даних
         async function load() {
             try {
                 const r = await fetch(scriptUrl);
+                if (!r.ok) throw new Error('Network error');
                 const d = await r.json();
-                allItems = d.filter(row => row[3] && row[3].toString().trim() !== "");
-                render();
+                // Фільтруємо лише рядки, де є прізвище (стовпчик D / індекс 3)
+                allItems = d.filter(row => row && row[3] && row[3].toString().trim() !== "" && row[3] !== "Прізвище");
+                if (allItems.length > 0) {
+                    render();
+                } else {
+                    document.getElementById('catalog').innerHTML = "Дані порожні або формат невірний.";
+                }
             } catch (e) { 
-                document.getElementById('catalog').innerHTML = "Помилка завантаження даних."; 
+                console.error(e);
+                document.getElementById('catalog').innerHTML = "Помилка зв'язку з таблицею. Перевірте scriptUrl."; 
             }
         }
 
-        // Пошук з префіксом бр.
         function handleSearch() {
-            const term = document.getElementById('searchInput').value.toLowerCase();
+            const term = document.getElementById('searchInput').value.toLowerCase().trim();
             const suggestions = document.getElementById('searchSuggestions');
             if (term.length < 1) { suggestions.style.display = 'none'; return; }
 
             const matches = allItems.filter(item => 
-                item[3].toString().toLowerCase().includes(term) || 
-                item[4].toString().toLowerCase().includes(term)
+                (item[3] && item[3].toString().toLowerCase().includes(term)) || 
+                (item[4] && item[4].toString().toLowerCase().includes(term))
             );
 
             if (matches.length > 0) {
@@ -215,4 +171,77 @@
                     </div>
                 `).join('');
                 suggestions.style.display = 'block';
-            } else { suggestions.style.display =
+            } else { suggestions.style.display = 'none'; }
+        }
+
+        function selectPerson(surname, firstName) {
+            document.getElementById('searchInput').value = "";
+            document.getElementById('searchSuggestions').style.display = 'none';
+            const personIdx = allItems.findIndex(item => item[3] === surname && item[4] === firstName);
+            if (personIdx !== -1) { idx = personIdx; render(); }
+        }
+
+        function createDetail(label, value) {
+            const dateLabels = ["День народження", "Новіціат", "Перші обіти", "Вічні обіти", "Дияконат", "Священство"];
+            let displayValue = value;
+            if (dateLabels.includes(label)) displayValue = formatDateUk(value);
+            if (!displayValue || displayValue === "—" || displayValue === "-" || displayValue.toString().trim() === "") return "";
+            return `
+                <div class="detail-row">
+                    <div class="detail-label">${label}</div>
+                    <div class="detail-value">${displayValue}</div>
+                </div>`;
+        }
+
+        function render() {
+            const catalog = document.getElementById('catalog');
+            if (allItems.length === 0) return;
+            const p = allItems[idx];
+
+            catalog.innerHTML = `
+                <div class="card">
+                    <div class="card-header">
+                        <div class="photo-circle">
+                            <img src="${p[0]}" referrerpolicy="no-referrer" onerror="this.src='https://via.placeholder.com/200?text=Фото'">
+                        </div>
+                        <div class="name-box">
+                            <h2 class="legal-name">бр. ${p[4] || '—'}</h2>
+                            <div class="surname-main">${p[3] || '—'}</div>
+                        </div>
+                    </div>
+
+                    <div class="controls">
+                        <button onclick="change(-1)" ${idx === 0 ? 'disabled' : ''}>←</button>
+                        <span id="counter">${idx + 1} / ${allItems.length}</span>
+                        <button onclick="change(1)" ${idx === allItems.length - 1 ? 'disabled' : ''}>→</button>
+                    </div>
+                    
+                    <div class="details-grid">
+                        ${createDetail("Ім'я з Хрещення", p[5])}
+                        ${createDetail("День народження", p[6])}
+                        ${createDetail("Місце народження", p[7])}
+                        ${createDetail("Новіціат", p[8])}
+                        ${createDetail("Перші обіти", p[9])}
+                        ${createDetail("Вічні обіти", p[10])}
+                        ${createDetail("Дияконат", p[11])}
+                        ${createDetail("Священство", p[12])}
+                    </div>
+                </div>`;
+        }
+
+        function change(d) { 
+            idx += d; 
+            render(); 
+            window.scrollTo({ top: 0, behavior: 'smooth' }); 
+        }
+
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.search-container')) {
+                document.getElementById('searchSuggestions').style.display = 'none';
+            }
+        });
+        
+        load();
+    </script>
+</body>
+</html>
