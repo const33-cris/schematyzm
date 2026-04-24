@@ -24,77 +24,88 @@
             color: var(--text-main);
         }
         
-        .header { width: 100%; max-width: 600px; padding: 25px 15px; text-align: center; }
-        h1 { margin: 0 0 20px 0; color: var(--primary); font-size: 1rem; text-transform: uppercase; letter-spacing: 1px; }
+        .header { width: 100%; max-width: 600px; padding: 20px 15px 10px; text-align: center; }
+        h1 { margin: 0 0 15px 0; color: var(--primary); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; }
         
-        .search-container { position: relative; width: 100%; margin-bottom: 20px; }
+        .search-container { position: relative; width: 100%; margin-bottom: 10px; }
         #searchInput { 
-            width: 100%; padding: 14px 25px; border-radius: 30px; border: 1px solid #ddd; 
-            font-size: 1rem; box-shadow: 0 4px 12px rgba(0,0,0,0.08); outline: none; box-sizing: border-box;
+            width: 100%; padding: 12px 20px; border-radius: 30px; border: 1px solid #ddd; 
+            font-size: 1rem; box-shadow: 0 4px 10px rgba(0,0,0,0.05); outline: none; box-sizing: border-box;
         }
 
         #searchSuggestions {
             position: absolute; top: 100%; left: 0; right: 0; 
-            background: white; border-radius: 15px; margin-top: 8px;
+            background: white; border-radius: 15px; margin-top: 5px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.15);
             max-height: 250px; overflow-y: auto; display: none; z-index: 1000;
         }
         .suggestion-item { padding: 12px 20px; text-align: left; cursor: pointer; border-bottom: 1px solid #f0f2f5; }
-        .suggestion-item:hover { background-color: #f0f7ff; color: var(--accent); }
 
-        #catalog { width: 100%; max-width: 600px; padding: 15px; }
+        #catalog { width: 100%; max-width: 500px; padding: 10px; box-sizing: border-box; }
+        
         .card { 
             background: white; 
             border-radius: 28px; 
-            padding: 40px;
-            box-shadow: 0 15px 45px rgba(0,0,0,0.1); 
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08); 
             display: flex; 
             flex-direction: column;
-            gap: 30px;
+            align-items: center;
+            text-align: center;
         }
 
-        .card-top { display: flex; align-items: center; gap: 35px; }
-
-        /* Збільшене фото */
+        /* Фото велике і по центру для мобільного */
         .photo-circle { 
-            width: 160px; 
-            height: 160px; 
+            width: 180px; 
+            height: 180px; 
             border-radius: 50%; 
             overflow: hidden; 
-            border: 4px solid white;
+            border: 5px solid white;
             box-shadow: 0 6px 15px rgba(0,0,0,0.12);
-            flex-shrink: 0;
             background: #eee;
+            margin-bottom: 20px;
         }
         .photo-circle img { width: 100%; height: 100%; object-fit: cover; }
 
-        .name-box { display: flex; flex-direction: column; justify-content: center; }
-        .legal-name { font-size: 2.4rem; font-weight: 800; color: var(--primary); margin: 0; line-height: 1; }
-        /* Збільшене прізвище */
-        .surname-main { font-size: 1.6rem; font-weight: 600; color: var(--text-main); margin: 8px 0 0 0; letter-spacing: -0.5px; }
-        
-        .details-grid { 
-            display: grid; 
-            gap: 20px; 
-            padding-top: 25px; 
-            border-top: 1px solid #f0f2f5;
-        }
-        .detail-row { display: flex; flex-direction: column; gap: 5px; }
-        .detail-label { font-size: 0.75rem; text-transform: uppercase; color: var(--text-secondary); font-weight: 700; letter-spacing: 0.8px; }
-        .detail-value { font-size: 1.15rem; font-weight: 500; color: var(--text-main); }
+        .legal-name { font-size: 2.2rem; font-weight: 800; color: var(--primary); margin: 0; line-height: 1.1; }
+        .surname-main { font-size: 1.5rem; font-weight: 600; color: var(--text-main); margin: 5px 0 20px 0; }
 
-        .controls { display: flex; align-items: center; gap: 25px; margin: 20px 0 50px; }
+        /* Навігація ОДРАЗУ під прізвищем */
+        .controls { 
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            gap: 15px; 
+            margin-bottom: 25px;
+            width: 100%;
+        }
         button { 
-            padding: 12px 35px; font-size: 0.95rem; cursor: pointer; border-radius: 50px; 
+            padding: 10px 25px; font-size: 0.9rem; cursor: pointer; border-radius: 50px; 
             border: none; background-color: var(--primary); color: white; font-weight: 600;
+            flex: 1; max-width: 120px;
         }
         button:disabled { background-color: #dcdcdc; color: #999; cursor: not-allowed; }
-        #counter { font-weight: 700; color: var(--text-secondary); }
+        #counter { font-weight: 700; color: var(--text-secondary); font-size: 0.9rem; min-width: 60px; }
 
-        @media (max-width: 520px) {
-            .card-top { flex-direction: column; text-align: center; gap: 20px; }
-            .photo-circle { width: 150px; height: 150px; }
-            .legal-name { font-size: 2rem; }
+        .details-grid { 
+            width: 100%;
+            display: grid; 
+            gap: 15px; 
+            padding-top: 20px; 
+            border-top: 1px solid #f0f2f5;
+            text-align: left;
+        }
+        .detail-row { display: flex; flex-direction: column; gap: 3px; }
+        .detail-label { font-size: 0.7rem; text-transform: uppercase; color: var(--text-secondary); font-weight: 700; letter-spacing: 0.5px; }
+        .detail-value { font-size: 1.1rem; font-weight: 500; color: var(--text-main); }
+
+        /* Для великих екранів (планшети/ПК) залишаємо гарний вигляд */
+        @media (min-width: 600px) {
+            .card { flex-direction: row; flex-wrap: wrap; align-items: flex-start; text-align: left; }
+            .photo-circle { margin-right: 30px; margin-bottom: 0; }
+            .name-box { flex: 1; }
+            .controls { justify-content: flex-start; width: auto; margin-top: 15px; }
+            .details-grid { width: 100%; margin-top: 20px; }
         }
     </style>
 </head>
@@ -109,12 +120,6 @@
     </div>
 
     <div id="catalog"></div>
-
-    <div class="controls">
-        <button id="prevBtn" onclick="change(-1)">← Назад</button>
-        <span id="counter">0 / 0</span>
-        <button id="nextBtn" onclick="change(1)">Вперед →</button>
-    </div>
 
     <script>
         const scriptUrl = 'https://script.google.com/macros/s/AKfycbzYu1iQBGrymGA_nYR1rU3j6quWdGvkHtBrNxQeA7r_2p1v6U06TZNPdBynkB9KHxrk/exec';
@@ -177,23 +182,26 @@
 
         function render() {
             const catalog = document.getElementById('catalog');
-            const counter = document.getElementById('counter');
             if (filteredItems.length === 0) {
                 catalog.innerHTML = "<p style='text-align:center'>Нікого не знайдено</p>";
-                counter.innerText = "0 / 0";
                 return;
             }
             const p = filteredItems[idx];
 
             catalog.innerHTML = `
                 <div class="card">
-                    <div class="card-top">
-                        <div class="photo-circle">
-                            <img src="${p[0]}" referrerpolicy="no-referrer" onerror="this.src='https://via.placeholder.com/200?text=Фото'">
-                        </div>
-                        <div class="name-box">
-                            <h2 class="legal-name">${p[4] || '—'}</h2>
-                            <div class="surname-main">${p[3] || '—'}</div>
+                    <div class="photo-circle">
+                        <img src="${p[0]}" referrerpolicy="no-referrer" onerror="this.src='https://via.placeholder.com/200?text=Фото'">
+                    </div>
+                    
+                    <div class="name-box">
+                        <h2 class="legal-name">${p[4] || '—'}</h2>
+                        <div class="surname-main">${p[3] || '—'}</div>
+                        
+                        <div class="controls">
+                            <button id="prevBtn" onclick="change(-1)" ${idx === 0 ? 'disabled' : ''}>←</button>
+                            <span id="counter">${idx + 1} / ${filteredItems.length}</span>
+                            <button id="nextBtn" onclick="change(1)" ${idx === filteredItems.length - 1 ? 'disabled' : ''}>→</button>
                         </div>
                     </div>
                     
@@ -212,13 +220,16 @@
                         </div>
                     </div>
                 </div>`;
-            
-            counter.innerText = `${idx + 1} / ${filteredItems.length}`;
-            document.getElementById('prevBtn').disabled = idx === 0;
-            document.getElementById('nextBtn').disabled = idx === filteredItems.length - 1;
         }
 
-        function change(d) { idx += d; render(); window.scrollTo(0,0); }
+        function change(d) { 
+            idx += d; 
+            render(); 
+            // Тепер скролити вгору не обов'язково, бо кнопки на місці, 
+            // але ми залишимо невеликий скрол до початку картки
+            document.getElementById('catalog').scrollIntoView({behavior: 'smooth'});
+        }
+        
         load();
     </script>
 </body>
