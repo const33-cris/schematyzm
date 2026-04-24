@@ -150,32 +150,40 @@
         }
     }
 
-    function handleSearch() {
-        const term = document.getElementById('searchInput').value.toLowerCase();
-        const suggestions = document.getElementById('searchSuggestions');
-        if (term.length < 1) { suggestions.style.display = 'none'; return; }
+   // Оновлена функція handleSearch: тепер передаємо два параметри для точності
+function handleSearch() {
+    const term = document.getElementById('searchInput').value.toLowerCase();
+    const suggestions = document.getElementById('searchSuggestions');
+    if (term.length < 1) { suggestions.style.display = 'none'; return; }
 
-        const matches = allItems.filter(item => 
-            item[3].toString().toLowerCase().includes(term) || 
-            item[4].toString().toLowerCase().includes(term)
-        );
+    const matches = allItems.filter(item => 
+        item[3].toString().toLowerCase().includes(term) || 
+        item[4].toString().toLowerCase().includes(term)
+    );
 
-        if (matches.length > 0) {
-            suggestions.innerHTML = matches.map(item => `
-                <div class="suggestion-item" onclick="selectPerson('${item[3]}')">
-                    <strong>${item[4]}</strong> ${item[3]}
-                </div>
-            `).join('');
-            suggestions.style.display = 'block';
-        } else { suggestions.style.display = 'none'; }
+    if (matches.length > 0) {
+        suggestions.innerHTML = matches.map(item => `
+            <div class="suggestion-item" onclick="selectPerson('${item[3]}', '${item[4]}')">
+                <strong>${item[4]}</strong> ${item[3]}
+            </div>
+        `).join('');
+        suggestions.style.display = 'block';
+    } else { suggestions.style.display = 'none'; }
+}
+
+// Оновлена функція selectPerson: шукає за прізвищем ТА іменем одночасно
+function selectPerson(surname, firstName) {
+    document.getElementById('searchInput').value = "";
+    document.getElementById('searchSuggestions').style.display = 'none';
+    
+    // Знаходимо індекс, де збігаються обидва поля
+    const personIdx = allItems.findIndex(item => item[3] === surname && item[4] === firstName);
+    
+    if (personIdx !== -1) { 
+        idx = personIdx; 
+        render(); 
     }
-
-    function selectPerson(surname) {
-        document.getElementById('searchInput').value = "";
-        document.getElementById('searchSuggestions').style.display = 'none';
-        const personIdx = allItems.findIndex(item => item[3] === surname);
-        if (personIdx !== -1) { idx = personIdx; render(); }
-    }
+}
 
     // Допоміжна функція для створення рядків з даними
     function createDetail(label, value) {
