@@ -122,17 +122,22 @@
         let allItems = [];
         let idx = 0;
 
-        function formatDateUk(dateInput) {
-            if (!dateInput || dateInput.toString().trim() === "" || dateInput.toString() === "-") return null;
-            
-            // Якщо дата прийшла як ISO рядок (як на вашому скріншоті), очищуємо її
-            let dateStr = dateInput.toString().split('T')[0];
-            const date = new Date(dateStr);
-            
-            if (isNaN(date.getTime())) return dateInput; 
-            const months = ["січня", "лютого", "березня", "квітня", "травня", "червня", "липня", "серпня", "вересня", "жовтня", "листопада", "грудня"];
-            return date.getDate() + " " + months[date.getMonth()] + " " + date.getFullYear();
-        }
+       function formatDateUk(dateInput) {
+    if (!dateInput || dateInput.toString().trim() === "" || dateInput.toString() === "-") return null;
+
+    // Спроба очистити ISO формат (прибираємо час після літери T, якщо він є)
+    let cleanInput = dateInput.toString().split('T')[0];
+    const date = new Date(cleanInput);
+
+    // Перевірка на валідність дати
+    if (isNaN(date.getTime())) return dateInput; 
+
+    // Перевірка на помилку 1970 року (іноді порожні дати так інтерпретуються)
+    if (date.getFullYear() <= 1970 && !dateInput.toString().includes("1970")) return null;
+
+    const months = ["січня", "лютого", "березня", "квітня", "травня", "червня", "липня", "серпня", "вересня", "жовтня", "листопада", "грудня"];
+    return date.getDate() + " " + months[date.getMonth()] + " " + date.getFullYear();
+}
 
         async function load() {
             try {
