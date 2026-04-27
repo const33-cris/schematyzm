@@ -24,8 +24,8 @@
         .header { width: 100%; max-width: 600px; padding: 30px 15px 10px; text-align: center; box-sizing: border-box; }
         
         .title-main {
-            font-size: 1.6rem;
-            font-weight: 800;
+            font-size: 1.6rem !important;
+            font-weight: 800 !important;
             color: var(--primary);
             display: block;
             text-transform: uppercase;
@@ -34,7 +34,7 @@
         }
 
         .title-sub {
-            font-size: 1rem;
+            font-size: 1rem !important;
             font-weight: 400;
             color: var(--primary);
             display: block;
@@ -110,29 +110,26 @@
     </div>
 
     <div id="catalog">
-        <div style="padding: 50px; color: #999; text-align: center;">Завантаження даних...</div>
+        <div style="padding: 50px; color: #999; text-align: center;">Завантаження...</div>
     </div>
 
     <script>
-        // ВАШЕ ОСТАННЄ ПОСИЛАННЯ
-        const scriptUrl = 'https://script.google.com/macros/s/AKfycbybHBACa4HKhGEJAo_Y5ORbxttdgwJqCNgtPu1lR_S3f8ey-xrHsvqgaBzSe53Elz_y/exec';
+        const scriptUrl = 'https://script.google.com/macros/s/AKfycbx5wF2-YSFjB2NTOzObml4ZLtuKlZdyl72uISyRL9LyFh8dVZLJzy2MEQWS0OsW1OX9/exec';
         
         let allItems = [];
         let idx = 0;
 
-        // ФУНКЦІЯ ФОРМАТУВАННЯ ТЕКСТОВОЇ ДАТИ (БЕЗ ЗМІЩЕНЬ)
+        // ФУНКЦІЯ ДЛЯ ПЕРЕТВОРЕННЯ ТЕКСТУ В КРАСИВУ ДАТУ
         function formatDateUk(dateInput) {
             if (!dateInput || dateInput.toString().trim() === "" || dateInput.toString() === "-") return null;
 
             const months = ["січня", "лютого", "березня", "квітня", "травня", "червня", "липня", "серпня", "вересня", "жовтня", "листопада", "грудня"];
             
             let s = dateInput.toString().trim();
-            
-            // Якщо раптом прийшов повний формат ISO з часом (хоча DisplayValues має це прибрати)
+            // Якщо раптом затесався формат ISO (T), відрізаємо його
             if (s.includes('T')) s = s.split('T')[0];
 
             let parts = s.includes('.') ? s.split('.') : s.split('-');
-            
             if (parts.length < 3) return dateInput;
 
             let day, monthIdx, year;
@@ -148,7 +145,6 @@
             }
 
             if (monthIdx < 0 || monthIdx > 11) return dateInput;
-
             return day + " " + months[monthIdx] + " " + year;
         }
 
@@ -158,7 +154,7 @@
                 allItems = await r.json();
                 render();
             } catch (e) { 
-                document.getElementById('catalog').innerHTML = "<div style='color:red; padding:20px; text-align:center;'>Помилка зв'язку. Перевірте доступ до скрипта.</div>"; 
+                document.getElementById('catalog').innerHTML = "<div style='color:red; padding:20px; text-align:center;'>Помилка зв'язку. Перевірте доступ.</div>"; 
             }
         }
 
