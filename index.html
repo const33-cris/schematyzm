@@ -127,22 +127,19 @@
 
     const months = ["січня", "лютого", "березня", "квітня", "травня", "червня", "липня", "серпня", "вересня", "жовтня", "листопада", "грудня"];
     
+    // Отримуємо рядок (наприклад, "01.01.1970" або "1970-01-01")
     let s = dateInput.toString().trim();
-    
-    // Розбиваємо дату за крапкою (якщо в таблиці 01.01.1970) або за дефісом
     let parts = s.includes('.') ? s.split('.') : s.split('-');
     
-    if (parts.length < 3) return dateInput; // Якщо формат невідомий, повертаємо як є
+    if (parts.length < 3) return dateInput;
 
     let day, monthIdx, year;
 
-    // Якщо формат YYYY-MM-DD
-    if (parts[0].length === 4) {
+    if (parts[0].length === 4) { // Формат YYYY-MM-DD
         year = parts[0];
         monthIdx = parseInt(parts[1]) - 1;
         day = parseInt(parts[2]);
-    } else { 
-        // Якщо формат DD.MM.YYYY
+    } else { // Формат DD.MM.YYYY
         day = parseInt(parts[0]);
         monthIdx = parseInt(parts[1]) - 1;
         year = parts[2];
