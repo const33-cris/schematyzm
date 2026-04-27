@@ -20,12 +20,12 @@
             min-height: 100vh; color: var(--text-main);
         }
         
-        /* ЗАГОЛОВОК */
+        /* ВЕЛИКИЙ ЖИРНИЙ ЗАГОЛОВОК */
         .header { width: 100%; max-width: 600px; padding: 30px 15px 10px; text-align: center; box-sizing: border-box; }
         
         .title-main {
-            font-size: 1.6rem !important;
-            font-weight: 800 !important;
+            font-size: 1.6rem;
+            font-weight: 800;
             color: var(--primary);
             display: block;
             text-transform: uppercase;
@@ -34,7 +34,7 @@
         }
 
         .title-sub {
-            font-size: 1rem !important;
+            font-size: 1rem;
             font-weight: 400;
             color: var(--primary);
             display: block;
@@ -114,19 +114,23 @@
     </div>
 
     <script>
+        // ВАШЕ ОСТАННЄ ПОСИЛАННЯ
         const scriptUrl = 'https://script.google.com/macros/s/AKfycbybHBACa4HKhGEJAo_Y5ORbxttdgwJqCNgtPu1lR_S3f8ey-xrHsvqgaBzSe53Elz_y/exec';
         
         let allItems = [];
         let idx = 0;
 
-        // ФУНКЦІЯ ОБРОБКИ ТЕКСТОВОЇ ДАТИ
+        // ФУНКЦІЯ ФОРМАТУВАННЯ ТЕКСТОВОЇ ДАТИ (БЕЗ ЗМІЩЕНЬ)
         function formatDateUk(dateInput) {
             if (!dateInput || dateInput.toString().trim() === "" || dateInput.toString() === "-") return null;
 
             const months = ["січня", "лютого", "березня", "квітня", "травня", "червня", "липня", "серпня", "вересня", "жовтня", "листопада", "грудня"];
             
             let s = dateInput.toString().trim();
-            // Розбиваємо за крапкою (01.01.1970) або дефісом (1970-01-01)
+            
+            // Якщо раптом прийшов повний формат ISO з часом (хоча DisplayValues має це прибрати)
+            if (s.includes('T')) s = s.split('T')[0];
+
             let parts = s.includes('.') ? s.split('.') : s.split('-');
             
             if (parts.length < 3) return dateInput;
