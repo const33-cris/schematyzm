@@ -101,15 +101,17 @@
             .name-box { text-align: center; }
             .photo-circle { width: 180px; height: 180px; } 
         }
-       .experience-box {
-    margin: 10px 0;
+      .experience-box {
+    margin: 12px 0;
     display: flex;
     flex-direction: column;
-    gap: 4px;
-    font-size: 1rem;
-    font-weight: 700;
-    color: var(--primary);
+    gap: 6px;
+    /* Трохи більший шрифт, жирний та темно-синій */
+    font-size: 1.15rem; 
+    font-weight: 800;
+    color: #003366; /* Глибокий темно-синій */
     text-align: center;
+    line-height: 1.2;
 }
     </style>
 </head>
@@ -268,14 +270,14 @@ function selectPerson(surname, firstName) {
                 </div>`;
         }
 
-       function render() {
+     function render() {
     const catalog = document.getElementById('catalog');
     if (allItems.length === 0) return;
     const p = allItems[idx];
 
-    // Розрахунок стажу
-    const monkExp = calculateExperience(p[9]);  // Від дати Перших обітів
-    const priestExp = calculateExperience(p[12]); // Від дати Священства
+    // Розрахунок стажу (p[9] - Перші обіти, p[12] - Священство)
+    const monkExp = calculateExperience(p[9]);
+    const priestExp = calculateExperience(p[12]);
 
     catalog.innerHTML = `
         <div class="card">
