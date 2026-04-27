@@ -163,32 +163,87 @@
             }
         }
 
-        function handleSearch() {
-            const term = document.getElementById('searchInput').value.toLowerCase();
-            const suggestions = document.getElementById('searchSuggestions');
-            if (term.length < 1) { suggestions.style.display = 'none'; return; }
+       let selectedSuggestionIndex = -1; // Змінна для відстеження виділеного пункту
 
-            const matches = allItems.filter(item => 
-                (item[3] && item[3].toString().toLowerCase().includes(term)) || 
-                (item[4] && item[4].toString().toLowerCase().includes(term))
-            );
+function handleSearch() {
+    const term = document.getElementById('searchInput').value.toLowerCase();
+    const suggestions = document.getElementById('searchSuggestions');
+    
+    if (term.length < 1) { 
+        suggestions.style.display = 'none'; 
+        selectedSuggestionIndex = -1;
+        return; 
+    }
 
-            if (matches.length > 0) {
-                suggestions.innerHTML = matches.map(item => `
-                    <div class="suggestion-item" onclick="selectPerson('${item[3]}', '${item[4]}')">
-                        <strong>бр. ${item[4]}</strong> ${item[3]}
-                    </div>
-                `).join('');
-                suggestions.style.display = 'block';
-            } else { suggestions.style.display = 'none'; }
+    const matches = allItems.filter(item => 
+        (item[3] && item[3].toString().toLowerCase().includes(term)) || 
+        (item[4] && item[4].toString().toLowerCase().includes(term))
+    );
+
+    if (matches.length > 0) {
+        suggestions.innerHTML = matches.map((item, i) => `
+            <div class="suggestion-item ${i === 0 ? 'active' : ''}" 
+                 id="sugg-${i}"
+                 onclick="selectPerson('${item[3]}', '${item[4]}')">
+                <strong>бр. ${item[4]}</strong> ${item[3]}
+            </div>
+        `).join('');
+        suggestions.style.display = 'block';
+        selectedSuggestionIndex = 0; // Завжди підсвічуємо перший елемент
+    } else { 
+        suggestions.style.display = 'none'; 
+        selectedSuggestionIndex = -1;
+    }
+}
+
+// Функція для вибору стрілками
+document.getElementById('searchInput').addEventListener('keydown', function(e) {
+    const suggestions = document.querySelectorAll('.suggestion-item');
+    if (suggestions.length === 0) return;
+
+    if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        updateSelection(1, suggestions);
+    } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        updateSelection(-1, suggestions);
+    } else if (e.key === 'Enter') {
+        e.preventDefault();
+        if (selectedSuggestionIndex >= 0) {
+            suggestions[selectedSuggestionIndex].click();
         }
+    }
+});
 
-        function selectPerson(surname, firstName) {
-            document.getElementById('searchInput').value = "";
-            document.getElementById('searchSuggestions').style.display = 'none';
-            const personIdx = allItems.findIndex(item => item[3] === surname && item[4] === firstName);
-            if (personIdx !== -1) { idx = personIdx; render(); }
-        }
+function updateSelection(direction, list) {
+    // Знімаємо клас active з поточного
+    if (selectedSuggestionIndex >= 0) {
+        list[selectedSuggestionIndex].classList.remove('active');
+    }
+
+    selectedSuggestionIndex += direction;
+
+    // Зациклюємо список
+    if (selectedSuggestionIndex >= list.length) selectedSuggestionIndex = 0;
+    if (selectedSuggestionIndex < 0) selectedSuggestionIndex = list.length - 1;
+
+    // Додаємо active новому та прокручуємо, якщо список довгий
+    const activeItem = list[selectedSuggestionIndex];
+    activeItem.classList.add('active');
+    activeItem.scrollIntoView({ block: 'nearest' });
+}
+
+function selectPerson(surname, firstName) {
+    document.getElementById('searchInput').value = "";
+    document.getElementById('searchSuggestions').style.display = 'none';
+    selectedSuggestionIndex = -1; // Скидаємо індекс
+    
+    const personIdx = allItems.findIndex(item => item[3] === surname && item[4] === firstName);
+    if (personIdx !== -1) { 
+        idx = personIdx; 
+        render(); 
+    }
+}
 
         function createDetail(label, value) {
             const dateLabels = ["День народження", "Новіціат", "Перші обіти", "Вічні обіти", "Дияконат", "Священство"];
