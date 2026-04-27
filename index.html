@@ -122,12 +122,23 @@
         let allItems = [];
         let idx = 0;
 
-       function formatDateUk(dateInput) {
+      function formatDateUk(dateInput) {
     if (!dateInput || dateInput.toString().trim() === "" || dateInput.toString() === "-") return null;
 
-    // Спроба очистити ISO формат
-    let dateStr = dateInput.toString().split('T')[0];
-    const date = new Date(dateStr);
+    // Отримуємо лише частину з датою (YYYY-MM-DD), ігноруючи час T00:00:00
+    let datePart = dateInput.toString().split('T')[0];
+    
+    // Розбиваємо рядок по дефісу
+    let parts = datePart.split('-');
+    
+    if (parts.length < 3) return dateInput; // Якщо це не формат YYYY-MM-DD, повертаємо як є
+
+    // parts[0] - рік, parts[1] - місяць (у JS місяці від 0 до 11), parts[2] - день
+    const year = parseInt(parts[0]);
+    const month = parseInt(parts[1]) - 1;
+    const day = parseInt(parts[2]);
+
+    const date = new Date(year, month, day);
 
     if (isNaN(date.getTime())) return dateInput; 
 
