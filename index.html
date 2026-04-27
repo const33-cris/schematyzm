@@ -117,7 +117,7 @@
 
     <script>
         // ВАЖЛИВО: ЗАМІНІТЬ ЦЕ ПОСИЛАННЯ НА ВАШЕ ВЛАСНЕ
-        const scriptUrl = 'https://script.google.com/macros/s/AKfycbzYu1iQBGrymGA_nYR1rU3j6quWdGvkHtBrNxQeA7r_2p1v6U06TZNPdBynkB9KHxrk/exec';
+        const scriptUrl = 'https://script.google.com/macros/s/AKfycby3yt8Sv6Wkw74HoB_3WP2TWzGJMcjOfkLJK_jhhMjb6U0Arq9bWvRTMTh1livX1Nzj/exec';
         
         let allItems = [];
         let idx = 0;
@@ -127,21 +127,22 @@
 
     const months = ["січня", "лютого", "березня", "квітня", "травня", "червня", "липня", "серпня", "вересня", "жовтня", "листопада", "грудня"];
     
-    // Перетворюємо вхідні дані в рядок
     let s = dateInput.toString().trim();
     
-    // Розбираємо формати DD.MM.YYYY або YYYY-MM-DD
+    // Розбиваємо дату за крапкою (якщо в таблиці 01.01.1970) або за дефісом
     let parts = s.includes('.') ? s.split('.') : s.split('-');
     
-    if (parts.length < 3) return dateInput;
+    if (parts.length < 3) return dateInput; // Якщо формат невідомий, повертаємо як є
 
     let day, monthIdx, year;
 
-    if (parts[0].length === 4) { // Формат YYYY-MM-DD
+    // Якщо формат YYYY-MM-DD
+    if (parts[0].length === 4) {
         year = parts[0];
         monthIdx = parseInt(parts[1]) - 1;
         day = parseInt(parts[2]);
-    } else { // Формат DD.MM.YYYY
+    } else { 
+        // Якщо формат DD.MM.YYYY
         day = parseInt(parts[0]);
         monthIdx = parseInt(parts[1]) - 1;
         year = parts[2];
