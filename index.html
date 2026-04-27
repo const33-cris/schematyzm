@@ -125,15 +125,11 @@
        function formatDateUk(dateInput) {
     if (!dateInput || dateInput.toString().trim() === "" || dateInput.toString() === "-") return null;
 
-    // Спроба очистити ISO формат (прибираємо час після літери T, якщо він є)
-    let cleanInput = dateInput.toString().split('T')[0];
-    const date = new Date(cleanInput);
+    // Спроба очистити ISO формат
+    let dateStr = dateInput.toString().split('T')[0];
+    const date = new Date(dateStr);
 
-    // Перевірка на валідність дати
     if (isNaN(date.getTime())) return dateInput; 
-
-    // Перевірка на помилку 1970 року (іноді порожні дати так інтерпретуються)
-    if (date.getFullYear() <= 1970 && !dateInput.toString().includes("1970")) return null;
 
     const months = ["січня", "лютого", "березня", "квітня", "травня", "червня", "липня", "серпня", "вересня", "жовтня", "листопада", "грудня"];
     return date.getDate() + " " + months[date.getMonth()] + " " + date.getFullYear();
@@ -179,17 +175,24 @@
         }
 
         function createDetail(label, value) {
-            const dateLabels = ["День народження", "Новіціат", "Перші обіти", "Вічні обіти", "Дияконат", "Священство"];
-            let displayValue = value;
-            if (dateLabels.includes(label)) displayValue = formatDateUk(value);
-            if (!displayValue || displayValue === "—" || displayValue === "-" || displayValue.toString().includes("1970")) return "";
-            
-            return `
-                <div class="detail-row">
-                    <div class="detail-label">${label}</div>
-                    <div class="detail-value">${displayValue}</div>
-                </div>`;
-        }
+    const dateLabels = ["День народження", "Новіціат", "Перші обіти", "Вічні обіти", "Дияконат", "Священство"];
+    let displayValue = value;
+    
+    if (dateLabels.includes(label)) {
+        displayValue = formatDateUk(value);
+    }
+    
+    // Тепер ми приховуємо рядок ТІЛЬКИ якщо в таблиці зовсім порожньо
+    if (displayValue === null || displayValue === undefined || displayValue.toString().trim() === "" || displayValue === "—" || displayValue === "-") {
+        return "";
+    }
+    
+    return `
+        <div class="detail-row">
+            <div class="detail-label">${label}</div>
+            <div class="detail-value">${displayValue}</div>
+        </div>`;
+}
 
         function render() {
             const catalog = document.getElementById('catalog');
