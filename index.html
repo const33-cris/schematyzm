@@ -122,39 +122,32 @@
         let allItems = [];
         let idx = 0;
 
-   function formatDateUk(dateInput) {
+  function formatDateUk(dateInput) {
     if (!dateInput || dateInput.toString().trim() === "" || dateInput.toString() === "-") return null;
-
-    let day, monthIdx, year;
-
-    // Якщо Google надіслав об'єкт дати (що і викликає проблему з 31 грудня)
-    if (dateInput instanceof Date || (typeof dateInput === 'string' && dateInput.includes('T'))) {
-        const d = new Date(dateInput);
-        // Використовуємо методи UTC, щоб ігнорувати місцевий час
-        day = d.getUTCDate();
-        monthIdx = d.getUTCMonth();
-        year = d.getUTCFullYear();
-    } else {
-        // Якщо це просто рядок типу "01.01.1970"
-        let s = dateInput.toString().split('T')[0];
-        let parts = s.includes('-') ? s.split('-') : s.split('.');
-        if (parts.length < 3) return dateInput;
-
-        if (parts[0].length === 4) { // YYYY-MM-DD
-            year = parseInt(parts[0]);
-            monthIdx = parseInt(parts[1]) - 1;
-            day = parseInt(parts[2]);
-        } else { // DD.MM.YYYY
-            day = parseInt(parts[0]);
-            monthIdx = parseInt(parts[1]) - 1;
-            year = parseInt(parts[2]);
-        }
-    }
 
     const months = ["січня", "лютого", "березня", "квітня", "травня", "червня", "липня", "серпня", "вересня", "жовтня", "листопада", "грудня"];
     
-    // Перевірка на помилку 1899 року (іноді буває в Sheets)
-    if (year < 1920) return null;
+    // Перетворюємо вхідні дані в рядок
+    let s = dateInput.toString().trim();
+    
+    // Розбираємо формати DD.MM.YYYY або YYYY-MM-DD
+    let parts = s.includes('.') ? s.split('.') : s.split('-');
+    
+    if (parts.length < 3) return dateInput;
+
+    let day, monthIdx, year;
+
+    if (parts[0].length === 4) { // Формат YYYY-MM-DD
+        year = parts[0];
+        monthIdx = parseInt(parts[1]) - 1;
+        day = parseInt(parts[2]);
+    } else { // Формат DD.MM.YYYY
+        day = parseInt(parts[0]);
+        monthIdx = parseInt(parts[1]) - 1;
+        year = parts[2];
+    }
+
+    if (monthIdx < 0 || monthIdx > 11) return dateInput;
 
     return day + " " + months[monthIdx] + " " + year;
 }
