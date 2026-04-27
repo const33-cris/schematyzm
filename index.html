@@ -125,36 +125,26 @@
      function formatDateUk(dateInput) {
     if (!dateInput || dateInput.toString().trim() === "" || dateInput.toString() === "-") return null;
 
-    // 1. Перетворюємо вхідні дані в чистий рядок YYYY-MM-DD
-    // Відсікаємо час (все що після T або пробілу)
-    let dateStr = dateInput.toString().split('T')[0].split(' ')[0];
+    let d;
     
-    // 2. Визначаємо роздільник (дефіс для Google, або крапка, якщо введено вручну)
-    let parts = dateStr.includes('-') ? dateStr.split('-') : dateStr.split('.');
-    
-    if (parts.length < 3) return dateInput;
-
-    let day, monthIdx, year;
-
-    // 3. Розбираємо частини залежно від формату
-    if (parts[0].length === 4) {
-        // Формат YYYY-MM-DD
-        year = parts[0];
-        monthIdx = parseInt(parts[1]) - 1;
-        day = parseInt(parts[2]);
+    // Перевіряємо, чи це вже об'єкт дати (Google іноді так робить)
+    if (dateInput instanceof Date) {
+        d = dateInput;
     } else {
-        // Формат DD.MM.YYYY
-        day = parseInt(parts[0]);
-        monthIdx = parseInt(parts[1]) - 1;
-        year = parts[2];
+        // Якщо це рядок, відрізаємо все зайве (час, часові пояси)
+        let s = dateInput.toString().split('T')[0];
+        // Створюємо дату, додаючи "час полудня", щоб ніякі часові пояси не відкинули її на вчора
+        d = new Date(s + "T12:00:00");
     }
+
+    if (isNaN(d.getTime())) return dateInput;
+
+    const day = d.getDate();
+    const monthIdx = d.getMonth();
+    const year = d.getFullYear();
 
     const months = ["січня", "лютого", "березня", "квітня", "травня", "червня", "липня", "серпня", "вересня", "жовтня", "листопада", "грудня"];
     
-    // 4. Перевірка на адекватність місяця
-    if (monthIdx < 0 || monthIdx > 11) return dateInput;
-
-    // 5. Просто повертаємо складений текст. Жодних обчислень часу!
     return day + " " + months[monthIdx] + " " + year;
 }
 
