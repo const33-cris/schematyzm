@@ -125,25 +125,37 @@
       function formatDateUk(dateInput) {
     if (!dateInput || dateInput.toString().trim() === "" || dateInput.toString() === "-") return null;
 
-    // Отримуємо лише частину з датою (YYYY-MM-DD), ігноруючи час T00:00:00
-    let datePart = dateInput.toString().split('T')[0];
+    // 1. Перетворюємо вхідні дані у рядок і беремо лише частину з датою (YYYY-MM-DD)
+    // Це відсікає "T00:00:00.000Z" та будь-які часові пояси
+    let dateStr = dateInput.toString().split('T')[0];
     
-    // Розбиваємо рядок по дефісу
-    let parts = datePart.split('-');
+    // 2. Розбиваємо рядок за роздільником (дефіс або крапка)
+    let parts = dateStr.includes('-') ? dateStr.split('-') : dateStr.split('.');
     
-    if (parts.length < 3) return dateInput; // Якщо це не формат YYYY-MM-DD, повертаємо як є
+    if (parts.length < 3) return dateInput;
 
-    // parts[0] - рік, parts[1] - місяць (у JS місяці від 0 до 11), parts[2] - день
-    const year = parseInt(parts[0]);
-    const month = parseInt(parts[1]) - 1;
-    const day = parseInt(parts[2]);
+    let day, month, year;
 
+    // 3. Визначаємо формат: YYYY-MM-DD (стандарт Google) або DD.MM.YYYY
+    if (parts[0].length === 4) {
+        year = parseInt(parts[0]);
+        month = parseInt(parts[1]) - 1;
+        day = parseInt(parts[2]);
+    } else {
+        day = parseInt(parts[0]);
+        month = parseInt(parts[1]) - 1;
+        year = parseInt(parts[2]);
+    }
+
+    // 4. Створюємо дату локально. Це ГАРАНТУЄ, що година буде 00:00 вашого часу
     const date = new Date(year, month, day);
 
     if (isNaN(date.getTime())) return dateInput; 
 
     const months = ["січня", "лютого", "березня", "квітня", "травня", "червня", "липня", "серпня", "вересня", "жовтня", "листопада", "грудня"];
-    return date.getDate() + " " + months[date.getMonth()] + " " + date.getFullYear();
+    
+    // Повертаємо чисте число без жодних зміщень
+    return day + " " + months[month] + " " + year;
 }
 
         async function load() {
