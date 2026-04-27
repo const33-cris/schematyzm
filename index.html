@@ -20,28 +20,29 @@
             min-height: 100vh; color: var(--text-main);
         }
         
-        /* Оновлений заголовок */
-        .header { width: 100%; max-width: 600px; padding: 20px 15px 5px; text-align: center; box-sizing: border-box; }
+        /* ЗАГОЛОВОК */
+        .header { width: 100%; max-width: 600px; padding: 30px 15px 10px; text-align: center; box-sizing: border-box; }
         
         .title-main {
-            font-size: 1.3rem;
-            font-weight: 800; /* Напівжирний */
+            font-size: 1.6rem !important;
+            font-weight: 800 !important;
             color: var(--primary);
             display: block;
             text-transform: uppercase;
             letter-spacing: 1px;
-            margin-bottom: 2px;
+            margin-bottom: 5px;
         }
 
         .title-sub {
-            font-size: 0.9rem;
+            font-size: 1rem !important;
             font-weight: 400;
             color: var(--primary);
             display: block;
             text-transform: uppercase;
+            margin-bottom: 20px;
         }
         
-        .search-container { position: relative; width: 100%; margin-top: 15px; margin-bottom: 10px; }
+        .search-container { position: relative; width: 100%; margin-bottom: 15px; }
 
         #searchInput { 
             width: 100%; padding: 12px 20px; border-radius: 30px; border: 1px solid #ddd; 
@@ -56,7 +57,7 @@
         }
         .suggestion-item { padding: 12px 20px; text-align: left; cursor: pointer; border-bottom: 1px solid #f0f2f5; }
 
-        #catalog { width: 100%; max-width: 600px; padding: 0 10px 10px; box-sizing: border-box; display: flex; justify-content: center; }
+        #catalog { width: 100%; max-width: 600px; padding: 0 10px 20px; box-sizing: border-box; display: flex; justify-content: center; }
         
         .card { 
             background: white; border-radius: 28px; padding: 30px;
@@ -64,9 +65,8 @@
             width: 100%; max-width: 500px; margin: 0 auto; box-sizing: border-box;
         }
 
-        .card-header { display: flex; align-items: center; gap: 25px; margin-bottom: 10px; }
+        .card-header { display: flex; align-items: center; gap: 25px; margin-bottom: 15px; }
 
-        /* Ще більше фото */
         .photo-circle { 
             width: 170px; height: 170px; border-radius: 50%; overflow: hidden; 
             border: 5px solid white; box-shadow: 0 8px 20px rgba(0,0,0,0.15); 
@@ -89,8 +89,6 @@
         .details-grid { width: 100%; display: grid; gap: 15px; padding-top: 20px; border-top: 1px solid #f0f2f5; }
         .detail-row { display: flex; flex-direction: column; gap: 2px; text-align: left;}
         .detail-label { font-size: 0.7rem; text-transform: uppercase; color: var(--text-secondary); font-weight: 600; letter-spacing: 0.5px; }
-        
-        /* Напівжирні дані */
         .detail-value { font-size: 1.15rem; font-weight: 700; color: var(--text-main); }
 
         @media (max-width: 480px) {
@@ -103,8 +101,8 @@
 <body>
 
     <div class="header">
-        <span class="title-main">СХЕМАТИЗМ ПРОВІНЦІЇ</span>
-        <span class="title-sub">СВ. АРХАНГЕЛА МИХАЇЛА</span>
+        <div class="title-main">СХЕМАТИЗМ ПРОВІНЦІЇ</div>
+        <div class="title-sub">СВ. АРХАНГЕЛА МИХАЇЛА</div>
         <div class="search-container">
             <input type="text" id="searchInput" placeholder="Пошук..." oninput="handleSearch()" autocomplete="off">
             <div id="searchSuggestions"></div>
@@ -112,53 +110,51 @@
     </div>
 
     <div id="catalog">
-        <div style="padding: 50px; color: #999;">Завантаження...</div>
+        <div style="padding: 50px; color: #999; text-align: center;">Завантаження даних...</div>
     </div>
 
     <script>
-        // ВАЖЛИВО: ЗАМІНІТЬ ЦЕ ПОСИЛАННЯ НА ВАШЕ ВЛАСНЕ
         const scriptUrl = 'https://script.google.com/macros/s/AKfycbybHBACa4HKhGEJAo_Y5ORbxttdgwJqCNgtPu1lR_S3f8ey-xrHsvqgaBzSe53Elz_y/exec';
-         
+        
         let allItems = [];
         let idx = 0;
 
-  function formatDateUk(dateInput) {
-    if (!dateInput || dateInput.toString().trim() === "" || dateInput.toString() === "-") return null;
+        // ФУНКЦІЯ ОБРОБКИ ТЕКСТОВОЇ ДАТИ
+        function formatDateUk(dateInput) {
+            if (!dateInput || dateInput.toString().trim() === "" || dateInput.toString() === "-") return null;
 
-    const months = ["січня", "лютого", "березня", "квітня", "травня", "червня", "липня", "серпня", "вересня", "жовтня", "листопада", "грудня"];
-    
-    // Отримуємо рядок (наприклад, "01.01.1970" або "1970-01-01")
-    let s = dateInput.toString().trim();
-    let parts = s.includes('.') ? s.split('.') : s.split('-');
-    
-    if (parts.length < 3) return dateInput;
+            const months = ["січня", "лютого", "березня", "квітня", "травня", "червня", "липня", "серпня", "вересня", "жовтня", "листопада", "грудня"];
+            
+            let s = dateInput.toString().trim();
+            // Розбиваємо за крапкою (01.01.1970) або дефісом (1970-01-01)
+            let parts = s.includes('.') ? s.split('.') : s.split('-');
+            
+            if (parts.length < 3) return dateInput;
 
-    let day, monthIdx, year;
+            let day, monthIdx, year;
 
-    if (parts[0].length === 4) { // Формат YYYY-MM-DD
-        year = parts[0];
-        monthIdx = parseInt(parts[1]) - 1;
-        day = parseInt(parts[2]);
-    } else { // Формат DD.MM.YYYY
-        day = parseInt(parts[0]);
-        monthIdx = parseInt(parts[1]) - 1;
-        year = parts[2];
-    }
+            if (parts[0].length === 4) { // Формат YYYY-MM-DD
+                year = parts[0];
+                monthIdx = parseInt(parts[1]) - 1;
+                day = parseInt(parts[2]);
+            } else { // Формат DD.MM.YYYY
+                day = parseInt(parts[0]);
+                monthIdx = parseInt(parts[1]) - 1;
+                year = parts[2];
+            }
 
-    if (monthIdx < 0 || monthIdx > 11) return dateInput;
+            if (monthIdx < 0 || monthIdx > 11) return dateInput;
 
-    return day + " " + months[monthIdx] + " " + year;
-}
+            return day + " " + months[monthIdx] + " " + year;
+        }
 
         async function load() {
             try {
                 const r = await fetch(scriptUrl);
-                const d = await r.json();
-                // Фільтруємо, щоб не було порожніх рядків
-                allItems = d.filter(row => row[3] && row[3].toString().trim() !== "" && row[3] !== "Прізвище");
+                allItems = await r.json();
                 render();
             } catch (e) { 
-                document.getElementById('catalog').innerHTML = "<div style='color:red; padding:20px;'>Помилка зв'язку. Перевірте Deployment URL та доступ (Anyone).</div>"; 
+                document.getElementById('catalog').innerHTML = "<div style='color:red; padding:20px; text-align:center;'>Помилка зв'язку. Перевірте доступ до скрипта.</div>"; 
             }
         }
 
@@ -168,8 +164,8 @@
             if (term.length < 1) { suggestions.style.display = 'none'; return; }
 
             const matches = allItems.filter(item => 
-                item[3].toString().toLowerCase().includes(term) || 
-                item[4].toString().toLowerCase().includes(term)
+                (item[3] && item[3].toString().toLowerCase().includes(term)) || 
+                (item[4] && item[4].toString().toLowerCase().includes(term))
             );
 
             if (matches.length > 0) {
@@ -190,24 +186,17 @@
         }
 
         function createDetail(label, value) {
-    const dateLabels = ["День народження", "Новіціат", "Перші обіти", "Вічні обіти", "Дияконат", "Священство"];
-    let displayValue = value;
-    
-    if (dateLabels.includes(label)) {
-        displayValue = formatDateUk(value);
-    }
-    
-    // Тепер ми приховуємо рядок ТІЛЬКИ якщо в таблиці зовсім порожньо
-    if (displayValue === null || displayValue === undefined || displayValue.toString().trim() === "" || displayValue === "—" || displayValue === "-") {
-        return "";
-    }
-    
-    return `
-        <div class="detail-row">
-            <div class="detail-label">${label}</div>
-            <div class="detail-value">${displayValue}</div>
-        </div>`;
-}
+            const dateLabels = ["День народження", "Новіціат", "Перші обіти", "Вічні обіти", "Дияконат", "Священство"];
+            let displayValue = value;
+            if (dateLabels.includes(label)) displayValue = formatDateUk(value);
+            if (!displayValue || displayValue === "—" || displayValue === "-" || displayValue.toString().trim() === "") return "";
+            
+            return `
+                <div class="detail-row">
+                    <div class="detail-label">${label}</div>
+                    <div class="detail-value">${displayValue}</div>
+                </div>`;
+        }
 
         function render() {
             const catalog = document.getElementById('catalog');
