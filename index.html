@@ -341,23 +341,73 @@
 
         function change(d) { idx += d; render(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
 
+      // Оновлена функція пошуку
         function handleSearch() {
             const term = document.getElementById('searchInput').value.toLowerCase();
             const suggestions = document.getElementById('searchSuggestions');
-            if (term.length < 1) { suggestions.style.display = 'none'; return; }
-            const matches = allItems.filter(item => (item[3]?.toLowerCase().includes(term)) || (item[4]?.toLowerCase().includes(term)));
+            if (term.length < 1) { 
+                suggestions.style.display = 'none'; 
+                return; 
+            }
+            
+            const matches = allItems.filter(item => 
+                (item[3]?.toLowerCase().includes(term)) || 
+                (item[4]?.toLowerCase().includes(term))
+            );
+
             if (matches.length > 0) {
-                suggestions.innerHTML = matches.map((item, i) => `<div class="suggestion-item ${i===0?'active':''}" onclick="selectPerson('${item[3]}', '${item[4]}')"><strong>бр. ${item[4]}</strong> ${item[3]}</div>`).join('');
+                // Рендеримо список підказок
+                suggestions.innerHTML = matches.map((item, i) => `
+                    <div class="suggestion-item ${i === 0 ? 'active' : ''}" 
+                         data-index="${i}"
+                         onclick="selectPerson('${item[3]}', '${item[4]}')">
+                        <strong>бр. ${item[4]}</strong> ${item[3]}
+                    </div>`).join('');
                 suggestions.style.display = 'block';
-            } else { suggestions.style.display = 'none'; }
+            } else { 
+                suggestions.style.display = 'none'; 
+            }
         }
 
+        // Вибір конкретної особи
         function selectPerson(surname, firstName) {
             document.getElementById('searchInput').value = "";
             document.getElementById('searchSuggestions').style.display = 'none';
             const personIdx = allItems.findIndex(item => item[3] === surname && item[4] === firstName);
-            if (personIdx !== -1) { idx = personIdx; isGridView = false; render(); }
+            if (personIdx !== -1) { 
+                idx = personIdx; 
+                isGridView = false; 
+                render(); 
+            }
         }
+
+        // НОВИЙ БЛОК: Навігація клавіатурою
+        document.getElementById('searchInput').addEventListener('keydown', function(e) {
+            const suggestions = document.getElementById('searchSuggestions');
+            const items = suggestions.getElementsByClassName('suggestion-item');
+            if (items.length === 0) return;
+
+            let activeIdx = Array.from(items).findIndex(item => item.classList.contains('active'));
+
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                items[activeIdx].classList.remove('active');
+                activeIdx = (activeIdx + 1) % items.length;
+                items[activeIdx].classList.add('active');
+                items[activeIdx].scrollIntoView({ block: 'nearest' });
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                items[activeIdx].classList.remove('active');
+                activeIdx = (activeIdx - 1 + items.length) % items.length;
+                items[activeIdx].classList.add('active');
+                items[activeIdx].scrollIntoView({ block: 'nearest' });
+            } else if (e.key === 'Enter') {
+                e.preventDefault();
+                if (activeIdx >= 0) {
+                    items[activeIdx].click();
+                }
+            }
+        });
 
         load();
     </script>
