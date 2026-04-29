@@ -32,8 +32,23 @@
         
         .header { width: 100%; max-width: 600px; padding: 25px 15px 5px; text-align: center; box-sizing: border-box; }
         
-        .title-main { font-size: 1.5rem; font-weight: 800; color: var(--primary); text-transform: uppercase; margin-bottom: 5px; }
-        .title-sub { font-size: 0.9rem; font-weight: 400; color: var(--primary); text-transform: uppercase; margin-bottom: 15px; }
+      .title-main { 
+            font-size: 1.5rem; 
+            font-weight: 800; 
+            color: var(--primary); 
+            text-transform: uppercase; 
+            margin-bottom: 2px; /* Мінімальний відступ */
+            letter-spacing: 2px;
+        }
+
+        .title-sub { 
+            font-size: 1.1rem; /* Збільшений розмір, як ви просили */
+            font-weight: 400; /* Тонкий шрифт (regular) */
+            color: var(--primary); 
+            text-transform: uppercase; 
+            margin-bottom: 20px; 
+            letter-spacing: 1px;
+        }
         
         .search-container { position: relative; width: 100%; margin-bottom: 10px; }
         #searchInput { 
@@ -192,9 +207,9 @@
 </head>
 <body>
 
-    <div class="header">
-        <div class="title-main">СХЕМАТИЗМ ПРОВІНЦІЇ</div>
-        <div class="title-sub">СВ. АРХАНГЕЛА МИХАЇЛА</div>
+   <div class="header">
+        <div class="title-main">СХЕМАТИЗМ</div>
+        <div class="title-sub">ПРОВІНЦІЇ СВ. АРХАНГЕЛА МИХАЇЛА</div>
         
         <div class="search-container">
             <input type="text" id="searchInput" placeholder="Пошук..." oninput="handleSearch()" autocomplete="off">
