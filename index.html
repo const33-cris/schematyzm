@@ -95,46 +95,64 @@
         .detail-label { font-size: 0.65rem; text-transform: uppercase; color: var(--text-secondary); font-weight: 600; }
         .detail-value { font-size: 1.1rem; font-weight: 700; color: var(--text-main); }
 
-        /* СІТКА - ТЕЛЕФОН (ЗБІЛЬШЕНО) */
-        .brothers-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            padding: 5px;
-            width: 100%;
-        }
-        .grid-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            cursor: pointer;
-            padding: 5px 0;
-        }
-        .grid-photo {
-            width: 95px; /* Збільшено для телефону */
-            height: 95px;
-            border-radius: 50%;
-            overflow: hidden;
-            border: 3px solid white;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            background: #eee;
-            margin-bottom: 6px;
-        }
-        .grid-photo img { width: 100%; height: 100%; object-fit: cover; }
-        .grid-name { font-weight: 700; font-size: 0.8rem; color: var(--primary); text-align: center; line-height: 1.2; }
+        /* СІТКА - МОБІЛЬНА ВЕРСІЯ (110px) */
+.brothers-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px; /* Трохи зменшив зазор, щоб великі кола влізли */
+    padding: 5px;
+    width: 100%;
+}
 
-        /* ВЕРСІЯ ДЛЯ КОМП'ЮТЕРА (ЗБІЛЬШЕНО) */
-        @media (min-width: 768px) {
-            #catalog { max-width: 900px; }
-            .grid-photo { width: 155px; height: 155px; border-width: 5px; }
-            .grid-name { font-size: 1.15rem; margin-top: 8px; }
-            .brothers-grid { gap: 35px; padding: 20px; }
-        }
+.grid-photo {
+    width: 110px; /* Ваш новий розмір для телефону */
+    height: 110px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 3px solid white;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+    background: #eee;
+    margin-bottom: 8px;
+}
 
-        @media (max-width: 400px) {
-            .grid-photo { width: 85px; height: 85px; } /* Трохи менше для зовсім вузьких екранів */
-            .grid-name { font-size: 0.75rem; }
-        }
+.grid-name { 
+    font-weight: 700; 
+    font-size: 0.85rem; 
+    color: var(--primary); 
+    text-align: center; 
+    line-height: 1.2; 
+}
+
+/* ВЕРСІЯ ДЛЯ КОМП'ЮТЕРА (200px) */
+@media (min-width: 768px) {
+    #catalog { 
+        max-width: 1000px; /* Розширив контейнер під великі фото */
+    }
+    
+    .grid-photo { 
+        width: 200px; /* Ваш новий розмір для ПК */
+        height: 200px; 
+        border-width: 6px; 
+    }
+    
+    .grid-name { 
+        font-size: 1.3rem; 
+        margin-top: 12px;
+    }
+
+    .brothers-grid { 
+        gap: 50px; /* Більше простору між великими портретами */
+        padding: 30px;
+    }
+}
+
+/* Адаптація для дуже малих екранів (якщо телефон дуже вузький) */
+@media (max-width: 380px) {
+    .grid-photo { 
+        width: 95px; 
+        height: 95px; 
+    }
+}
     </style>
 </head>
 <body>
