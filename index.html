@@ -32,7 +32,7 @@
             font-size: 1rem; box-shadow: 0 4px 10px rgba(0,0,0,0.05); outline: none; box-sizing: border-box;
         }
 
-        /* КНОПКА ЗАМІСТЬ ЛІНКУ */
+        /* КНОПКА ПЕРЕМИКАННЯ */
         .view-toggle {
             margin: 10px 0 20px 0;
             padding: 10px 25px;
@@ -43,7 +43,7 @@
             border-radius: 25px;
             cursor: pointer;
             font-size: 1rem;
-            display: inline-block;
+            display: none; /* Тимчасово прихована за замовчуванням */
             transition: all 0.3s ease;
             outline: none;
         }
@@ -161,7 +161,7 @@
         
         let allItems = [];
         let idx = 0;
-        let isGridView = false;
+        let isGridView = true; // Завжди відкриваємо з сітки
         let selectedSuggestionIndex = -1;
 
         async function load() {
@@ -176,22 +176,32 @@
 
         function toggleView() {
             isGridView = !isGridView;
-            document.getElementById('toggleLink').innerText = isGridView ? "Повернутися до картки" : "Усі брати";
             render();
         }
 
         function selectFromGrid(index) {
             idx = index;
             isGridView = false;
-            document.getElementById('toggleLink').innerText = "Усі брати";
             render();
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         function render() {
             const catalog = document.getElementById('catalog');
+            const toggleBtn = document.getElementById('toggleLink');
+            
             if (allItems.length === 0) return;
-            isGridView ? renderGrid(catalog) : renderCard(catalog);
+
+            if (isGridView) {
+                // В режимі сітки ховаємо кнопку
+                toggleBtn.style.display = "none";
+                renderGrid(catalog);
+            } else {
+                // В режимі картки показуємо кнопку "Усі брати"
+                toggleBtn.style.display = "inline-block";
+                toggleBtn.innerText = "Усі брати";
+                renderCard(catalog);
+            }
         }
 
         function renderGrid(container) {
@@ -211,8 +221,8 @@
 
         function renderCard(container) {
             const p = allItems[idx];
-            const monkExp = calculateExperience(p[10]); // Перші обіти (K)
-            const priestExp = calculateExperience(p[13]); // Священство (N)
+            const monkExp = calculateExperience(p[10]);
+            const priestExp = calculateExperience(p[13]);
 
             container.innerHTML = `
                 <div class="card">
