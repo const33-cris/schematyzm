@@ -32,15 +32,25 @@
             font-size: 1rem; box-shadow: 0 4px 10px rgba(0,0,0,0.05); outline: none; box-sizing: border-box;
         }
 
-        /* ПОСИЛАННЯ "УСІ БРАТИ" - ТЕПЕР ПІД ПОШУКОМ */
+        /* КНОПКА ЗАМІСТЬ ЛІНКУ */
         .view-toggle {
-            margin: 5px 0 15px 0;
+            margin: 10px 0 20px 0;
+            padding: 10px 25px;
             font-weight: 700;
             color: var(--accent-blue);
+            background-color: transparent;
+            border: 2px solid var(--primary);
+            border-radius: 25px;
             cursor: pointer;
-            text-decoration: underline;
             font-size: 1rem;
             display: inline-block;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        .view-toggle:hover {
+            background-color: rgba(93, 64, 55, 0.05);
+            transform: translateY(-1px);
         }
 
         #searchSuggestions {
@@ -55,7 +65,7 @@
 
         #catalog { width: 100%; max-width: 600px; padding: 0 10px 20px; box-sizing: border-box; }
         
-        /* КАРТКА */
+        /* КАРТКА БРАТА */
         .card { 
             background: white; border-radius: 28px; padding: 30px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.08); 
@@ -75,15 +85,15 @@
         .experience-box { margin: 12px 0; display: flex; flex-direction: column; gap: 6px; font-size: 1.15rem; font-weight: 800; color: var(--accent-blue); text-align: center; }
 
         .controls { display: flex; align-items: center; justify-content: center; gap: 20px; margin: 15px 0; width: 100%; }
-        button { padding: 10px 25px; font-size: 1.3rem; cursor: pointer; border-radius: 50px; border: none; background-color: var(--primary); color: white; font-weight: bold; min-width: 80px; }
-        button:disabled { background-color: #dcdcdc; color: #999; cursor: not-allowed; }
+        button.nav-btn { padding: 10px 25px; font-size: 1.3rem; cursor: pointer; border-radius: 50px; border: none; background-color: var(--primary); color: white; font-weight: bold; min-width: 80px; }
+        button.nav-btn:disabled { background-color: #dcdcdc; color: #999; cursor: not-allowed; }
 
         .details-grid { width: 100%; display: grid; gap: 15px; padding-top: 20px; border-top: 1px solid #f0f2f5; }
         .detail-row { display: flex; flex-direction: column; gap: 2px; text-align: left;}
         .detail-label { font-size: 0.7rem; text-transform: uppercase; color: var(--text-secondary); font-weight: 600; letter-spacing: 0.5px; }
         .detail-value { font-size: 1.15rem; font-weight: 700; color: var(--text-main); }
 
-        /* СІТКА - ЗАВЖДИ 3 В РЯД */
+        /* СІТКА БРАТІВ */
         .brothers-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -100,22 +110,30 @@
         }
         .grid-item:hover { transform: scale(1.05); }
         .grid-photo {
-            width: 85px; height: 85px;
+            width: 80px; height: 80px;
             border-radius: 50%;
             overflow: hidden;
             border: 3px solid white;
             box-shadow: 0 4px 10px rgba(0,0,0,0.1);
             background: #eee;
-            margin-bottom: 6px;
+            margin-bottom: 8px;
         }
         .grid-photo img { width: 100%; height: 100%; object-fit: cover; }
         .grid-name { font-weight: 700; font-size: 0.85rem; color: var(--primary); text-align: center; line-height: 1.2; }
+
+        /* АДАПТИВНІСТЬ ТА ВЕРСІЯ ДЛЯ ПК */
+        @media (min-width: 768px) {
+            #catalog { max-width: 800px; }
+            .grid-photo { width: 130px; height: 130px; border-width: 5px; }
+            .grid-name { font-size: 1.1rem; margin-top: 5px; }
+            .brothers-grid { gap: 30px; }
+        }
 
         @media (max-width: 480px) {
             .card-header { flex-direction: column; text-align: center; gap: 15px; }
             .name-box { text-align: center; }
             .photo-circle { width: 170px; height: 170px; }
-            .grid-photo { width: 75px; height: 75px; } /* Трохи менші фото на телефоні, щоб влізло 3 в ряд */
+            .grid-photo { width: 75px; height: 75px; }
             .grid-name { font-size: 0.75rem; }
         }
     </style>
@@ -131,11 +149,11 @@
             <div id="searchSuggestions"></div>
         </div>
 
-        <div id="toggleLink" class="view-toggle" onclick="toggleView()">Усі брати</div>
+        <button id="toggleLink" class="view-toggle" onclick="toggleView()">Усі брати</button>
     </div>
 
     <div id="catalog">
-        <div style="padding: 50px; color: #999; text-align: center;">Завантаження...</div>
+        <div style="padding: 50px; color: #999; text-align: center;">Завантаження даних...</div>
     </div>
 
     <script>
@@ -173,7 +191,7 @@
         function render() {
             const catalog = document.getElementById('catalog');
             if (allItems.length === 0) return;
-            if (isGridView) renderGrid(catalog); else renderCard(catalog);
+            isGridView ? renderGrid(catalog) : renderCard(catalog);
         }
 
         function renderGrid(container) {
@@ -193,29 +211,32 @@
 
         function renderCard(container) {
             const p = allItems[idx];
-            const monkExp = calculateExperience(p[10]);
-            const priestExp = calculateExperience(p[13]);
+            const monkExp = calculateExperience(p[10]); // Перші обіти (K)
+            const priestExp = calculateExperience(p[13]); // Священство (N)
 
             container.innerHTML = `
                 <div class="card">
                     <div class="card-header">
                         <div class="photo-circle">
-                            <img src="${p[0]}" referrerpolicy="no-referrer" onerror="this.src='https://via.placeholder.com/200?text=фото'">
+                            <img src="${p[0]}" referrerpolicy="no-referrer" onerror="this.src='https://via.placeholder.com/200?text=Немає+фото'">
                         </div>
                         <div class="name-box">
                             <h2 class="legal-name">бр. ${p[4] || '—'}</h2>
                             <div class="surname-main">${p[3] || '—'}</div>
                         </div>
                     </div>
+
                     <div class="experience-box">
                         ${monkExp ? `<div>${monkExp} чернечого життя</div>` : ''}
                         ${priestExp ? `<div>${priestExp} священства</div>` : ''}
                     </div>
+
                     <div class="controls">
-                        <button onclick="change(-1)" ${idx === 0 ? 'disabled' : ''}>←</button>
+                        <button class="nav-btn" onclick="change(-1)" ${idx === 0 ? 'disabled' : ''}>←</button>
                         <span style="font-weight:700;">${idx + 1} / ${allItems.length}</span>
-                        <button onclick="change(1)" ${idx === allItems.length - 1 ? 'disabled' : ''}>→</button>
+                        <button class="nav-btn" onclick="change(1)" ${idx === allItems.length - 1 ? 'disabled' : ''}>→</button>
                     </div>
+                    
                     <div class="details-grid">
                         ${createDetail("Ім'я з Хрещення", p[5], false)}
                         ${createDetail("Іменини", p[7], false)}
