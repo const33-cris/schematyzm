@@ -32,93 +32,53 @@
         
         .header { width: 100%; max-width: 600px; padding: 25px 15px 5px; text-align: center; box-sizing: border-box; }
         
-     /* ЗАГАЛЬНІ СТИЛІ ТИТУЛУ (МОБІЛЬНІ) */
-        .title-main { 
-            font-size: 1.6rem; 
+      .title-main { 
+            font-size: 1.5rem; 
             font-weight: 800; 
             color: var(--primary); 
             text-transform: uppercase; 
-            margin-bottom: 2px; 
+            margin-bottom: 2px; /* Мінімальний відступ */
             letter-spacing: 2px;
         }
 
         .title-sub { 
-            font-size: 1rem; 
-            font-weight: 400; 
+            font-size: 1.1rem; /* Збільшений розмір, як ви просили */
+            font-weight: 400; /* Тонкий шрифт (regular) */
             color: var(--primary); 
             text-transform: uppercase; 
             margin-bottom: 20px; 
             letter-spacing: 1px;
-            line-height: 1.2;
+        }
+        
+        .search-container { position: relative; width: 100%; margin-bottom: 10px; }
+        #searchInput { 
+            width: 100%; padding: 12px 20px; border-radius: 30px; border: 1px solid #ddd; 
+            font-size: 1rem; box-shadow: 0 4px 10px rgba(0,0,0,0.05); outline: none; box-sizing: border-box;
         }
 
-        /* КОМП'ЮТЕРНА ВЕРСІЯ - ЗБІЛЬШЕННЯ ТИТУЛУ */
-        @media (min-width: 768px) {
-            .title-main { 
-                font-size: 3rem; /* Суттєво збільшуємо головне слово */
-                letter-spacing: 8px; /* Робимо напис більш "повітряним" */
-                margin-bottom: 5px;
-            }
+        .view-toggle {
+            margin: 5px 0 15px 0;
+            padding: 8px 20px;
+            font-weight: 700;
+            color: var(--accent-blue);
+            background-color: transparent;
+            border: 2px solid var(--primary);
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            display: none; 
+            transition: all 0.3s ease;
+        }
 
-            .title-sub { 
-                font-size: 1.5rem; /* Збільшуємо підзаголовок */
-                letter-spacing: 3px; 
-                margin-bottom: 30px;
-            }
+        #searchSuggestions {
+            position: absolute; top: 100%; left: 0; right: 0; 
+            background: white; border-radius: 15px; margin-top: 5px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            max-height: 250px; overflow-y: auto; display: none; z-index: 1000;
+        }
 
-            .header {
-                max-width: 900px; /* Розширюємо шапку під заголовок */
-                padding-top: 40px;
-            }
-            
-  /* КОНТЕЙНЕР ПОШУКУ */
-.search-container { 
-    position: relative; 
-    width: 90%; /* На телефоні займає майже всю ширину */
-    max-width: 600px; 
-    margin: 0 auto 15px auto; 
-    z-index: 1001; /* Щоб пошук був вище за сітку братів */
-}
-
-/* ПОЛЕ ВВОДУ */
-#searchInput { 
-    width: 100%; 
-    padding: 12px 20px; 
-    border-radius: 30px !important; /* Примусове закруглення */
-    border: 1px solid #ddd; 
-    font-size: 16px; /* Запобігає автоматичному наближенню на iPhone */
-    box-shadow: 0 4px 10px rgba(0,0,0,0.05); 
-    outline: none; 
-    box-sizing: border-box; 
-    display: block;
-    -webkit-appearance: none; /* ПРИБИРАЄ СТАНДАРТНИЙ СТИЛЬ IPHONE */
-    background-color: white;
-}
-
-/* СПИСОК ПІДКАЗОК */
-#searchSuggestions {
-    position: absolute;
-    top: 100%; 
-    left: 0;
-    right: 0;
-    background: white;
-    border-radius: 15px;
-    margin-top: 5px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.2); 
-    max-height: 200px; 
-    overflow-y: auto;
-    display: none;
-    z-index: 9999; /* ПІДНІМАЄ ПІДКАЗКИ НАД УСІМ КОНТЕНТОМ */
-    border: 1px solid #eee;
-}
-
-.suggestion-item {
-    padding: 14px 20px;
-    text-align: left;
-    border-bottom: 1px solid #f0f2f5;
-    cursor: pointer;
-    color: var(--text-main);
-}
+        .suggestion-item { padding: 12px 20px; text-align: left; cursor: pointer; border-bottom: 1px solid #f0f2f5; }
+        .suggestion-item.active { background-color: #e8e1df; border-left: 5px solid var(--primary); font-weight: bold; }
 
         #catalog { width: 100%; max-width: 600px; padding: 0 5px 20px; box-sizing: border-box; }
         
@@ -396,35 +356,33 @@
 
         function change(d) { idx += d; render(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
 
-     // Додайте або оновіть цей блок у вашому <script>
-document.getElementById('searchInput').addEventListener('input', handleSearch);
+      // Оновлена функція пошуку
+        function handleSearch() {
+            const term = document.getElementById('searchInput').value.toLowerCase();
+            const suggestions = document.getElementById('searchSuggestions');
+            if (term.length < 1) { 
+                suggestions.style.display = 'none'; 
+                return; 
+            }
+            
+            const matches = allItems.filter(item => 
+                (item[3]?.toLowerCase().includes(term)) || 
+                (item[4]?.toLowerCase().includes(term))
+            );
 
-function handleSearch() {
-    const input = document.getElementById('searchInput');
-    const term = input.value.toLowerCase().trim();
-    const suggestions = document.getElementById('searchSuggestions');
-    
-    if (term.length < 1) {
-        suggestions.style.display = 'none';
-        return;
-    }
-
-    const matches = allItems.filter(item => 
-        (item[3] && item[3].toLowerCase().includes(term)) || 
-        (item[4] && item[4].toLowerCase().includes(term))
-    );
-
-    if (matches.length > 0) {
-        suggestions.innerHTML = matches.map((item, i) => `
-            <div class="suggestion-item" onclick="selectPerson('${item[3]}', '${item[4]}')">
-                <strong>бр. ${item[4]}</strong> ${item[3]}
-            </div>
-        `).join('');
-        suggestions.style.display = 'block';
-    } else {
-        suggestions.style.display = 'none';
-    }
-}
+            if (matches.length > 0) {
+                // Рендеримо список підказок
+                suggestions.innerHTML = matches.map((item, i) => `
+                    <div class="suggestion-item ${i === 0 ? 'active' : ''}" 
+                         data-index="${i}"
+                         onclick="selectPerson('${item[3]}', '${item[4]}')">
+                        <strong>бр. ${item[4]}</strong> ${item[3]}
+                    </div>`).join('');
+                suggestions.style.display = 'block';
+            } else { 
+                suggestions.style.display = 'none'; 
+            }
+        }
 
         // Вибір конкретної особи
         function selectPerson(surname, firstName) {
