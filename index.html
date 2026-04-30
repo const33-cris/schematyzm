@@ -32,28 +32,49 @@
         
         .header { width: 100%; max-width: 600px; padding: 25px 15px 5px; text-align: center; box-sizing: border-box; }
         
-      .title-main { 
-            font-size: 1.5rem; 
+     /* ЗАГАЛЬНІ СТИЛІ ТИТУЛУ (МОБІЛЬНІ) */
+        .title-main { 
+            font-size: 1.6rem; 
             font-weight: 800; 
             color: var(--primary); 
             text-transform: uppercase; 
-            margin-bottom: 2px; /* Мінімальний відступ */
+            margin-bottom: 2px; 
             letter-spacing: 2px;
         }
 
         .title-sub { 
-            font-size: 1.1rem; /* Збільшений розмір, як ви просили */
-            font-weight: 400; /* Тонкий шрифт (regular) */
+            font-size: 1rem; 
+            font-weight: 400; 
             color: var(--primary); 
             text-transform: uppercase; 
             margin-bottom: 20px; 
             letter-spacing: 1px;
+            line-height: 1.2;
         }
-        
-        .search-container { position: relative; width: 100%; margin-bottom: 10px; }
-        #searchInput { 
-            width: 100%; padding: 12px 20px; border-radius: 30px; border: 1px solid #ddd; 
-            font-size: 1rem; box-shadow: 0 4px 10px rgba(0,0,0,0.05); outline: none; box-sizing: border-box;
+
+        /* КОМП'ЮТЕРНА ВЕРСІЯ - ЗБІЛЬШЕННЯ ТИТУЛУ */
+        @media (min-width: 768px) {
+            .title-main { 
+                font-size: 3rem; /* Суттєво збільшуємо головне слово */
+                letter-spacing: 8px; /* Робимо напис більш "повітряним" */
+                margin-bottom: 5px;
+            }
+
+            .title-sub { 
+                font-size: 1.5rem; /* Збільшуємо підзаголовок */
+                letter-spacing: 3px; 
+                margin-bottom: 30px;
+            }
+
+            .header {
+                max-width: 900px; /* Розширюємо шапку під заголовок */
+                padding-top: 40px;
+            }
+            
+            #searchInput {
+                max-width: 600px; /* Пошук залишаємо акуратним по центру */
+                margin: 0 auto;
+            }
         }
 
         .view-toggle {
