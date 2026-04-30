@@ -71,25 +71,28 @@
                 padding-top: 40px;
             }
             
-           /* КОНТЕЙНЕР ПОШУКУ */
+   /* КОНТЕЙНЕР ПОШУКУ */
 .search-container { 
     position: relative; 
-    width: 100%; 
-    max-width: 600px; /* Обмежуємо максимальну ширину для зручності */
-    margin: 0 auto 20px auto; /* Центруємо сам контейнер */
+    width: 90%; /* На мобільних займає 90% ширини */
+    max-width: 600px; /* На великих екранах не більше 600px */
+    margin: 0 auto 20px auto; 
+    display: flex;
+    justify-content: center;
 }
 
 /* САМЕ ПОЛЕ ВВОДУ */
 #searchInput { 
     width: 100%; 
-    padding: 15px 25px; 
-    border-radius: 30px; 
+    min-width: 280px; /* Забороняємо ставати занадто малим */
+    padding: 12px 20px; 
+    border-radius: 25px; 
     border: 1px solid #ddd; 
-    font-size: 1.1rem; 
+    font-size: 16px; /* 16px запобігає автоматичному збільшенню (zoom) на iPhone */
     box-shadow: 0 4px 10px rgba(0,0,0,0.05); 
     outline: none; 
-    box-sizing: border-box; /* Важливо, щоб padding не розширював поле за межі */
-    display: block;
+    box-sizing: border-box; 
+    -webkit-appearance: none; /* Прибирає стандартні стилі Safari */
 }
 
 /* ВИПРАВЛЕННЯ ДЛЯ КОМП'ЮТЕРНОЇ ВЕРСІЇ */
