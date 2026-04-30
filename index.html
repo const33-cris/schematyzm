@@ -71,89 +71,53 @@
                 padding-top: 40px;
             }
             
-   /* КОНТЕЙНЕР ПОШУКУ */
+  /* КОНТЕЙНЕР ПОШУКУ */
 .search-container { 
     position: relative; 
-    width: 90%; /* На мобільних займає 90% ширини */
-    max-width: 600px; /* На великих екранах не більше 600px */
-    margin: 0 auto 20px auto; 
-    display: flex;
-    justify-content: center;
+    width: 90%; /* На телефоні займає майже всю ширину */
+    max-width: 600px; 
+    margin: 0 auto 15px auto; 
+    z-index: 1001; /* Щоб пошук був вище за сітку братів */
 }
 
-/* САМЕ ПОЛЕ ВВОДУ */
+/* ПОЛЕ ВВОДУ */
 #searchInput { 
     width: 100%; 
-    min-width: 280px; /* Забороняємо ставати занадто малим */
     padding: 12px 20px; 
-    border-radius: 25px; 
+    border-radius: 30px !important; /* Примусове закруглення */
     border: 1px solid #ddd; 
-    font-size: 16px; /* 16px запобігає автоматичному збільшенню (zoom) на iPhone */
+    font-size: 16px; /* Запобігає автоматичному наближенню на iPhone */
     box-shadow: 0 4px 10px rgba(0,0,0,0.05); 
     outline: none; 
     box-sizing: border-box; 
-    -webkit-appearance: none; /* Прибирає стандартні стилі Safari */
+    display: block;
+    -webkit-appearance: none; /* ПРИБИРАЄ СТАНДАРТНИЙ СТИЛЬ IPHONE */
+    background-color: white;
 }
 
-/* ВИПРАВЛЕННЯ ДЛЯ КОМП'ЮТЕРНОЇ ВЕРСІЇ */
-@media (min-width: 768px) {
-    .title-main { 
-        font-size: 3.5rem; 
-        letter-spacing: 12px; 
-        margin-bottom: 10px;
-    }
-
-    .title-sub { 
-        font-size: 1.6rem; 
-        letter-spacing: 4px; 
-        margin-bottom: 40px;
-    }
-
-    /* Робимо пошук трохи більшим на ПК */
-    #searchInput {
-        font-size: 1.2rem;
-        padding: 18px 30px;
-    }
-}
-        }
-
-        .view-toggle {
-            margin: 5px 0 15px 0;
-            padding: 8px 20px;
-            font-weight: 700;
-            color: var(--accent-blue);
-            background-color: transparent;
-            border: 2px solid var(--primary);
-            border-radius: 25px;
-            cursor: pointer;
-            font-size: 0.95rem;
-            display: none; 
-            transition: all 0.3s ease;
-        }
-
-       #searchSuggestions {
+/* СПИСОК ПІДКАЗОК */
+#searchSuggestions {
     position: absolute;
-    top: 100%; /* Чітко під полем пошуку */
+    top: 100%; 
     left: 0;
     right: 0;
     background: white;
     border-radius: 15px;
     margin-top: 5px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.2); /* Робимо тінь чіткішою */
-    max-height: 250px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2); 
+    max-height: 200px; 
     overflow-y: auto;
     display: none;
-    z-index: 9999; /* ДУЖЕ ВАЖЛИВО: піднімає список на самий верхній шар */
-    border: 1px solid #ddd;
+    z-index: 9999; /* ПІДНІМАЄ ПІДКАЗКИ НАД УСІМ КОНТЕНТОМ */
+    border: 1px solid #eee;
 }
 
-/* Додамо стиль для елемента підказки, щоб по ньому було легше влучити пальцем */
 .suggestion-item {
-    padding: 15px 20px; /* Збільшуємо зону натискання для мобільних */
+    padding: 14px 20px;
     text-align: left;
-    cursor: pointer;
     border-bottom: 1px solid #f0f2f5;
-    font-size: 16px; /* Гарний розмір для читання */
+    cursor: pointer;
+    color: var(--text-main);
 }
 
         #catalog { width: 100%; max-width: 600px; padding: 0 5px 20px; box-sizing: border-box; }
@@ -432,8 +396,10 @@
 
         function change(d) { idx += d; render(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
 
-      // Оновлена функція пошуку
-      function handleSearch() {
+     // Додайте або оновіть цей блок у вашому <script>
+document.getElementById('searchInput').addEventListener('input', handleSearch);
+
+function handleSearch() {
     const input = document.getElementById('searchInput');
     const term = input.value.toLowerCase().trim();
     const suggestions = document.getElementById('searchSuggestions');
@@ -443,7 +409,6 @@
         return;
     }
 
-    // Фільтрація (перевіряємо імена та прізвища)
     const matches = allItems.filter(item => 
         (item[3] && item[3].toLowerCase().includes(term)) || 
         (item[4] && item[4].toLowerCase().includes(term))
@@ -451,8 +416,7 @@
 
     if (matches.length > 0) {
         suggestions.innerHTML = matches.map((item, i) => `
-            <div class="suggestion-item ${i === 0 ? 'active' : ''}" 
-                 onclick="selectPerson('${item[3]}', '${item[4]}')">
+            <div class="suggestion-item" onclick="selectPerson('${item[3]}', '${item[4]}')">
                 <strong>бр. ${item[4]}</strong> ${item[3]}
             </div>
         `).join('');
