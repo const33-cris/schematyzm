@@ -36,29 +36,33 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.1);
             width: 100%; max-width: 400px; text-align: center;
         }
-        .auth-card h2 { color: var(--primary); margin-bottom: 10px; }
-        .auth-card p { color: #666; font-size: 0.9rem; margin-bottom: 25px; }
+        .auth-card h2 { color: var(--primary); margin: 0 0 10px; font-weight: 800; }
+        .auth-card p { color: #666; font-size: 0.9rem; margin-bottom: 25px; line-height: 1.4; }
+        
         .auth-input {
             width: 100%; padding: 14px 20px; border-radius: 30px;
             border: 1px solid #ddd; margin-bottom: 15px; font-size: 16px;
             box-sizing: border-box; outline: none; -webkit-appearance: none;
+            background: #fff;
         }
         .auth-btn {
-            width: 100%; padding: 14px; border-radius: 30px; border: none;
-            background: var(--primary); color: white; font-weight: bold;
-            font-size: 16px; cursor: pointer; transition: opacity 0.3s;
+            width: 100%; padding: 15px; border-radius: 30px; border: none;
+            background: #b0a4a0; color: white; font-weight: 800;
+            font-size: 16px; cursor: pointer; transition: background 0.3s;
+            text-transform: uppercase; letter-spacing: 1px;
         }
-        .auth-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .auth-btn.ready { background: var(--primary); }
+        .auth-btn:disabled { background: #ccc; cursor: not-allowed; }
 
-        /* --- ЗАГОЛОВОК --- */
+        /* --- ШАПКА --- */
         .header { width: 100%; text-align: center; padding: 30px 15px 10px; box-sizing: border-box; }
         .title-main { 
             font-size: 1.8rem; font-weight: 800; color: var(--primary); 
             text-transform: uppercase; letter-spacing: 2px; margin: 0;
         }
         .title-sub { 
-            font-size: 1rem; font-weight: 400; color: var(--primary); 
-            text-transform: uppercase; margin: 5px 0 20px;
+            font-size: 0.9rem; font-weight: 400; color: var(--primary); 
+            text-transform: uppercase; margin: 5px 0 20px; letter-spacing: 1px;
         }
 
         @media (min-width: 768px) {
@@ -66,7 +70,7 @@
             .title-sub { font-size: 1.6rem; letter-spacing: 4px; }
         }
 
-        /* --- ПОШУК (Виправлений для iPhone) --- */
+        /* --- ПОШУК (Фікс для iPhone) --- */
         .search-container { position: relative; width: 90%; max-width: 600px; margin: 0 auto 25px; z-index: 1001; }
         #searchInput { 
             width: 100%; padding: 14px 25px; border-radius: 30px !important; 
@@ -81,13 +85,14 @@
         .suggestion-item { padding: 15px 20px; text-align: left; border-bottom: 1px solid #f5f5f5; cursor: pointer; }
         .suggestion-item.active { background: #f0f0f0; }
 
-        /* --- СІТКА --- */
+        /* --- СІТКА КАТАЛОГУ --- */
         #catalog { width: 100%; max-width: 900px; padding: 10px; box-sizing: border-box; }
         .brothers-grid { 
             display: grid; grid-template-columns: repeat(3, 1fr); 
             gap: 15px; width: 100%; 
         }
-        .grid-item { display: flex; flex-direction: column; align-items: center; cursor: pointer; }
+        .grid-item { display: flex; flex-direction: column; align-items: center; cursor: pointer; transition: transform 0.2s; }
+        .grid-item:active { transform: scale(0.95); }
         .grid-photo { 
             width: 100px; height: 100px; border-radius: 50%; overflow: hidden; 
             border: 3px solid white; box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin-bottom: 8px;
@@ -97,27 +102,29 @@
             .brothers-grid { gap: 30px; }
         }
         .grid-photo img { width: 100%; height: 100%; object-fit: cover; }
-        .grid-name { font-weight: 700; font-size: 0.9rem; color: var(--primary); text-align: center; }
+        .grid-name { font-weight: 700; font-size: 0.85rem; color: var(--primary); text-align: center; }
 
-        /* --- КАРТКА --- */
+        /* --- КАРТКА БРАТА --- */
         .card { 
             background: white; border-radius: 30px; padding: 30px; 
             box-shadow: 0 15px 35px rgba(0,0,0,0.1); width: 100%; 
             max-width: 450px; margin: 0 auto; box-sizing: border-box; 
         }
         .card-header { display: flex; align-items: center; gap: 20px; margin-bottom: 20px; }
-        .photo-circle { width: 120px; height: 120px; border-radius: 50%; overflow: hidden; border: 4px solid white; box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
+        .photo-circle { width: 110px; height: 110px; border-radius: 50%; overflow: hidden; border: 4px solid white; box-shadow: 0 8px 20px rgba(0,0,0,0.1); flex-shrink: 0; }
         .photo-circle img { width: 100%; height: 100%; object-fit: cover; }
-        .legal-name { font-size: 1.8rem; font-weight: 800; color: var(--primary); margin: 0; }
-        .surname-main { font-size: 1.2rem; color: var(--text); margin-top: 5px; }
-        .experience-box { background: #f8f9fa; padding: 10px; border-radius: 15px; margin: 15px 0; color: var(--accent); font-weight: 700; text-align: center; }
-        .details-grid { display: grid; gap: 12px; border-top: 1px solid #eee; padding-top: 15px; }
-        .detail-label { font-size: 0.7rem; text-transform: uppercase; color: #888; }
-        .detail-value { font-size: 1.1rem; font-weight: 700; color: var(--text); }
+        .legal-name { font-size: 1.6rem; font-weight: 800; color: var(--primary); margin: 0; }
+        .surname-main { font-size: 1.1rem; color: var(--text); margin-top: 4px; }
+        .experience-box { background: #f8f9fa; padding: 10px; border-radius: 15px; margin: 15px 0; color: var(--accent); font-weight: 700; text-align: center; font-size: 0.95rem; }
+        .details-grid { display: grid; gap: 14px; border-top: 1px solid #eee; padding-top: 18px; }
+        .detail-row { display: flex; flex-direction: column; }
+        .detail-label { font-size: 0.65rem; text-transform: uppercase; color: #999; letter-spacing: 1px; margin-bottom: 2px; }
+        .detail-value { font-size: 1.05rem; font-weight: 700; color: var(--text); }
         
-        .controls { display: flex; justify-content: center; align-items: center; gap: 25px; margin-bottom: 20px; }
+        .controls { display: flex; justify-content: center; align-items: center; gap: 25px; margin-bottom: 25px; }
         .nav-btn { background: var(--primary); color: white; border: none; padding: 10px 25px; border-radius: 25px; font-weight: bold; cursor: pointer; }
-        .view-toggle { border: 2px solid var(--primary); background: none; color: var(--primary); padding: 8px 20px; border-radius: 20px; font-weight: 700; cursor: pointer; margin-bottom: 20px; }
+        .nav-btn:disabled { background: #ccc; }
+        .view-toggle { border: 2px solid var(--primary); background: none; color: var(--primary); padding: 8px 22px; border-radius: 20px; font-weight: 700; cursor: pointer; margin-bottom: 20px; }
     </style>
 </head>
 <body>
@@ -125,11 +132,11 @@
     <div id="authOverlay">
         <div class="auth-card">
             <h2>Вхід</h2>
-            <p id="authHint">Введіть email, щоб отримати код доступу</p>
-            <input type="email" id="emailInput" class="auth-input" placeholder="vash.email@gmail.com">
-            <input type="text" id="codeInput" class="auth-input" placeholder="Код із пошти" style="display:none;">
+            <p id="authHint">Введіть ваш email, щоб отримати одноразовий код доступу</p>
+            <input type="email" id="emailInput" class="auth-input" placeholder="vash.email@gmail.com" oninput="toggleBtnStyle()">
+            <input type="text" id="codeInput" class="auth-input" placeholder="6-значний код" style="display:none;">
             <button id="authBtn" class="auth-btn" onclick="processAuth()">Отримати код</button>
-            <p id="errorLabel" style="color:red; display:none; margin-top:15px;"></p>
+            <p id="errorLabel" style="color:#d32f2f; display:none; margin-top:15px; font-weight:600;"></p>
         </div>
     </div>
 
@@ -139,7 +146,7 @@
             <p class="title-sub">ПРОВІНЦІЇ СВ. АРХАНГЕЛА МИХАЇЛА</p>
             
             <div class="search-container">
-                <input type="text" id="searchInput" placeholder="Пошук брата..." autocomplete="off">
+                <input type="text" id="searchInput" placeholder="Пошук..." autocomplete="off">
                 <div id="searchSuggestions"></div>
             </div>
             <button id="backBtn" class="view-toggle" onclick="showGrid()" style="display:none;">Усі брати</button>
@@ -149,26 +156,33 @@
     </div>
 
     <script>
+        // НОВЕ ПОСИЛАННЯ НА ВАШ СКРИПТ
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyUr9Atc61g6ggpjYdVF0UhGdcp0N1gyqlI7dgxbIpcwtGYehbwOAcvk7p6DMMGNduP/exec';
+        
         let allItems = [];
         let idx = 0;
         let isGridView = true;
         let currentUserEmail = "";
 
-        // Авто-перевірка при завантаженні
+        // Автоматична перевірка сесії
         window.onload = () => {
             const savedEmail = localStorage.getItem('userEmail');
             if (savedEmail) {
                 currentUserEmail = savedEmail;
-                document.getElementById('authHint').innerText = "Відновлення сесії...";
+                document.getElementById('authHint').innerText = "Оновлення даних...";
                 document.getElementById('emailInput').style.display = "none";
                 document.getElementById('authBtn').style.display = "none";
                 
-                google.script.run.withSuccessHandler(data => {
-                    allItems = data;
-                    startApp();
-                }).getBrothersData();
+                fetchDataDirectly();
             }
         };
+
+        function toggleBtnStyle() {
+            const btn = document.getElementById('authBtn');
+            const email = document.getElementById('emailInput').value;
+            if (email.includes('@')) btn.classList.add('ready');
+            else btn.classList.remove('ready');
+        }
 
         async function processAuth() {
             const btn = document.getElementById('authBtn');
@@ -180,7 +194,7 @@
             btn.disabled = true;
 
             if (codeInp.style.display === "none") {
-                // Крок 1: Надсилаємо код
+                // КРОК 1: Запит коду
                 currentUserEmail = emailInp.value.trim().toLowerCase();
                 if (!currentUserEmail) { btn.disabled = false; return; }
 
@@ -189,9 +203,10 @@
                     if (res.success) {
                         emailInp.style.display = "none";
                         codeInp.style.display = "block";
-                        btn.innerText = "Підтвердити";
+                        btn.innerText = "Увійти";
                         btn.disabled = false;
-                        document.getElementById('authHint').innerText = "Код надіслано на пошту";
+                        btn.classList.add('ready');
+                        document.getElementById('authHint').innerText = "Код надіслано на вашу пошту";
                     } else {
                         error.innerText = res.message;
                         error.style.display = "block";
@@ -200,7 +215,7 @@
                     }
                 }).sendVerificationCode(currentUserEmail);
             } else {
-                // Крок 2: Перевіряємо код
+                // КРОК 2: Перевірка коду
                 const code = codeInp.value.trim();
                 btn.innerText = "Перевірка...";
                 google.script.run.withSuccessHandler(res => {
@@ -212,10 +227,17 @@
                         error.innerText = res.message;
                         error.style.display = "block";
                         btn.disabled = false;
-                        btn.innerText = "Підтвердити";
+                        btn.innerText = "Увійти";
                     }
                 }).verifyCode(currentUserEmail, code);
             }
+        }
+
+        function fetchDataDirectly() {
+            google.script.run.withSuccessHandler(data => {
+                allItems = data;
+                startApp();
+            }).getBrothersData();
         }
 
         function startApp() {
@@ -248,11 +270,11 @@
                             </div>
                         </div>
                         <div class="experience-box">
-                            ${calculateExp(p[10]) ? calculateExp(p[10]) + " чернечого життя" : ""}
+                            ${calculateExp(p[10]) ? calculateExp(p[10]) + " чернечого життя" : "Чернече життя"}
                         </div>
                         <div class="controls">
                             <button class="nav-btn" onclick="change(-1)" ${idx===0?'disabled':''}>←</button>
-                            <span style="font-weight:700;">${idx+1} / ${allItems.length}</span>
+                            <span style="font-weight:700; color:var(--primary);">${idx+1} / ${allItems.length}</span>
                             <button class="nav-btn" onclick="change(1)" ${idx===allItems.length-1?'disabled':''}>→</button>
                         </div>
                         <div class="details-grid">
@@ -287,11 +309,13 @@
 
         function formatDate(d) {
             const m = ["січня","лютого","березня","квітня","травня","червня","липня","серпня","вересня","жовтня","листопада","грудня"];
-            const p = d.split('T')[0].split(/[.-]/);
-            const day = parseInt(p[0].length === 4 ? p[2] : p[0]);
-            const month = parseInt(p[1]) - 1;
-            const year = p[0].length === 4 ? p[0] : p[2];
-            return `${day} ${m[month]} ${year}`;
+            try {
+                const p = d.split('T')[0].split(/[.-]/);
+                const day = parseInt(p[0].length === 4 ? p[2] : p[0]);
+                const month = parseInt(p[1]) - 1;
+                const year = p[0].length === 4 ? p[0] : p[2];
+                return `${day} ${m[month]} ${year}`;
+            } catch(e) { return d; }
         }
 
         // --- ПОШУК ---
@@ -316,27 +340,6 @@
             idx = allItems.findIndex(p => p[3] === s && p[4] === f);
             isGridView = false; render();
         }
-
-        sInput.addEventListener('keydown', e => {
-            const items = sSug.getElementsByClassName('suggestion-item');
-            if (!items.length) return;
-            let active = Array.from(items).findIndex(i => i.classList.contains('active'));
-            if (e.key === 'ArrowDown') {
-                e.preventDefault();
-                items[active].classList.remove('active');
-                active = (active + 1) % items.length;
-                items[active].classList.add('active');
-                items[active].scrollIntoView({block:'nearest'});
-            } else if (e.key === 'ArrowUp') {
-                e.preventDefault();
-                items[active].classList.remove('active');
-                active = (active - 1 + items.length) % items.length;
-                items[active].classList.add('active');
-                items[active].scrollIntoView({block:'nearest'});
-            } else if (e.key === 'Enter') {
-                items[active].click();
-            }
-        });
     </script>
 </body>
 </html>
