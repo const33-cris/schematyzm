@@ -293,7 +293,7 @@
                     </div>
                     <div class="details-grid">
                         ${createDetail("Ім'я з Хрещення", p[5], false)}
-                        ${createDetail("Іменини", p[7], true)}
+                        ${createDetail("Іменини", p[7], false)}
                         ${createDetail("День народження", p[6])}
                         ${createDetail("Місце народження", p[8], false)}
                         ${createDetail("Новіціат", p[9])}
@@ -324,22 +324,20 @@
             } catch(e) { return null; }
         }
 
-        function formatDateUk(dateInput) {
+       function formatDateUk(dateInput, showYear = true) {
     if (!dateInput || dateInput.toString().trim() === "" || dateInput === "-") return null;
     
     const months = ["січня", "лютого", "березня", "квітня", "травня", "червня", "липня", "серпня", "вересня", "жовтня", "листопада", "грудня"];
     
     try {
-        // Видаляємо час, якщо він прийшов у форматі T22:00:00...
         let s = dateInput.toString().split('T')[0]; 
         let dateObj;
-
-        // Обробка різних форматів (ISO, крапки, тире)
         let parts = s.includes('.') ? s.split('.') : s.split('-');
+
         if (parts.length === 3) {
-            if (parts[0].length === 4) { // YYYY-MM-DD
+            if (parts[0].length === 4) {
                 dateObj = new Date(parts[0], parts[1] - 1, parts[2]);
-            } else { // DD.MM.YYYY
+            } else {
                 dateObj = new Date(parts[2], parts[1] - 1, parts[0]);
             }
         } else {
@@ -347,7 +345,12 @@
         }
 
         if (!isNaN(dateObj.getTime())) {
-            return dateObj.getDate() + " " + months[dateObj.getMonth()] + " " + dateObj.getFullYear();
+            let result = dateObj.getDate() + " " + months[dateObj.getMonth()];
+            // Додаємо рік лише якщо showYear === true
+            if (showYear) {
+                result += " " + dateObj.getFullYear();
+            }
+            return result;
         }
         return dateInput;
     } catch (e) {
