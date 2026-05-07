@@ -293,7 +293,7 @@
                     </div>
                     <div class="details-grid">
                         ${createDetail("Ім'я з Хрещення", p[5], false)}
-                        ${createDetail("Іменини", p[7], false)}
+                        ${createDetail("Іменини", formatDateUk(p[7], false)}
                         ${createDetail("День народження", p[6])}
                         ${createDetail("Місце народження", p[8], false)}
                         ${createDetail("Новіціат", p[9])}
@@ -324,20 +324,23 @@
             } catch(e) { return null; }
         }
 
-       function formatDateUk(dateInput, showYear = true) {
-    if (!dateInput || dateInput.toString().trim() === "" || dateInput === "-") return null;
+     function formatDateUk(dateInput, showYear = true) {
+    if (!dateInput || dateInput.toString().trim() === "" || dateInput === "-") return "";
     
     const months = ["січня", "лютого", "березня", "квітня", "травня", "червня", "липня", "серпня", "вересня", "жовтня", "листопада", "грудня"];
     
     try {
-        let s = dateInput.toString().split('T')[0]; 
+        // Очищуємо вхідні дані від часових міток (все що після T або пробілу)
+        let dateStr = dateInput.toString().split('T')[0].split(' ')[0];
         let dateObj;
-        let parts = s.includes('.') ? s.split('.') : s.split('-');
+
+        // Розбиваємо дату за крапкою або дефісом
+        let parts = dateStr.includes('.') ? dateStr.split('.') : dateStr.split('-');
 
         if (parts.length === 3) {
-            if (parts[0].length === 4) {
+            if (parts[0].length === 4) { // Формат YYYY-MM-DD
                 dateObj = new Date(parts[0], parts[1] - 1, parts[2]);
-            } else {
+            } else { // Формат DD.MM.YYYY
                 dateObj = new Date(parts[2], parts[1] - 1, parts[0]);
             }
         } else {
@@ -345,15 +348,13 @@
         }
 
         if (!isNaN(dateObj.getTime())) {
-            let result = dateObj.getDate() + " " + months[dateObj.getMonth()];
-            // Додаємо рік лише якщо showYear === true
-            if (showYear) {
-                result += " " + dateObj.getFullYear();
-            }
-            return result;
+            let day = dateObj.getDate();
+            let month = months[dateObj.getMonth()];
+            return showYear ? `${day} ${month} ${dateObj.getFullYear()}` : `${day} ${month}`;
         }
         return dateInput;
     } catch (e) {
+        console.error("Date error:", e);
         return dateInput;
     }
 }
