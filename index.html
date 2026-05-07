@@ -217,15 +217,23 @@
             }
         }
 
-        async function loadDirect() {
-            try {
-                const r = await fetch(`${scriptUrl}?action=verifyCode&email=${currentUserEmail}&code=session`);
-                const res = await r.json();
-                allItems = res.data.slice(1);
-                render();
-            } catch (e) { console.error("Session error", e); }
+       async function loadDirect() {
+    try {
+        const r = await fetch(`${scriptUrl}?action=verifyCode&email=${currentUserEmail}&code=session`);
+        const res = await r.json();
+        if (res.success && res.data) {
+            allItems = res.data.slice(1);
+            render();
+        } else {
+            // Якщо сесія недійсна, показуємо вікно входу
+            localStorage.removeItem('userEmail');
+            document.getElementById('authOverlay').style.display = "flex";
+            document.getElementById('appContent').style.display = "none";
         }
-
+    } catch (e) {
+        console.error("Session error", e);
+    }
+}
         function startApp() {
             document.getElementById('authOverlay').style.display = "none";
             document.getElementById('appContent').style.display = "flex";
