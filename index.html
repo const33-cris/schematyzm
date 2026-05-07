@@ -157,7 +157,7 @@
 
     <script>
         // НОВЕ ПОСИЛАННЯ НА ВАШ СКРИПТ
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzPyVPev1uz200p5St46p4JmF0hVKrRDe6okvlz3J2RefwpV7rvbTrB9TPtzOn233Q/exec';
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxyUFXM-aOhqi63W9nWjB6Ieejs6ufCdzOsmYq0iSKZgihDg35jKtPjl4k8sIExanuj/exec';
         
         let allItems = [];
         let idx = 0;
@@ -184,54 +184,61 @@
             else btn.classList.remove('ready');
         }
 
-        async function processAuth() {
-            const btn = document.getElementById('authBtn');
-            const emailInp = document.getElementById('emailInput');
-            const codeInp = document.getElementById('codeInput');
-            const error = document.getElementById('errorLabel');
+      async function processAuth() {
+    const btn = document.getElementById('authBtn');
+    const emailInp = document.getElementById('emailInput');
+    const codeInp = document.getElementById('codeInput');
+    const error = document.getElementById('errorLabel');
+    
+    error.style.display = "none";
+    btn.disabled = true;
 
-            error.style.display = "none";
-            btn.disabled = true;
-
-            if (codeInp.style.display === "none") {
-                // КРОК 1: Запит коду
-                currentUserEmail = emailInp.value.trim().toLowerCase();
-                if (!currentUserEmail) { btn.disabled = false; return; }
-
-                btn.innerText = "Надсилаємо...";
-                google.script.run.withSuccessHandler(res => {
-                    if (res.success) {
-                        emailInp.style.display = "none";
-                        codeInp.style.display = "block";
-                        btn.innerText = "Увійти";
-                        btn.disabled = false;
-                        btn.classList.add('ready');
-                        document.getElementById('authHint').innerText = "Код надіслано на вашу пошту";
-                    } else {
-                        error.innerText = res.message;
-                        error.style.display = "block";
-                        btn.disabled = false;
-                        btn.innerText = "Отримати код";
-                    }
-                }).sendVerificationCode(currentUserEmail);
+    if (codeInp.style.display === "none") {
+        // КРОК 1: Запит коду
+        currentUserEmail = emailInp.value.trim().toLowerCase();
+        btn.innerText = "Надсилаємо...";
+        
+        try {
+            const resp = await fetch(`${SCRIPT_URL}?action=sendCode&email=${currentUserEmail}`);
+            const res = await resp.json();
+            if (res.success) {
+                emailInp.style.display = "none";
+                codeInp.style.display = "block";
+                btn.innerText = "Увійти";
+                btn.disabled = false;
+                document.getElementById('authHint').innerText = "Код надіслано!";
             } else {
-                // КРОК 2: Перевірка коду
-                const code = codeInp.value.trim();
-                btn.innerText = "Перевірка...";
-                google.script.run.withSuccessHandler(res => {
-                    if (res.success) {
-                        localStorage.setItem('userEmail', currentUserEmail);
-                        allItems = res.data;
-                        startApp();
-                    } else {
-                        error.innerText = res.message;
-                        error.style.display = "block";
-                        btn.disabled = false;
-                        btn.innerText = "Увійти";
-                    }
-                }).verifyCode(currentUserEmail, code);
+                throw new Error(res.message);
             }
+        } catch (e) {
+            error.innerText = e.message;
+            error.style.display = "block";
+            btn.disabled = false;
+            btn.innerText = "Отримати код";
         }
+    } else {
+        // КРОК 2: Перевірка коду
+        const code = codeInp.value.trim();
+        btn.innerText = "Перевірка...";
+        
+        try {
+            const resp = await fetch(`${SCRIPT_URL}?action=verifyCode&email=${currentUserEmail}&code=${code}`);
+            const res = await resp.json();
+            if (res.success) {
+                localStorage.setItem('userEmail', currentUserEmail);
+                allItems = res.data;
+                startApp();
+            } else {
+                throw new Error(res.message);
+            }
+        } catch (e) {
+            error.innerText = e.message;
+            error.style.display = "block";
+            btn.disabled = false;
+            btn.innerText = "Увійти";
+        }
+    }
+}
 
         function fetchDataDirectly() {
             google.script.run.withSuccessHandler(data => {
