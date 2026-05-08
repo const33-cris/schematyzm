@@ -155,224 +155,225 @@
         <div style="padding: 50px; color: #999; text-align: center;">Завантаження даних...</div>
     </div>
 
-    <script>
-        const scriptUrl = 'https://script.google.com/macros/s/AKfycbx5wF2-YSFjB2NTOzObml4ZLtuKlZdyl72uISyRL9LyFh8dVZLJzy2MEQWS0OsW1OX9/exec';
+  <style>
+    /* Додаємо стиль для напівпрозорого по батькові */
+    .patronymic {
+        opacity: 0.5;
+        font-weight: 400;
+        margin-left: 5px;
+    }
+</style>
+
+<script>
+    const scriptUrl = 'https://script.google.com/macros/s/AKfycbx5wF2-YSFjB2NTOzObml4ZLtuKlZdyl72uISyRL9LyFh8dVZLJzy2MEQWS0OsW1OX9/exec';
+    
+    let allItems = [];
+    let idx = 0;
+    let isGridView = true; 
+
+    async function load() {
+        try {
+            const r = await fetch(scriptUrl);
+            allItems = await r.json();
+            render();
+        } catch (e) { 
+            document.getElementById('catalog').innerHTML = "<div style='color:red; text-align:center;'>Помилка завантаження. Спробуйте оновити сторінку.</div>"; 
+        }
+    }
+
+    function toggleView() {
+        isGridView = !isGridView;
+        render();
+    }
+
+    function selectFromGrid(index) {
+        idx = index;
+        isGridView = false;
+        render();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function render() {
+        const catalog = document.getElementById('catalog');
+        const toggleBtn = document.getElementById('toggleLink');
+        if (allItems.length === 0) return;
+
+        if (isGridView) {
+            toggleBtn.style.display = "none";
+            renderGrid(catalog);
+        } else {
+            toggleBtn.style.display = "inline-block";
+            renderCard(catalog);
+        }
+    }
+
+    function renderGrid(container) {
+        container.innerHTML = `
+            <div class="brothers-grid">
+                ${allItems.map((p, i) => `
+                    <div class="grid-item" onclick="selectFromGrid(${i})">
+                        <div class="grid-photo">
+                            <img src="${p[0]}" referrerpolicy="no-referrer" onerror="this.src='https://via.placeholder.com/100?text=?'">
+                        </div>
+                        <div class="grid-name">бр. ${p[4]}</div>
+                    </div>
+                `).join('')}
+            </div>`;
+    }
+
+    function renderCard(container) {
+        const p = allItems[idx];
+        // Стаж тепер рахуємо за новими індексами (Перші обіти - 11, Священство - 14)
+        const monkExp = calculateExperience(p[11]);
+        const priestExp = calculateExperience(p[14]);
+
+        // Формуємо ім'я + напівпрозоре по батькові
+        const firstName = p[5] || '—';
+        const fatherName = p[6] && p[6] !== "—" && p[6] !== "-" ? `<span class="patronymic">${p[6]}</span>` : "";
+        const fullNameWithPatronymic = firstName + fatherName;
+
+        container.innerHTML = `
+            <div class="card">
+                <div class="card-header">
+                    <div class="photo-circle">
+                        <img src="${p[0]}" referrerpolicy="no-referrer" onerror="this.src='https://via.placeholder.com/200?text=фото'">
+                    </div>
+                    <div class="name-box">
+                        <h2 class="legal-name">бр. ${p[4] || '—'}</h2>
+                        <div class="surname-main">${p[3] || '—'}</div>
+                    </div>
+                </div>
+                <div class="experience-box">
+                    ${monkExp ? `<div>${monkExp} чернечого життя</div>` : ''}
+                    ${priestExp ? `<div>${priestExp} священства</div>` : ''}
+                </div>
+                <div class="controls">
+                    <button class="nav-btn" onclick="change(-1)" ${idx === 0 ? 'disabled' : ''}>←</button>
+                    <span style="font-weight:700;">${idx + 1} / ${allItems.length}</span>
+                    <button class="nav-btn" onclick="change(1)" ${idx === allItems.length - 1 ? 'disabled' : ''}>→</button>
+                </div>
+                <div class="details-grid">
+                    <div class="detail-row">
+                        <div class="detail-label">Ім'я з Хрещення</div>
+                        <div class="detail-value">${fullNameWithPatronymic}</div>
+                    </div>
+                    ${createDetail("Іменини", p[8], true, true)}
+                    ${createDetail("День народження", p[7])}
+                    ${createDetail("Місце народження", p[9], false)}
+                    ${createDetail("Новіціат", p[10])}
+                    ${createDetail("Перші обіти", p[11])}
+                    ${createDetail("Вічні обіти", p[12])}
+                    ${createDetail("Дияконат", p[13])}
+                    ${createDetail("Священство", p[14])}
+                </div>
+            </div>`;
+    }
+
+    function calculateExperience(dateStr) {
+        if (!dateStr || dateStr === "-" || dateStr === "—" || dateStr.trim() === "") return null;
+        let s = dateStr.toString().trim().split('T')[0].split(' ')[0];
+        let parts = s.includes('.') ? s.split('.') : s.split('-');
+        let day, month, year;
+        if (parts[0].length === 4) { year = parseInt(parts[0]); month = parseInt(parts[1])-1; day = parseInt(parts[2]); }
+        else { day = parseInt(parts[0]); month = parseInt(parts[1])-1; year = parseInt(parts[2]); }
+        let dateObj = new Date(year, month, day);
+        if (isNaN(dateObj.getTime())) return null;
+        let today = new Date();
+        let years = today.getFullYear() - dateObj.getFullYear();
+        let currentAnniversary = new Date(today.getFullYear(), month, day);
+        if (today < currentAnniversary) years--;
+        if (years < 0) return null;
+        let suffix = "років";
+        if (years % 10 === 1 && years % 100 !== 11) suffix = "рік";
+        else if (years % 10 >= 2 && years % 10 <= 4 && (years % 100 < 10 || years % 100 >= 20)) suffix = "роки";
+        return years + " " + suffix;
+    }
+
+    function formatDateUk(dateInput, hideYear = false) {
+        if (!dateInput || dateInput.toString().trim() === "" || dateInput === "-") return null;
+        const months = ["січня", "лютого", "березня", "квітня", "травня", "червня", "липня", "серпня", "вересня", "жовтня", "листопада", "грудня"];
+        let s = dateInput.toString().trim().split('T')[0].split(' ')[0];
+        let parts = s.includes('.') ? s.split('.') : s.split('-');
+        if (parts.length < 3) return dateInput;
+        let d, m, y;
+        if (parts[0].length === 4) { y = parseInt(parts[0]); m = parseInt(parts[1])-1; d = parseInt(parts[2]); }
+        else { d = parseInt(parts[0]); m = parseInt(parts[1])-1; y = parseInt(parts[2]); }
+        if (m < 0 || m > 11) return dateInput;
+        return hideYear ? d + " " + months[m] : d + " " + months[m] + " " + y;
+    }
+
+    function createDetail(label, value, isDate = true, hideYear = false) {
+        let displayValue = isDate ? formatDateUk(value, hideYear) : value;
+        if (!displayValue || displayValue === "—" || displayValue === "-" || displayValue.toString().trim() === "") return "";
+        return `<div class="detail-row"><div class="detail-label">${label}</div><div class="detail-value">${displayValue}</div></div>`;
+    }
+
+    function change(d) { idx += d; render(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+
+    function handleSearch() {
+        const term = document.getElementById('searchInput').value.toLowerCase();
+        const suggestions = document.getElementById('searchSuggestions');
+        if (term.length < 1) { suggestions.style.display = 'none'; return; }
         
-        let allItems = [];
-        let idx = 0;
-        let isGridView = true; 
+        let matches = allItems.filter(item => 
+            (item[3]?.toLowerCase().includes(term)) || 
+            (item[4]?.toLowerCase().includes(term))
+        );
 
-        async function load() {
-            try {
-                const r = await fetch(scriptUrl);
-                allItems = await r.json();
-                render();
-            } catch (e) { 
-                document.getElementById('catalog').innerHTML = "<div style='color:red; text-align:center;'>Помилка завантаження. Спробуйте оновити сторінку.</div>"; 
-            }
-        }
-
-        function toggleView() {
-            isGridView = !isGridView;
-            render();
-        }
-
-        function selectFromGrid(index) {
-            idx = index;
-            isGridView = false;
-            render();
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        function render() {
-            const catalog = document.getElementById('catalog');
-            const toggleBtn = document.getElementById('toggleLink');
-            if (allItems.length === 0) return;
-
-            if (isGridView) {
-                toggleBtn.style.display = "none";
-                renderGrid(catalog);
-            } else {
-                toggleBtn.style.display = "inline-block";
-                renderCard(catalog);
-            }
-        }
-
-        function renderGrid(container) {
-            container.innerHTML = `
-                <div class="brothers-grid">
-                    ${allItems.map((p, i) => `
-                        <div class="grid-item" onclick="selectFromGrid(${i})">
-                            <div class="grid-photo">
-                                <img src="${p[0]}" referrerpolicy="no-referrer" onerror="this.src='https://via.placeholder.com/100?text=?'">
-                            </div>
-                            <div class="grid-name">бр. ${p[4]}</div>
-                        </div>
-                    `).join('')}
-                </div>`;
-        }
-
-        function renderCard(container) {
-            const p = allItems[idx];
-            const monkExp = calculateExperience(p[10]);
-            const priestExp = calculateExperience(p[13]);
-
-            container.innerHTML = `
-                <div class="card">
-                    <div class="card-header">
-                        <div class="photo-circle">
-                            <img src="${p[0]}" referrerpolicy="no-referrer" onerror="this.src='https://via.placeholder.com/200?text=фото'">
-                        </div>
-                        <div class="name-box">
-                            <h2 class="legal-name">бр. ${p[4] || '—'}</h2>
-                            <div class="surname-main">${p[3] || '—'}</div>
-                        </div>
-                    </div>
-                    <div class="experience-box">
-                        ${monkExp ? `<div>${monkExp} чернечого життя</div>` : ''}
-                        ${priestExp ? `<div>${priestExp} священства</div>` : ''}
-                    </div>
-                    <div class="controls">
-                        <button class="nav-btn" onclick="change(-1)" ${idx === 0 ? 'disabled' : ''}>←</button>
-                        <span style="font-weight:700;">${idx + 1} / ${allItems.length}</span>
-                        <button class="nav-btn" onclick="change(1)" ${idx === allItems.length - 1 ? 'disabled' : ''}>→</button>
-                    </div>
-                    <div class="details-grid">
-                        ${createDetail("Ім'я з Хрещення", p[5], false)}
-                        ${createDetail("Іменини", p[7], true, true)}
-                        ${createDetail("День народження", p[6])}
-                        ${createDetail("Місце народження", p[8], false)}
-                        ${createDetail("Новіціат", p[9])}
-                        ${createDetail("Перші обіти", p[10])}
-                        ${createDetail("Вічні обіти", p[11])}
-                        ${createDetail("Дияконат", p[12])}
-                        ${createDetail("Священство", p[13])}
-                    </div>
-                </div>`;
-        }
-
-        // КОРЕКТНИЙ РОЗРАХУНОК СТАЖУ (без зміщення дат)
-        function calculateExperience(dateStr) {
-            if (!dateStr || dateStr === "-" || dateStr === "—" || dateStr.trim() === "") return null;
-            let s = dateStr.toString().trim().split('T')[0].split(' ')[0];
-            let parts = s.includes('.') ? s.split('.') : s.split('-');
-            
-            let day, month, year;
-            if (parts[0].length === 4) { year = parseInt(parts[0]); month = parseInt(parts[1])-1; day = parseInt(parts[2]); }
-            else { day = parseInt(parts[0]); month = parseInt(parts[1])-1; year = parseInt(parts[2]); }
-            
-            let dateObj = new Date(year, month, day);
-            if (isNaN(dateObj.getTime())) return null;
-            
-            let today = new Date();
-            let years = today.getFullYear() - dateObj.getFullYear();
-            let currentAnniversary = new Date(today.getFullYear(), month, day);
-            if (today < currentAnniversary) years--;
-            
-            if (years < 0) return null;
-            let suffix = "років";
-            if (years % 10 === 1 && years % 100 !== 11) suffix = "рік";
-            else if (years % 10 >= 2 && years % 10 <= 4 && (years % 100 < 10 || years % 100 >= 20)) suffix = "роки";
-            return years + " " + suffix;
-        }
-
-        // КОРЕКТНЕ ФОРМАТУВАННЯ ДАТИ (без зміщення та з опцією приховування року)
-        function formatDateUk(dateInput, hideYear = false) {
-            if (!dateInput || dateInput.toString().trim() === "" || dateInput === "-") return null;
-            const months = ["січня", "лютого", "березня", "квітня", "травня", "червня", "липня", "серпня", "вересня", "жовтня", "листопада", "грудня"];
-            
-            let s = dateInput.toString().trim().split('T')[0].split(' ')[0];
-            let parts = s.includes('.') ? s.split('.') : s.split('-');
-            if (parts.length < 3) return dateInput;
-
-            let d, m, y;
-            if (parts[0].length === 4) { y = parseInt(parts[0]); m = parseInt(parts[1])-1; d = parseInt(parts[2]); }
-            else { d = parseInt(parts[0]); m = parseInt(parts[1])-1; y = parseInt(parts[2]); }
-
-            if (m < 0 || m > 11) return dateInput;
-            return hideYear ? d + " " + months[m] : d + " " + months[m] + " " + y;
-        }
-
-        function createDetail(label, value, isDate = true, hideYear = false) {
-            let displayValue = isDate ? formatDateUk(value, hideYear) : value;
-            if (!displayValue || displayValue === "—" || displayValue === "-" || displayValue.toString().trim() === "") return "";
-            return `<div class="detail-row"><div class="detail-label">${label}</div><div class="detail-value">${displayValue}</div></div>`;
-        }
-
-        function change(d) { idx += d; render(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
-
-     function handleSearch() {
-            const term = document.getElementById('searchInput').value.toLowerCase();
-            const suggestions = document.getElementById('searchSuggestions');
-            if (term.length < 1) { suggestions.style.display = 'none'; return; }
-            
-            // 1. Знаходимо всі збіги
-            let matches = allItems.filter(item => 
-                (item[3]?.toLowerCase().includes(term)) || 
-                (item[4]?.toLowerCase().includes(term))
-            );
-
-            // 2. Сортуємо: пріоритет тим, хто ПОЧИНАЄТЬСЯ з цих літер
-            matches.sort((a, b) => {
-                const aSurname = a[3]?.toLowerCase() || "";
-                const aName = a[4]?.toLowerCase() || "";
-                const bSurname = b[3]?.toLowerCase() || "";
-                const bName = b[4]?.toLowerCase() || "";
-
-                const aStarts = aSurname.startsWith(term) || aName.startsWith(term);
-                const bStarts = bSurname.startsWith(term) || bName.startsWith(term);
-
-                if (aStarts && !bStarts) return -1;
-                if (!aStarts && bStarts) return 1;
-                return 0;
-            });
-
-            if (matches.length > 0) {
-                suggestions.innerHTML = matches.map((item, i) => {
-                    const originalIdx = allItems.findIndex(orig => orig === item);
-                    return `
-                    <div class="suggestion-item ${i === 0 ? 'active' : ''}" 
-                         onclick="selectPersonByIndex(${originalIdx})">
-                        <strong>бр. ${item[4]}</strong> ${item[3]}
-                    </div>`}).join('');
-                suggestions.style.display = 'block';
-            } else { suggestions.style.display = 'none'; }
-        }
-
-        function selectPersonByIndex(index) {
-            document.getElementById('searchInput').value = "";
-            document.getElementById('searchSuggestions').style.display = 'none';
-            idx = index; 
-            isGridView = false; 
-            render(); 
-        }
-
-        document.getElementById('searchInput').addEventListener('keydown', function(e) {
-            const suggestions = document.getElementById('searchSuggestions');
-            const items = suggestions.getElementsByClassName('suggestion-item');
-            if (items.length === 0) return;
-
-            let activeIdx = Array.from(items).findIndex(item => item.classList.contains('active'));
-
-            if (e.key === 'ArrowDown') {
-                e.preventDefault();
-                items[activeIdx].classList.remove('active');
-                activeIdx = (activeIdx + 1) % items.length;
-                items[activeIdx].classList.add('active');
-                items[activeIdx].scrollIntoView({ block: 'nearest' });
-            } else if (e.key === 'ArrowUp') {
-                e.preventDefault();
-                items[activeIdx].classList.remove('active');
-                activeIdx = (activeIdx - 1 + items.length) % items.length;
-                items[activeIdx].classList.add('active');
-                items[activeIdx].scrollIntoView({ block: 'nearest' });
-            } else if (e.key === 'Enter') {
-                e.preventDefault();
-                if (activeIdx >= 0) items[activeIdx].click();
-            }
+        matches.sort((a, b) => {
+            const aSurname = a[3]?.toLowerCase() || "";
+            const aName = a[4]?.toLowerCase() || "";
+            const bSurname = b[3]?.toLowerCase() || "";
+            const bName = b[4]?.toLowerCase() || "";
+            const aStarts = aSurname.startsWith(term) || aName.startsWith(term);
+            const bStarts = bSurname.startsWith(term) || bName.startsWith(term);
+            if (aStarts && !bStarts) return -1;
+            if (!aStarts && bStarts) return 1;
+            return 0;
         });
 
-        load();
-    </script>
+        if (matches.length > 0) {
+            suggestions.innerHTML = matches.map((item, i) => {
+                const originalIdx = allItems.findIndex(orig => orig === item);
+                return `
+                <div class="suggestion-item ${i === 0 ? 'active' : ''}" 
+                     onclick="selectPersonByIndex(${originalIdx})">
+                    <strong>бр. ${item[4]}</strong> ${item[3]}
+                </div>`}).join('');
+            suggestions.style.display = 'block';
+        } else { suggestions.style.display = 'none'; }
+    }
+
+    function selectPersonByIndex(index) {
+        document.getElementById('searchInput').value = "";
+        document.getElementById('searchSuggestions').style.display = 'none';
+        idx = index; isGridView = false; render(); 
+    }
+
+    document.getElementById('searchInput').addEventListener('keydown', function(e) {
+        const suggestions = document.getElementById('searchSuggestions');
+        const items = suggestions.getElementsByClassName('suggestion-item');
+        if (items.length === 0) return;
+        let activeIdx = Array.from(items).findIndex(item => item.classList.contains('active'));
+        if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            items[activeIdx].classList.remove('active');
+            activeIdx = (activeIdx + 1) % items.length;
+            items[activeIdx].classList.add('active');
+            items[activeIdx].scrollIntoView({ block: 'nearest' });
+        } else if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            items[activeIdx].classList.remove('active');
+            activeIdx = (activeIdx - 1 + items.length) % items.length;
+            items[activeIdx].classList.add('active');
+            items[activeIdx].scrollIntoView({ block: 'nearest' });
+        } else if (e.key === 'Enter') {
+            e.preventDefault();
+            if (activeIdx >= 0) items[activeIdx].click();
+        }
+    });
+
+    load();
+</script>
 </body>
 </html>
