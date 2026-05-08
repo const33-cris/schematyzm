@@ -5,21 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Схематизм Провінції</title>
 
-    <meta name="apple-mobile-web-app-title" content="Схематизм">
+    <!-- Налаштування для мобільних пристроїв -->
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
-
-    <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/const33-cris/schematyzm/main/img/icon.png?v=2">
-    <link rel="icon" type="image/png" sizes="192x192" href="https://raw.githubusercontent.com/const33-cris/schematyzm/main/img/icon.png?v=2">
+    <meta name="mobile-web-app-status-bar-style" content="default">
+    <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/const33-cris/schematyzm/main/img/icon.png">
 
     <style>
         :root {
             --primary: #5d4037;
+            --bg: #f0f2f5;
+            --white: #ffffff;
             --text-main: #1c1e21;
             --text-secondary: #606770;
-            --bg: #f0f2f5;
-            --accent-blue: #003366;
+            --error: #dc3545;
         }
 
         body { 
@@ -29,354 +27,207 @@
             display: flex; flex-direction: column; align-items: center; 
             min-height: 100vh; color: var(--text-main);
         }
-        
-        .header { width: 100%; max-width: 600px; padding: 25px 15px 5px; text-align: center; box-sizing: border-box; }
-        
-        .title-main { 
-            font-size: 3rem; 
-            font-weight: 800; 
-            color: var(--primary); 
-            text-transform: uppercase; 
-            margin-bottom: 2px;
-            letter-spacing: 2px;
+
+        /* --- БЛОК АВТОРИЗАЦІЇ --- */
+        #auth-container {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: var(--bg); z-index: 2000;
+            display: flex; align-items: center; justify-content: center; padding: 20px;
+        }
+        .auth-card {
+            background: white; padding: 40px; border-radius: 28px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1); max-width: 400px; width: 100%; text-align: center;
+        }
+        .auth-input {
+            width: 100%; padding: 14px; margin: 15px 0;
+            border: 1px solid #ddd; border-radius: 12px; font-size: 1.1rem;
+            box-sizing: border-box; outline: none; text-align: center;
+        }
+        .auth-input:focus { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(93, 64, 55, 0.1); }
+        .auth-submit {
+            width: 100%; padding: 14px; background: var(--primary); color: white;
+            border: none; border-radius: 12px; font-size: 1rem; font-weight: 700;
+            cursor: pointer; transition: opacity 0.2s;
+        }
+        .auth-submit:disabled { background: #ccc; cursor: not-allowed; }
+        .error-msg { 
+            color: var(--error); font-size: 0.85rem; margin-top: 12px; 
+            display: none; padding: 10px; background: #ffeeee; border-radius: 8px;
+            border: 1px solid #ffcccc; line-height: 1.4;
         }
 
-        .title-sub { 
-            font-size: 1.1rem;
-            font-weight: 400;
-            color: var(--primary); 
-            text-transform: uppercase; 
-            margin-bottom: 20px; 
-            letter-spacing: 1px;
-        }
+        /* --- ОСНОВНИЙ КОНТЕНТ --- */
+        #main-content { display: none; width: 100%; flex-direction: column; align-items: center; }
         
-        .search-container { position: relative; width: 100%; margin-bottom: 10px; }
+        .header { width: 100%; max-width: 600px; padding: 25px 15px; text-align: center; box-sizing: border-box; }
+        .title-main { font-size: 2rem; font-weight: 800; color: var(--primary); text-transform: uppercase; }
+        
+        .search-container { position: relative; width: 100%; margin-bottom: 20px; }
         #searchInput { 
             width: 100%; padding: 12px 20px; border-radius: 30px; border: 1px solid #ddd; 
             font-size: 1rem; box-shadow: 0 4px 10px rgba(0,0,0,0.05); outline: none; box-sizing: border-box;
         }
 
-        .view-toggle {
-            margin: 5px 0 15px 0;
-            padding: 8px 20px;
-            font-weight: 700;
-            color: var(--accent-blue);
-            background-color: transparent;
-            border: 2px solid var(--primary);
-            border-radius: 25px;
-            cursor: pointer;
-            font-size: 0.95rem;
-            display: none; 
-            transition: all 0.3s ease;
-        }
-
-        #searchSuggestions {
-            position: absolute; top: 100%; left: 0; right: 0; 
-            background: white; border-radius: 15px; margin-top: 5px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-            max-height: 250px; overflow-y: auto; display: none; z-index: 1000;
-        }
-
-        .suggestion-item { padding: 12px 20px; text-align: left; cursor: pointer; border-bottom: 1px solid #f0f2f5; }
-        .suggestion-item.active { background-color: #e8e1df; border-left: 5px solid var(--primary); font-weight: bold; }
-
-        #catalog { width: 100%; max-width: 600px; padding: 0 5px 20px; box-sizing: border-box; }
-        
-        .card { 
-            background: white; border-radius: 28px; padding: 30px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.08); 
-            width: 100%; max-width: 500px; margin: 0 auto; box-sizing: border-box;
-        }
-        .card-header { display: flex; align-items: center; gap: 20px; margin-bottom: 15px; }
-        .photo-circle { 
-            width: 140px; height: 140px; border-radius: 50%; overflow: hidden; 
-            border: 4px solid white; box-shadow: 0 8px 20px rgba(0,0,0,0.15); 
-            background: #eee; flex-shrink: 0;
-        }
-        .photo-circle img { width: 100%; height: 100%; object-fit: cover; }
-        .name-box { display: flex; flex-direction: column; text-align: left; }
-        .legal-name { font-size: 2rem; font-weight: 800; color: var(--primary); margin: 0; line-height: 1.1; }
-        .surname-main { font-size: 1.4rem; font-weight: 500; color: var(--text-main); margin: 5px 0 0 0; }
-
-        .experience-box { margin: 12px 0; display: flex; flex-direction: column; gap: 4px; font-size: 1.1rem; font-weight: 800; color: var(--accent-blue); text-align: center; }
-
-        .controls { display: flex; align-items: center; justify-content: center; gap: 20px; margin: 15px 0; width: 100%; }
-        button.nav-btn { padding: 8px 20px; font-size: 1.2rem; cursor: pointer; border-radius: 50px; border: none; background-color: var(--primary); color: white; font-weight: bold; }
-        button.nav-btn:disabled { background-color: #dcdcdc; color: #999; }
-
-        .details-grid { width: 100%; display: grid; gap: 12px; padding-top: 15px; border-top: 1px solid #f0f2f5; }
-        .detail-row { display: flex; flex-direction: column; text-align: left;}
-        .detail-label { font-size: 0.65rem; text-transform: uppercase; color: var(--text-secondary); font-weight: 600; }
-        .detail-value { font-size: 1.1rem; font-weight: 700; color: var(--text-main); }
-
-        .brothers-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
-            padding: 10px;
-            width: 100%;
-            justify-items: center;
-        }
-
-        .grid-item { display: flex; flex-direction: column; align-items: center; cursor: pointer; transition: transform 0.3s ease; width: 100%; }
-        .grid-item:hover { transform: scale(1.05); }
-
-        .grid-photo {
-            width: 110px; height: 110px; border-radius: 50%; overflow: hidden;
-            border: 3px solid white; box-shadow: 0 4px 12px rgba(0,0,0,0.12);
-            background: #eee; margin-bottom: 8px; display: flex; align-items: center; justify-content: center;
-        }
+        #catalog { width: 100%; max-width: 600px; padding: 0 10px 40px; box-sizing: border-box; }
+        .brothers-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; width: 100%; }
+        .grid-item { display: flex; flex-direction: column; align-items: center; cursor: pointer; }
+        .grid-photo { width: 85px; height: 85px; border-radius: 50%; overflow: hidden; border: 3px solid white; box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin-bottom: 5px; }
         .grid-photo img { width: 100%; height: 100%; object-fit: cover; }
-        .grid-name { font-weight: 700; font-size: 0.9rem; color: var(--primary); text-align: center; line-height: 1.2; max-width: 120px; }
+        .grid-name { font-size: 0.85rem; font-weight: 700; text-align: center; color: var(--primary); }
 
-        @media (min-width: 768px) {
-            #catalog { max-width: 900px; margin: 0 auto; }
-            .brothers-grid { gap: 40px; padding: 20px; }
-            .grid-photo { width: 200px; height: 200px; border-width: 5px; }
-            .grid-name { font-size: 1.25rem; margin-top: 10px; max-width: 220px; }
-            .grid-item .prefix-br {
-            font-size: 1em; 
-        }
+        @media (max-width: 480px) {
+            .brothers-grid { grid-template-columns: repeat(2, 1fr); }
         }
     </style>
 </head>
 <body>
 
-    <div class="header">
-        <div class="title-main">СХЕМАТИЗМ</div>
-        <div class="title-sub">ПРОВІНЦІЇ СВ. АРХАНГЕЛА МИХАЇЛА</div>
-        
-        <div class="search-container">
-            <input type="text" id="searchInput" placeholder="Пошук за прізвищем або іменем..." oninput="handleSearch()" autocomplete="off">
-            <div id="searchSuggestions"></div>
+    <!-- ЕКРАН АВТОРИЗАЦІЇ -->
+    <div id="auth-container">
+        <div id="auth-step-email" class="auth-card">
+            <h2 style="color: var(--primary)">Схематизм</h2>
+            <p>Введіть email для перевірки доступу (аркуш <b>AllowedUsers</b>)</p>
+            <input type="email" id="emailInput" class="auth-input" placeholder="example@gmail.com" value="const33@gmail.com">
+            <button class="auth-submit" id="btnSendCode" onclick="sendVerificationCode()">Отримати код</button>
+            <div id="emailError" class="error-msg"></div>
         </div>
 
-        <button id="toggleLink" class="view-toggle" onclick="toggleView()">Усі брати</button>
+        <div id="auth-step-code" class="auth-card" style="display: none;">
+            <h2>Введіть код</h2>
+            <p>На пошту <span id="displayEmail" style="font-weight:bold"></span> надіслано 6-значний код</p>
+            <input type="text" id="codeInput" class="auth-input" placeholder="000000" maxlength="6">
+            <button class="auth-submit" id="btnVerifyCode" onclick="verifyCode()">Увійти</button>
+            <div id="codeError" class="error-msg"></div>
+            <button style="background:none; border:none; margin-top:15px; color:var(--text-secondary); cursor:pointer;" onclick="toggleAuthStep(1)">← Змінити пошту</button>
+        </div>
     </div>
 
-    <div id="catalog">
-        <div style="padding: 50px; color: #999; text-align: center;">Завантаження даних...</div>
+    <!-- ОСНОВНИЙ ДОДАТОК -->
+    <div id="main-content">
+        <div class="header">
+            <div class="title-main">СХЕМАТИЗМ</div>
+            <div class="search-container">
+                <input type="text" id="searchInput" placeholder="Пошук за іменем..." oninput="handleSearch()">
+            </div>
+        </div>
+        <div id="catalog">
+            <div style="text-align: center; padding: 40px; color: var(--text-secondary);">Завантаження списку...</div>
+        </div>
     </div>
 
-  <style>
-    /* Додаємо стиль для напівпрозорого по батькові */
-    .patronymic {
-        opacity: 0.5;
-        font-weight: 400;
-        margin-left: 5px;
-    }
-</style>
-
-<script>
-    const scriptUrl = 'https://script.google.com/macros/s/AKfycbx5wF2-YSFjB2NTOzObml4ZLtuKlZdyl72uISyRL9LyFh8dVZLJzy2MEQWS0OsW1OX9/exec';
-    
-    let allItems = [];
-    let idx = 0;
-    let isGridView = true; 
-
-    async function load() {
-        try {
-            const r = await fetch(scriptUrl);
-            allItems = await r.json();
-            render();
-        } catch (e) { 
-            document.getElementById('catalog').innerHTML = "<div style='color:red; text-align:center;'>Помилка завантаження. Спробуйте оновити сторінку.</div>"; 
-        }
-    }
-
-    function toggleView() {
-        isGridView = !isGridView;
-        render();
-    }
-
-    function selectFromGrid(index) {
-        idx = index;
-        isGridView = false;
-        render();
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    function render() {
-        const catalog = document.getElementById('catalog');
-        const toggleBtn = document.getElementById('toggleLink');
-        if (allItems.length === 0) return;
-
-        if (isGridView) {
-            toggleBtn.style.display = "none";
-            renderGrid(catalog);
-        } else {
-            toggleBtn.style.display = "inline-block";
-            renderCard(catalog);
-        }
-    }
-
-    function renderGrid(container) {
-        container.innerHTML = `
-            <div class="brothers-grid">
-                ${allItems.map((p, i) => `
-                    <div class="grid-item" onclick="selectFromGrid(${i})">
-                        <div class="grid-photo">
-                            <img src="${p[0]}" referrerpolicy="no-referrer" onerror="this.src='https://via.placeholder.com/100?text=?'">
-                        </div>
-                        <div class="grid-name">бр. ${p[4]}</div>
-                    </div>
-                `).join('')}
-            </div>`;
-    }
-
-    function renderCard(container) {
-        const p = allItems[idx];
-        // Стаж тепер рахуємо за новими індексами (Перші обіти - 11, Священство - 14)
-        const monkExp = calculateExperience(p[11]);
-        const priestExp = calculateExperience(p[14]);
-
-        // Формуємо ім'я + напівпрозоре по батькові
-        const firstName = p[5] || '—';
-        const fatherName = p[6] && p[6] !== "—" && p[6] !== "-" ? `<span class="patronymic">${p[6]}</span>` : "";
-        const fullNameWithPatronymic = firstName + fatherName;
-
-        container.innerHTML = `
-            <div class="card">
-                <div class="card-header">
-                    <div class="photo-circle">
-                        <img src="${p[0]}" referrerpolicy="no-referrer" onerror="this.src='https://via.placeholder.com/200?text=фото'">
-                    </div>
-                    <div class="name-box">
-                        <h2 class="legal-name">бр. ${p[4] || '—'}</h2>
-                        <div class="surname-main">${p[3] || '—'}</div>
-                    </div>
-                </div>
-                <div class="experience-box">
-                    ${monkExp ? `<div>${monkExp} чернечого життя</div>` : ''}
-                    ${priestExp ? `<div>${priestExp} священства</div>` : ''}
-                </div>
-                <div class="controls">
-                    <button class="nav-btn" onclick="change(-1)" ${idx === 0 ? 'disabled' : ''}>←</button>
-                    <span style="font-weight:700;">${idx + 1} / ${allItems.length}</span>
-                    <button class="nav-btn" onclick="change(1)" ${idx === allItems.length - 1 ? 'disabled' : ''}>→</button>
-                </div>
-                <div class="details-grid">
-                    <div class="detail-row">
-                        <div class="detail-label">Ім'я з Хрещення</div>
-                        <div class="detail-value">${fullNameWithPatronymic}</div>
-                    </div>
-                    ${createDetail("Іменини", p[8], true, true)}
-                    ${createDetail("День народження", p[7])}
-                    ${createDetail("Місце народження", p[9], false)}
-                    ${createDetail("Новіціат", p[10])}
-                    ${createDetail("Перші обіти", p[11])}
-                    ${createDetail("Вічні обіти", p[12])}
-                    ${createDetail("Дияконат", p[13])}
-                    ${createDetail("Священство", p[14])}
-                </div>
-            </div>`;
-    }
-
-    function calculateExperience(dateStr) {
-        if (!dateStr || dateStr === "-" || dateStr === "—" || dateStr.trim() === "") return null;
-        let s = dateStr.toString().trim().split('T')[0].split(' ')[0];
-        let parts = s.includes('.') ? s.split('.') : s.split('-');
-        let day, month, year;
-        if (parts[0].length === 4) { year = parseInt(parts[0]); month = parseInt(parts[1])-1; day = parseInt(parts[2]); }
-        else { day = parseInt(parts[0]); month = parseInt(parts[1])-1; year = parseInt(parts[2]); }
-        let dateObj = new Date(year, month, day);
-        if (isNaN(dateObj.getTime())) return null;
-        let today = new Date();
-        let years = today.getFullYear() - dateObj.getFullYear();
-        let currentAnniversary = new Date(today.getFullYear(), month, day);
-        if (today < currentAnniversary) years--;
-        if (years < 0) return null;
-        let suffix = "років";
-        if (years % 10 === 1 && years % 100 !== 11) suffix = "рік";
-        else if (years % 10 >= 2 && years % 10 <= 4 && (years % 100 < 10 || years % 100 >= 20)) suffix = "роки";
-        return years + " " + suffix;
-    }
-
-    function formatDateUk(dateInput, hideYear = false) {
-        if (!dateInput || dateInput.toString().trim() === "" || dateInput === "-") return null;
-        const months = ["січня", "лютого", "березня", "квітня", "травня", "червня", "липня", "серпня", "вересня", "жовтня", "листопада", "грудня"];
-        let s = dateInput.toString().trim().split('T')[0].split(' ')[0];
-        let parts = s.includes('.') ? s.split('.') : s.split('-');
-        if (parts.length < 3) return dateInput;
-        let d, m, y;
-        if (parts[0].length === 4) { y = parseInt(parts[0]); m = parseInt(parts[1])-1; d = parseInt(parts[2]); }
-        else { d = parseInt(parts[0]); m = parseInt(parts[1])-1; y = parseInt(parts[2]); }
-        if (m < 0 || m > 11) return dateInput;
-        return hideYear ? d + " " + months[m] : d + " " + months[m] + " " + y;
-    }
-
-    function createDetail(label, value, isDate = true, hideYear = false) {
-        let displayValue = isDate ? formatDateUk(value, hideYear) : value;
-        if (!displayValue || displayValue === "—" || displayValue === "-" || displayValue.toString().trim() === "") return "";
-        return `<div class="detail-row"><div class="detail-label">${label}</div><div class="detail-value">${displayValue}</div></div>`;
-    }
-
-    function change(d) { idx += d; render(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
-
-    function handleSearch() {
-        const term = document.getElementById('searchInput').value.toLowerCase();
-        const suggestions = document.getElementById('searchSuggestions');
-        if (term.length < 1) { suggestions.style.display = 'none'; return; }
+    <script>
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx5wF2-YSFjB2NTOzObml4ZLtuKlZdyl72uISyRL9LyFh8dVZLJzy2MEQWS0OsW1OX9/exec';
         
-        let matches = allItems.filter(item => 
-            (item[3]?.toLowerCase().includes(term)) || 
-            (item[4]?.toLowerCase().includes(term))
-        );
+        let allItems = [];
+        let userEmail = "";
 
-        matches.sort((a, b) => {
-            const aSurname = a[3]?.toLowerCase() || "";
-            const aName = a[4]?.toLowerCase() || "";
-            const bSurname = b[3]?.toLowerCase() || "";
-            const bName = b[4]?.toLowerCase() || "";
-            const aStarts = aSurname.startsWith(term) || aName.startsWith(term);
-            const bStarts = bSurname.startsWith(term) || bName.startsWith(term);
-            if (aStarts && !bStarts) return -1;
-            if (!aStarts && bStarts) return 1;
-            return 0;
-        });
-
-        if (matches.length > 0) {
-            suggestions.innerHTML = matches.map((item, i) => {
-                const originalIdx = allItems.findIndex(orig => orig === item);
-                return `
-                <div class="suggestion-item ${i === 0 ? 'active' : ''}" 
-                     onclick="selectPersonByIndex(${originalIdx})">
-                    <strong>бр. ${item[4]}</strong> ${item[3]}
-                </div>`}).join('');
-            suggestions.style.display = 'block';
-        } else { suggestions.style.display = 'none'; }
-    }
-
-    function selectPersonByIndex(index) {
-        document.getElementById('searchInput').value = "";
-        document.getElementById('searchSuggestions').style.display = 'none';
-        idx = index; isGridView = false; render(); 
-    }
-
-    document.getElementById('searchInput').addEventListener('keydown', function(e) {
-        const suggestions = document.getElementById('searchSuggestions');
-        const items = suggestions.getElementsByClassName('suggestion-item');
-        if (items.length === 0) return;
-        let activeIdx = Array.from(items).findIndex(item => item.classList.contains('active'));
-        if (e.key === 'ArrowDown') {
-            e.preventDefault();
-            items[activeIdx].classList.remove('active');
-            activeIdx = (activeIdx + 1) % items.length;
-            items[activeIdx].classList.add('active');
-            items[activeIdx].scrollIntoView({ block: 'nearest' });
-        } else if (e.key === 'ArrowUp') {
-            e.preventDefault();
-            items[activeIdx].classList.remove('active');
-            activeIdx = (activeIdx - 1 + items.length) % items.length;
-            items[activeIdx].classList.add('active');
-            items[activeIdx].scrollIntoView({ block: 'nearest' });
-        } else if (e.key === 'Enter') {
-            e.preventDefault();
-            if (activeIdx >= 0) items[activeIdx].click();
+        function toggleAuthStep(step) {
+            document.getElementById('auth-step-email').style.display = step === 1 ? 'block' : 'none';
+            document.getElementById('auth-step-code').style.display = step === 2 ? 'block' : 'none';
         }
-    });
 
-    load();
-</script>
+        async function sendVerificationCode() {
+            const btn = document.getElementById('btnSendCode');
+            const errorDiv = document.getElementById('emailError');
+            const emailInput = document.getElementById('emailInput');
+            
+            // Очищення від пробілів та переведення в нижній регістр
+            userEmail = emailInput.value.trim().toLowerCase();
+            
+            if (!userEmail || !userEmail.includes('@')) {
+                errorDiv.innerText = "Будь ласка, введіть дійсний email";
+                errorDiv.style.display = 'block';
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerText = "Перевірка доступу...";
+            errorDiv.style.display = 'none';
+
+            try {
+                // Додаємо випадковий параметр, щоб уникнути кешування відповіді
+                const response = await fetch(`${SCRIPT_URL}?action=sendCode&email=${encodeURIComponent(userEmail)}&t=${Date.now()}`);
+                const result = await response.json();
+
+                if (result.status === "success") {
+                    document.getElementById('displayEmail').innerText = userEmail;
+                    toggleAuthStep(2);
+                } else {
+                    // Показуємо детальну причину відмови
+                    errorDiv.innerHTML = `<strong>Доступ заблоковано:</strong><br>${result.message || "Пошту не знайдено в списку дозволених."}`;
+                    errorDiv.style.display = 'block';
+                }
+            } catch (e) {
+                errorDiv.innerHTML = "<strong>Помилка мережі:</strong><br>Не вдалося з'єднатися зі скриптом. Перевірте, чи опубліковано його як веб-додаток.";
+                errorDiv.style.display = 'block';
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "Отримати код";
+            }
+        }
+
+        async function verifyCode() {
+            const btn = document.getElementById('btnVerifyCode');
+            const errorDiv = document.getElementById('codeError');
+            const code = document.getElementById('codeInput').value.trim();
+
+            if (code.length < 6) return;
+
+            btn.disabled = true;
+            btn.innerText = "Увійти...";
+
+            try {
+                const response = await fetch(`${SCRIPT_URL}?action=verifyCode&email=${encodeURIComponent(userEmail)}&code=${code}`);
+                const result = await response.json();
+
+                if (result.status === "success") {
+                    document.getElementById('auth-container').style.display = 'none';
+                    document.getElementById('main-content').style.display = 'flex';
+                    loadData();
+                } else {
+                    errorDiv.innerText = "Код неправильний";
+                    errorDiv.style.display = 'block';
+                }
+            } catch (e) {
+                errorDiv.innerText = "Помилка підключення";
+                errorDiv.style.display = 'block';
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "Увійти";
+            }
+        }
+
+        async function loadData() {
+            try {
+                const r = await fetch(`${SCRIPT_URL}?action=getData`);
+                allItems = await r.json();
+                render(allItems);
+            } catch (e) {
+                document.getElementById('catalog').innerHTML = "Помилка завантаження бази даних.";
+            }
+        }
+
+        function render(data) {
+            const container = document.getElementById('catalog');
+            if (!data.length) {
+                container.innerHTML = "<center>Нічого не знайдено</center>";
+                return;
+            }
+            container.innerHTML = `<div class="brothers-grid">${data.map(p => `
+                <div class="grid-item">
+                    <div class="grid-photo"><img src="${p[0] || 'https://via.placeholder.com/100'}" referrerpolicy="no-referrer"></div>
+                    <div class="grid-name">бр. ${p[4] || 'Без імені'}</div>
+                </div>`).join('')}</div>`;
+        }
+
+        function handleSearch() {
+            const q = document.getElementById('searchInput').value.toLowerCase();
+            const filtered = allItems.filter(p => 
+                (p[4] && p[4].toLowerCase().includes(q)) || 
+                (p[3] && p[3].toLowerCase().includes(q))
+            );
+            render(filtered);
+        }
+    </script>
 </body>
 </html>
