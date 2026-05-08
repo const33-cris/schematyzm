@@ -301,15 +301,31 @@
 
         function change(d) { idx += d; render(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
 
-        function handleSearch() {
+     function handleSearch() {
             const term = document.getElementById('searchInput').value.toLowerCase();
             const suggestions = document.getElementById('searchSuggestions');
             if (term.length < 1) { suggestions.style.display = 'none'; return; }
             
-            const matches = allItems.filter(item => 
+            // 1. Знаходимо всі збіги
+            let matches = allItems.filter(item => 
                 (item[3]?.toLowerCase().includes(term)) || 
                 (item[4]?.toLowerCase().includes(term))
             );
+
+            // 2. Сортуємо: пріоритет тим, хто ПОЧИНАЄТЬСЯ з цих літер
+            matches.sort((a, b) => {
+                const aSurname = a[3]?.toLowerCase() || "";
+                const aName = a[4]?.toLowerCase() || "";
+                const bSurname = b[3]?.toLowerCase() || "";
+                const bName = b[4]?.toLowerCase() || "";
+
+                const aStarts = aSurname.startsWith(term) || aName.startsWith(term);
+                const bStarts = bSurname.startsWith(term) || bName.startsWith(term);
+
+                if (aStarts && !bStarts) return -1;
+                if (!aStarts && bStarts) return 1;
+                return 0;
+            });
 
             if (matches.length > 0) {
                 suggestions.innerHTML = matches.map((item, i) => {
