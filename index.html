@@ -20,7 +20,6 @@
             --text-secondary: #606770;
             --bg: #f0f2f5;
             --accent-blue: #003366;
-            --error: #dc3545;
         }
 
         body { 
@@ -30,39 +29,26 @@
             display: flex; flex-direction: column; align-items: center; 
             min-height: 100vh; color: var(--text-main);
         }
-
-        /* --- СТИЛІ АВТОРИЗАЦІЇ --- */
-        #authOverlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--bg); z-index: 10000;
-            display: flex; align-items: center; justify-content: center; padding: 20px; box-sizing: border-box;
-        }
-        .auth-card {
-            background: white; padding: 40px 30px; border-radius: 28px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            width: 100%; max-width: 400px; text-align: center;
-        }
-        .auth-card h2 { color: var(--primary); margin: 0 0 10px; font-weight: 800; }
-        .auth-input {
-            width: 100%; padding: 14px 20px; border-radius: 30px;
-            border: 1px solid #ddd; margin-bottom: 15px; font-size: 16px;
-            box-sizing: border-box; outline: none; -webkit-appearance: none;
-            background: #fff; text-align: center;
-        }
-        .auth-btn {
-            width: 100%; padding: 15px; border-radius: 30px; border: none;
-            background: var(--primary); color: white; font-weight: 800;
-            font-size: 16px; cursor: pointer; transition: background 0.3s;
-            text-transform: uppercase;
-        }
-        .auth-btn:disabled { background: #ccc; }
-        #errorLabel { color: var(--error); font-size: 0.85rem; margin-top: 15px; display: none; }
-
-        /* --- СТИЛІ ДОДАТКУ --- */
-        #appContent { display: none; width: 100%; flex-direction: column; align-items: center; }
+        
         .header { width: 100%; max-width: 600px; padding: 25px 15px 5px; text-align: center; box-sizing: border-box; }
-        .title-main { font-size: 3rem; font-weight: 800; color: var(--primary); text-transform: uppercase; margin-bottom: 2px; letter-spacing: 2px; }
-        .title-sub { font-size: 1.1rem; font-weight: 400; color: var(--primary); text-transform: uppercase; margin-bottom: 20px; letter-spacing: 1px; }
+        
+        .title-main { 
+            font-size: 3rem; 
+            font-weight: 800; 
+            color: var(--primary); 
+            text-transform: uppercase; 
+            margin-bottom: 2px;
+            letter-spacing: 2px;
+        }
+
+        .title-sub { 
+            font-size: 1.1rem;
+            font-weight: 400;
+            color: var(--primary); 
+            text-transform: uppercase; 
+            margin-bottom: 20px; 
+            letter-spacing: 1px;
+        }
         
         .search-container { position: relative; width: 100%; margin-bottom: 10px; }
         #searchInput { 
@@ -71,9 +57,17 @@
         }
 
         .view-toggle {
-            margin: 5px 0 15px 0; padding: 8px 20px; font-weight: 700; color: var(--accent-blue);
-            background-color: transparent; border: 2px solid var(--primary); border-radius: 25px;
-            cursor: pointer; font-size: 0.95rem; display: none; transition: all 0.3s ease;
+            margin: 5px 0 15px 0;
+            padding: 8px 20px;
+            font-weight: 700;
+            color: var(--accent-blue);
+            background-color: transparent;
+            border: 2px solid var(--primary);
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            display: none; 
+            transition: all 0.3s ease;
         }
 
         #searchSuggestions {
@@ -116,10 +110,17 @@
         .detail-value { font-size: 1.1rem; font-weight: 700; color: var(--text-main); }
 
         .brothers-grid {
-            display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; padding: 10px; width: 100%; justify-items: center;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            padding: 10px;
+            width: 100%;
+            justify-items: center;
         }
 
         .grid-item { display: flex; flex-direction: column; align-items: center; cursor: pointer; transition: transform 0.3s ease; width: 100%; }
+        .grid-item:hover { transform: scale(1.05); }
+
         .grid-photo {
             width: 110px; height: 110px; border-radius: 50%; overflow: hidden;
             border: 3px solid white; box-shadow: 0 4px 12px rgba(0,0,0,0.12);
@@ -128,45 +129,43 @@
         .grid-photo img { width: 100%; height: 100%; object-fit: cover; }
         .grid-name { font-weight: 700; font-size: 0.9rem; color: var(--primary); text-align: center; line-height: 1.2; max-width: 120px; }
 
-        .patronymic { opacity: 0.5; font-weight: 400; margin-left: 5px; }
-
-        @media (max-width: 768px) {
-            .brothers-grid { grid-template-columns: repeat(2, 1fr); }
-            .grid-photo { width: 110px; height: 110px; }
-            .title-main { font-size: 2.2rem; }
+        @media (min-width: 768px) {
+            #catalog { max-width: 900px; margin: 0 auto; }
+            .brothers-grid { gap: 40px; padding: 20px; }
+            .grid-photo { width: 200px; height: 200px; border-width: 5px; }
+            .grid-name { font-size: 1.25rem; margin-top: 10px; max-width: 220px; }
+            .grid-item .prefix-br {
+            font-size: 1em; 
+        }
         }
     </style>
 </head>
 <body>
 
-    <div id="authOverlay">
-        <div class="auth-card">
-            <h2>Вхід</h2>
-            <p id="authHint" style="font-size: 0.9rem; color: #666; margin-bottom: 20px;">Введіть ваш email для доступу</p>
-            <input type="email" id="emailInput" class="auth-input" placeholder="example@gmail.com">
-            <input type="text" id="codeInput" class="auth-input" placeholder="Код з пошти" style="display:none;" maxlength="6">
-            <button id="authBtn" class="auth-btn" onclick="processAuth()">Отримати код</button>
-            <p id="errorLabel"></p>
+    <div class="header">
+        <div class="title-main">СХЕМАТИЗМ</div>
+        <div class="title-sub">ПРОВІНЦІЇ СВ. АРХАНГЕЛА МИХАЇЛА</div>
+        
+        <div class="search-container">
+            <input type="text" id="searchInput" placeholder="Пошук за прізвищем або іменем..." oninput="handleSearch()" autocomplete="off">
+            <div id="searchSuggestions"></div>
         </div>
+
+        <button id="toggleLink" class="view-toggle" onclick="toggleView()">Усі брати</button>
     </div>
 
-    <div id="appContent">
-        <div class="header">
-            <div class="title-main">СХЕМАТИЗМ</div>
-            <div class="title-sub">ПРОВІНЦІЇ СВ. АРХАНГЕЛА МИХАЇЛА</div>
-            
-            <div class="search-container">
-                <input type="text" id="searchInput" placeholder="Пошук за прізвищем або іменем..." oninput="handleSearch()" autocomplete="off">
-                <div id="searchSuggestions"></div>
-            </div>
-
-            <button id="toggleLink" class="view-toggle" onclick="toggleView()">Усі брати</button>
-        </div>
-
-        <div id="catalog">
-            <div style="padding: 50px; color: #999; text-align: center;">Завантаження даних...</div>
-        </div>
+    <div id="catalog">
+        <div style="padding: 50px; color: #999; text-align: center;">Завантаження даних...</div>
     </div>
+
+  <style>
+    /* Додаємо стиль для напівпрозорого по батькові */
+    .patronymic {
+        opacity: 0.5;
+        font-weight: 400;
+        margin-left: 5px;
+    }
+</style>
 
 <script>
     const scriptUrl = 'https://script.google.com/macros/s/AKfycbx5wF2-YSFjB2NTOzObml4ZLtuKlZdyl72uISyRL9LyFh8dVZLJzy2MEQWS0OsW1OX9/exec';
@@ -174,96 +173,26 @@
     let allItems = [];
     let idx = 0;
     let isGridView = true; 
-    let currentUserEmail = "";
 
-    // 1. ПЕРЕВІРКА СЕСІЇ ПРИ ЗАВАНТАЖЕННІ
-    window.onload = () => {
-        const savedEmail = localStorage.getItem('userEmail');
-        if (savedEmail) {
-            currentUserEmail = savedEmail;
-            document.getElementById('authOverlay').style.display = "none";
-            document.getElementById('appContent').style.display = "flex";
-            loadDirect();
-        }
-    };
-
-    // 2. ФУНКЦІЯ АВТОРИЗАЦІЇ
-    async function processAuth() {
-        const btn = document.getElementById('authBtn');
-        const emailInp = document.getElementById('emailInput');
-        const codeInp = document.getElementById('codeInput');
-        const error = document.getElementById('errorLabel');
-        
-        error.style.display = "none";
-        btn.disabled = true;
-
-        if (codeInp.style.display === "none") {
-            currentUserEmail = emailInp.value.trim().toLowerCase();
-            if (!currentUserEmail) { btn.disabled = false; return; }
-            
-            btn.innerText = "Надсилаємо...";
-            try {
-                const r = await fetch(`${scriptUrl}?action=sendCode&email=${encodeURIComponent(currentUserEmail)}`);
-                const res = await r.json();
-                if (res.success) {
-                    emailInp.style.display = "none";
-                    codeInp.style.display = "block";
-                    btn.innerText = "Увійти";
-                    btn.disabled = false;
-                    document.getElementById('authHint').innerText = "Код надіслано на пошту";
-                } else { throw new Error(res.message || "Доступ заборонено"); }
-            } catch (e) {
-                error.innerText = e.message; error.style.display = "block";
-                btn.innerText = "Отримати код"; btn.disabled = false;
-            }
-        } else {
-            const code = codeInp.value.trim();
-            btn.innerText = "Перевірка...";
-            try {
-                const r = await fetch(`${scriptUrl}?action=verifyCode&email=${encodeURIComponent(currentUserEmail)}&code=${code}`);
-                const res = await r.json();
-                if (res.success) {
-                    localStorage.setItem('userEmail', currentUserEmail);
-                    allItems = res.data.slice(1);
-                    startApp();
-                } else { throw new Error(res.message || "Невірний код"); }
-            } catch (e) {
-                error.innerText = e.message; error.style.display = "block";
-                btn.innerText = "Увійти"; btn.disabled = false;
-            }
-        }
-    }
-
-    // 3. ЗАВАНТАЖЕННЯ ДАНИХ ПІСЛЯ ВХОДУ
-    async function loadDirect() {
+    async function load() {
         try {
-            const r = await fetch(`${scriptUrl}?action=verifyCode&email=${encodeURIComponent(currentUserEmail)}&code=session`);
-            const res = await r.json();
-            if (res.success && res.data) {
-                allItems = res.data.slice(1);
-                render();
-            } else {
-                localStorage.removeItem('userEmail');
-                location.reload();
-            }
+            const r = await fetch(scriptUrl);
+            allItems = await r.json();
+            render();
         } catch (e) { 
-            console.error("Session error", e); 
-            document.getElementById('catalog').innerHTML = "<div style='color:red; text-align:center;'>Помилка зв'язку з сервером.</div>";
+            document.getElementById('catalog').innerHTML = "<div style='color:red; text-align:center;'>Помилка завантаження. Спробуйте оновити сторінку.</div>"; 
         }
     }
 
-    function startApp() {
-        document.getElementById('authOverlay').style.display = "none";
-        document.getElementById('appContent').style.display = "flex";
+    function toggleView() {
+        isGridView = !isGridView;
         render();
     }
 
-    // --- ЛОГІКА ВІДОБРАЖЕННЯ (ВАШ ДІЮЧИЙ КОД) ---
-
-    function toggleView() { isGridView = !isGridView; render(); }
-
     function selectFromGrid(index) {
-        idx = index; isGridView = false; render();
+        idx = index;
+        isGridView = false;
+        render();
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
@@ -271,6 +200,7 @@
         const catalog = document.getElementById('catalog');
         const toggleBtn = document.getElementById('toggleLink');
         if (allItems.length === 0) return;
+
         if (isGridView) {
             toggleBtn.style.display = "none";
             renderGrid(catalog);
@@ -281,17 +211,26 @@
     }
 
     function renderGrid(container) {
-        container.innerHTML = `<div class="brothers-grid">${allItems.map((p, i) => `
-            <div class="grid-item" onclick="selectFromGrid(${i})">
-                <div class="grid-photo"><img src="${p[0]}" referrerpolicy="no-referrer" onerror="this.src='https://via.placeholder.com/100?text=?'"></div>
-                <div class="grid-name">бр. ${p[4]}</div>
-            </div>`).join('')}</div>`;
+        container.innerHTML = `
+            <div class="brothers-grid">
+                ${allItems.map((p, i) => `
+                    <div class="grid-item" onclick="selectFromGrid(${i})">
+                        <div class="grid-photo">
+                            <img src="${p[0]}" referrerpolicy="no-referrer" onerror="this.src='https://via.placeholder.com/100?text=?'">
+                        </div>
+                        <div class="grid-name">бр. ${p[4]}</div>
+                    </div>
+                `).join('')}
+            </div>`;
     }
 
     function renderCard(container) {
         const p = allItems[idx];
+        // Стаж тепер рахуємо за новими індексами (Перші обіти - 11, Священство - 14)
         const monkExp = calculateExperience(p[11]);
         const priestExp = calculateExperience(p[14]);
+
+        // Формуємо ім'я + напівпрозоре по батькові
         const firstName = p[5] || '—';
         const fatherName = p[6] && p[6] !== "—" && p[6] !== "-" ? `<span class="patronymic">${p[6]}</span>` : "";
         const fullNameWithPatronymic = firstName + fatherName;
@@ -299,7 +238,9 @@
         container.innerHTML = `
             <div class="card">
                 <div class="card-header">
-                    <div class="photo-circle"><img src="${p[0]}" referrerpolicy="no-referrer" onerror="this.src='https://via.placeholder.com/200?text=фото'"></div>
+                    <div class="photo-circle">
+                        <img src="${p[0]}" referrerpolicy="no-referrer" onerror="this.src='https://via.placeholder.com/200?text=фото'">
+                    </div>
                     <div class="name-box">
                         <h2 class="legal-name">бр. ${p[4] || '—'}</h2>
                         <div class="surname-main">${p[3] || '—'}</div>
@@ -315,7 +256,10 @@
                     <button class="nav-btn" onclick="change(1)" ${idx === allItems.length - 1 ? 'disabled' : ''}>→</button>
                 </div>
                 <div class="details-grid">
-                    <div class="detail-row"><div class="detail-label">Ім'я з Хрещення</div><div class="detail-value">${fullNameWithPatronymic}</div></div>
+                    <div class="detail-row">
+                        <div class="detail-label">Ім'я з Хрещення</div>
+                        <div class="detail-value">${fullNameWithPatronymic}</div>
+                    </div>
                     ${createDetail("Іменини", p[8], true, true)}
                     ${createDetail("День народження", p[7])}
                     ${createDetail("Місце народження", p[9], false)}
@@ -330,21 +274,22 @@
 
     function calculateExperience(dateStr) {
         if (!dateStr || dateStr === "-" || dateStr === "—" || dateStr.trim() === "") return null;
-        try {
-            let s = dateStr.toString().trim().split('T')[0].split(' ')[0];
-            let parts = s.includes('.') ? s.split('.') : s.split('-');
-            let day, month, year;
-            if (parts[0].length === 4) { year = parseInt(parts[0]); month = parseInt(parts[1])-1; day = parseInt(parts[2]); }
-            else { day = parseInt(parts[0]); month = parseInt(parts[1])-1; year = parseInt(parts[2]); }
-            let dateObj = new Date(year, month, day);
-            if (isNaN(dateObj.getTime())) return null;
-            let today = new Date();
-            let years = today.getFullYear() - dateObj.getFullYear();
-            if (today < new Date(today.getFullYear(), month, day)) years--;
-            if (years < 0) return null;
-            let suffix = (years % 10 === 1 && years % 100 !== 11) ? "рік" : (years % 10 >= 2 && years % 10 <= 4 && (years % 100 < 10 || years % 100 >= 20)) ? "роки" : "років";
-            return years + " " + suffix;
-        } catch(e) { return null; }
+        let s = dateStr.toString().trim().split('T')[0].split(' ')[0];
+        let parts = s.includes('.') ? s.split('.') : s.split('-');
+        let day, month, year;
+        if (parts[0].length === 4) { year = parseInt(parts[0]); month = parseInt(parts[1])-1; day = parseInt(parts[2]); }
+        else { day = parseInt(parts[0]); month = parseInt(parts[1])-1; year = parseInt(parts[2]); }
+        let dateObj = new Date(year, month, day);
+        if (isNaN(dateObj.getTime())) return null;
+        let today = new Date();
+        let years = today.getFullYear() - dateObj.getFullYear();
+        let currentAnniversary = new Date(today.getFullYear(), month, day);
+        if (today < currentAnniversary) years--;
+        if (years < 0) return null;
+        let suffix = "років";
+        if (years % 10 === 1 && years % 100 !== 11) suffix = "рік";
+        else if (years % 10 >= 2 && years % 10 <= 4 && (years % 100 < 10 || years % 100 >= 20)) suffix = "роки";
+        return years + " " + suffix;
     }
 
     function formatDateUk(dateInput, hideYear = false) {
@@ -352,9 +297,11 @@
         const months = ["січня", "лютого", "березня", "квітня", "травня", "червня", "липня", "серпня", "вересня", "жовтня", "листопада", "грудня"];
         let s = dateInput.toString().trim().split('T')[0].split(' ')[0];
         let parts = s.includes('.') ? s.split('.') : s.split('-');
+        if (parts.length < 3) return dateInput;
         let d, m, y;
         if (parts[0].length === 4) { y = parseInt(parts[0]); m = parseInt(parts[1])-1; d = parseInt(parts[2]); }
         else { d = parseInt(parts[0]); m = parseInt(parts[1])-1; y = parseInt(parts[2]); }
+        if (m < 0 || m > 11) return dateInput;
         return hideYear ? d + " " + months[m] : d + " " + months[m] + " " + y;
     }
 
@@ -370,12 +317,32 @@
         const term = document.getElementById('searchInput').value.toLowerCase();
         const suggestions = document.getElementById('searchSuggestions');
         if (term.length < 1) { suggestions.style.display = 'none'; return; }
-        let matches = allItems.filter(item => (item[3]?.toLowerCase().includes(term)) || (item[4]?.toLowerCase().includes(term)));
+        
+        let matches = allItems.filter(item => 
+            (item[3]?.toLowerCase().includes(term)) || 
+            (item[4]?.toLowerCase().includes(term))
+        );
+
+        matches.sort((a, b) => {
+            const aSurname = a[3]?.toLowerCase() || "";
+            const aName = a[4]?.toLowerCase() || "";
+            const bSurname = b[3]?.toLowerCase() || "";
+            const bName = b[4]?.toLowerCase() || "";
+            const aStarts = aSurname.startsWith(term) || aName.startsWith(term);
+            const bStarts = bSurname.startsWith(term) || bName.startsWith(term);
+            if (aStarts && !bStarts) return -1;
+            if (!aStarts && bStarts) return 1;
+            return 0;
+        });
+
         if (matches.length > 0) {
-            suggestions.innerHTML = matches.map((item) => {
-                const originalIdx = allItems.indexOf(item);
-                return `<div class="suggestion-item" onclick="selectPersonByIndex(${originalIdx})"><strong>бр. ${item[4]}</strong> ${item[3]}</div>`
-            }).join('');
+            suggestions.innerHTML = matches.map((item, i) => {
+                const originalIdx = allItems.findIndex(orig => orig === item);
+                return `
+                <div class="suggestion-item ${i === 0 ? 'active' : ''}" 
+                     onclick="selectPersonByIndex(${originalIdx})">
+                    <strong>бр. ${item[4]}</strong> ${item[3]}
+                </div>`}).join('');
             suggestions.style.display = 'block';
         } else { suggestions.style.display = 'none'; }
     }
@@ -385,6 +352,31 @@
         document.getElementById('searchSuggestions').style.display = 'none';
         idx = index; isGridView = false; render(); 
     }
+
+    document.getElementById('searchInput').addEventListener('keydown', function(e) {
+        const suggestions = document.getElementById('searchSuggestions');
+        const items = suggestions.getElementsByClassName('suggestion-item');
+        if (items.length === 0) return;
+        let activeIdx = Array.from(items).findIndex(item => item.classList.contains('active'));
+        if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            items[activeIdx].classList.remove('active');
+            activeIdx = (activeIdx + 1) % items.length;
+            items[activeIdx].classList.add('active');
+            items[activeIdx].scrollIntoView({ block: 'nearest' });
+        } else if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            items[activeIdx].classList.remove('active');
+            activeIdx = (activeIdx - 1 + items.length) % items.length;
+            items[activeIdx].classList.add('active');
+            items[activeIdx].scrollIntoView({ block: 'nearest' });
+        } else if (e.key === 'Enter') {
+            e.preventDefault();
+            if (activeIdx >= 0) items[activeIdx].click();
+        }
+    });
+
+    load();
 </script>
 </body>
 </html>
