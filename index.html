@@ -2,21 +2,24 @@
 <html lang="uk">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Схематизм Провінції</title>
 
-    <!-- Налаштування для мобільних пристроїв -->
+    <meta name="apple-mobile-web-app-title" content="Схематизм">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="mobile-web-app-status-bar-style" content="default">
-    <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/const33-cris/schematyzm/main/img/icon.png">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+
+    <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/const33-cris/schematyzm/main/img/icon.png?v=2">
+    <link rel="icon" type="image/png" sizes="192x192" href="https://raw.githubusercontent.com/const33-cris/schematyzm/main/img/icon.png?v=2">
 
     <style>
         :root {
             --primary: #5d4037;
-            --bg: #f0f2f5;
-            --white: #ffffff;
             --text-main: #1c1e21;
             --text-secondary: #606770;
+            --bg: #f0f2f5;
+            --accent-blue: #003366;
             --error: #dc3545;
         }
 
@@ -28,86 +31,77 @@
             min-height: 100vh; color: var(--text-main);
         }
 
-        /* --- БЛОК АВТОРИЗАЦІЇ --- */
-        #auth-container {
-            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            background: var(--bg); z-index: 2000;
-            display: flex; align-items: center; justify-content: center; padding: 20px;
+        /* --- БЛОК АВТОРИЗАЦІЇ (З вчорашнього коду) --- */
+        #authOverlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg); z-index: 10000;
+            display: flex; align-items: center; justify-content: center; padding: 20px; box-sizing: border-box;
         }
         .auth-card {
-            background: white; padding: 40px; border-radius: 28px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1); max-width: 400px; width: 100%; text-align: center;
+            background: white; padding: 40px 30px; border-radius: 28px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            width: 100%; max-width: 400px; text-align: center;
         }
+        .auth-card h2 { color: var(--primary); margin: 0 0 10px; font-weight: 800; }
         .auth-input {
-            width: 100%; padding: 14px; margin: 15px 0;
-            border: 1px solid #ddd; border-radius: 12px; font-size: 1.1rem;
-            box-sizing: border-box; outline: none; text-align: center;
+            width: 100%; padding: 14px 20px; border-radius: 30px;
+            border: 1px solid #ddd; margin-bottom: 15px; font-size: 16px;
+            box-sizing: border-box; outline: none; -webkit-appearance: none;
+            background: #fff; text-align: center;
         }
-        .auth-input:focus { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(93, 64, 55, 0.1); }
-        .auth-submit {
-            width: 100%; padding: 14px; background: var(--primary); color: white;
-            border: none; border-radius: 12px; font-size: 1rem; font-weight: 700;
-            cursor: pointer; transition: opacity 0.2s;
+        .auth-btn {
+            width: 100%; padding: 15px; border-radius: 30px; border: none;
+            background: var(--primary); color: white; font-weight: 800;
+            font-size: 16px; cursor: pointer; transition: background 0.3s;
+            text-transform: uppercase;
         }
-        .auth-submit:disabled { background: #ccc; cursor: not-allowed; }
-        .error-msg { 
-            color: var(--error); font-size: 0.85rem; margin-top: 12px; 
-            display: none; padding: 10px; background: #ffeeee; border-radius: 8px;
-            border: 1px solid #ffcccc; line-height: 1.4;
-        }
+        .auth-btn:disabled { background: #ccc; cursor: not-allowed; }
+        #errorLabel { color: var(--error); font-size: 0.85rem; margin-top: 15px; display: none; line-height: 1.4; }
 
-        /* --- ОСНОВНИЙ КОНТЕНТ --- */
-        #main-content { display: none; width: 100%; flex-direction: column; align-items: center; }
-        
-        .header { width: 100%; max-width: 600px; padding: 25px 15px; text-align: center; box-sizing: border-box; }
-        .title-main { font-size: 2rem; font-weight: 800; color: var(--primary); text-transform: uppercase; }
+        /* --- ОСНОВНИЙ ІНТЕРФЕЙС --- */
+        #appContent { display: none; width: 100%; flex-direction: column; align-items: center; }
+        .header { width: 100%; max-width: 600px; padding: 25px 15px 5px; text-align: center; box-sizing: border-box; }
+        .title-main { font-size: 2.2rem; font-weight: 800; color: var(--primary); text-transform: uppercase; margin-bottom: 2px; letter-spacing: 1px; }
+        .title-sub { font-size: 0.9rem; font-weight: 400; color: var(--primary); text-transform: uppercase; margin-bottom: 20px; }
         
         .search-container { position: relative; width: 100%; margin-bottom: 20px; }
         #searchInput { 
             width: 100%; padding: 12px 20px; border-radius: 30px; border: 1px solid #ddd; 
-            font-size: 1rem; box-shadow: 0 4px 10px rgba(0,0,0,0.05); outline: none; box-sizing: border-box;
+            font-size: 16px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); outline: none; box-sizing: border-box;
         }
 
         #catalog { width: 100%; max-width: 600px; padding: 0 10px 40px; box-sizing: border-box; }
         .brothers-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; width: 100%; }
         .grid-item { display: flex; flex-direction: column; align-items: center; cursor: pointer; }
-        .grid-photo { width: 85px; height: 85px; border-radius: 50%; overflow: hidden; border: 3px solid white; box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin-bottom: 5px; }
+        .grid-photo { width: 85px; height: 85px; border-radius: 50%; overflow: hidden; border: 3px solid white; box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin-bottom: 5px; background: #eee; }
         .grid-photo img { width: 100%; height: 100%; object-fit: cover; }
         .grid-name { font-size: 0.85rem; font-weight: 700; text-align: center; color: var(--primary); }
 
         @media (max-width: 480px) {
             .brothers-grid { grid-template-columns: repeat(2, 1fr); }
+            .grid-photo { width: 100px; height: 100px; }
         }
     </style>
 </head>
 <body>
 
-    <!-- ЕКРАН АВТОРИЗАЦІЇ -->
-    <div id="auth-container">
-        <div id="auth-step-email" class="auth-card">
-            <h2 style="color: var(--primary)">Схематизм</h2>
-            <p>Введіть email для перевірки доступу (аркуш <b>AllowedUsers</b>)</p>
-            <input type="email" id="emailInput" class="auth-input" placeholder="example@gmail.com" value="const33@gmail.com">
-            <button class="auth-submit" id="btnSendCode" onclick="sendVerificationCode()">Отримати код</button>
-            <div id="emailError" class="error-msg"></div>
-        </div>
-
-        <div id="auth-step-code" class="auth-card" style="display: none;">
-            <h2>Введіть код</h2>
-            <p>На пошту <span id="displayEmail" style="font-weight:bold"></span> надіслано 6-значний код</p>
-            <input type="text" id="codeInput" class="auth-input" placeholder="000000" maxlength="6">
-            <button class="auth-submit" id="btnVerifyCode" onclick="verifyCode()">Увійти</button>
-            <div id="codeError" class="error-msg"></div>
-            <button style="background:none; border:none; margin-top:15px; color:var(--text-secondary); cursor:pointer;" onclick="toggleAuthStep(1)">← Змінити пошту</button>
+    <div id="authOverlay">
+        <div class="auth-card">
+            <h2>Вхід</h2>
+            <p id="authHint" style="font-size: 0.9rem; color: #666; margin-bottom: 20px;">Введіть ваш email для доступу</p>
+            <input type="email" id="emailInput" class="auth-input" placeholder="example@gmail.com">
+            <input type="text" id="codeInput" class="auth-input" placeholder="Код з пошти" style="display:none;" maxlength="6">
+            <button id="authBtn" class="auth-btn" onclick="processAuth()">Отримати код</button>
+            <p id="errorLabel"></p>
         </div>
     </div>
 
-    <!-- ОСНОВНИЙ ДОДАТОК -->
-    <div id="main-content">
+    <div id="appContent">
         <div class="header">
             <div class="title-main">СХЕМАТИЗМ</div>
+            <div class="title-sub">ПРОВІНЦІЇ СВ. АРХАНГЕЛА МИХАЇЛА</div>
             <div class="search-container">
-                <input type="text" id="searchInput" placeholder="Пошук за іменем..." oninput="handleSearch()">
+                <input type="text" id="searchInput" placeholder="Пошук..." oninput="handleSearch()" autocomplete="off">
             </div>
         </div>
         <div id="catalog">
@@ -116,117 +110,114 @@
     </div>
 
     <script>
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx5wF2-YSFjB2NTOzObml4ZLtuKlZdyl72uISyRL9LyFh8dVZLJzy2MEQWS0OsW1OX9/exec';
+        // ВИКОРИСТОВУЄМО ВАШ ПРАВИЛЬНИЙ URL СКРИПТА
+        const scriptUrl = 'https://script.google.com/macros/s/AKfycbyaQJMhRAc3ARyY8_0g2STjwY4R2p3xNZfeCxqfCcW-FlbqaEIbrVSqJ-3GYyoP_9Lw/exec';
         
         let allItems = [];
-        let userEmail = "";
+        let currentUserEmail = "";
 
-        function toggleAuthStep(step) {
-            document.getElementById('auth-step-email').style.display = step === 1 ? 'block' : 'none';
-            document.getElementById('auth-step-code').style.display = step === 2 ? 'block' : 'none';
-        }
+        // ПЕРЕВІРКА СЕСІЇ ПРИ ЗАВАНТАЖЕННІ (з вчорашнього коду)
+        window.onload = () => {
+            const savedEmail = localStorage.getItem('userEmail');
+            if (savedEmail) {
+                currentUserEmail = savedEmail;
+                document.getElementById('authOverlay').style.display = "none";
+                document.getElementById('appContent').style.display = "flex";
+                loadDirect();
+            }
+        };
 
-        async function sendVerificationCode() {
-            const btn = document.getElementById('btnSendCode');
-            const errorDiv = document.getElementById('emailError');
-            const emailInput = document.getElementById('emailInput');
+        // ЛОГІКА АВТОРИЗАЦІЇ (з вчорашнього коду)
+        async function processAuth() {
+            const btn = document.getElementById('authBtn');
+            const emailInp = document.getElementById('emailInput');
+            const codeInp = document.getElementById('codeInput');
+            const error = document.getElementById('errorLabel');
             
-            // Очищення від пробілів та переведення в нижній регістр
-            userEmail = emailInput.value.trim().toLowerCase();
-            
-            if (!userEmail || !userEmail.includes('@')) {
-                errorDiv.innerText = "Будь ласка, введіть дійсний email";
-                errorDiv.style.display = 'block';
-                return;
-            }
-
+            error.style.display = "none";
             btn.disabled = true;
-            btn.innerText = "Перевірка доступу...";
-            errorDiv.style.display = 'none';
 
-            try {
-                // Додаємо випадковий параметр, щоб уникнути кешування відповіді
-                const response = await fetch(`${SCRIPT_URL}?action=sendCode&email=${encodeURIComponent(userEmail)}&t=${Date.now()}`);
-                const result = await response.json();
-
-                if (result.status === "success") {
-                    document.getElementById('displayEmail').innerText = userEmail;
-                    toggleAuthStep(2);
-                } else {
-                    // Показуємо детальну причину відмови
-                    errorDiv.innerHTML = `<strong>Доступ заблоковано:</strong><br>${result.message || "Пошту не знайдено в списку дозволених."}`;
-                    errorDiv.style.display = 'block';
+            if (codeInp.style.display === "none") {
+                currentUserEmail = emailInp.value.trim().toLowerCase();
+                if (!currentUserEmail) { btn.disabled = false; return; }
+                
+                btn.innerText = "Надсилаємо...";
+                try {
+                    const r = await fetch(`${scriptUrl}?action=sendCode&email=${encodeURIComponent(currentUserEmail)}`);
+                    const res = await r.json();
+                    if (res.success) {
+                        emailInp.style.display = "none";
+                        codeInp.style.display = "block";
+                        btn.innerText = "Увійти";
+                        btn.disabled = false;
+                        document.getElementById('authHint').innerText = "Код надіслано на пошту";
+                    } else { throw new Error(res.message || "Помилка доступу"); }
+                } catch (e) {
+                    error.innerText = e.message; error.style.display = "block";
+                    btn.innerText = "Отримати код"; btn.disabled = false;
                 }
-            } catch (e) {
-                errorDiv.innerHTML = "<strong>Помилка мережі:</strong><br>Не вдалося з'єднатися зі скриптом. Перевірте, чи опубліковано його як веб-додаток.";
-                errorDiv.style.display = 'block';
-            } finally {
-                btn.disabled = false;
-                btn.innerText = "Отримати код";
-            }
-        }
-
-        async function verifyCode() {
-            const btn = document.getElementById('btnVerifyCode');
-            const errorDiv = document.getElementById('codeError');
-            const code = document.getElementById('codeInput').value.trim();
-
-            if (code.length < 6) return;
-
-            btn.disabled = true;
-            btn.innerText = "Увійти...";
-
-            try {
-                const response = await fetch(`${SCRIPT_URL}?action=verifyCode&email=${encodeURIComponent(userEmail)}&code=${code}`);
-                const result = await response.json();
-
-                if (result.status === "success") {
-                    document.getElementById('auth-container').style.display = 'none';
-                    document.getElementById('main-content').style.display = 'flex';
-                    loadData();
-                } else {
-                    errorDiv.innerText = "Код неправильний";
-                    errorDiv.style.display = 'block';
+            } else {
+                const code = codeInp.value.trim();
+                btn.innerText = "Перевірка...";
+                try {
+                    const r = await fetch(`${scriptUrl}?action=verifyCode&email=${encodeURIComponent(currentUserEmail)}&code=${code}`);
+                    const res = await r.json();
+                    if (res.success) {
+                        localStorage.setItem('userEmail', currentUserEmail);
+                        allItems = res.data.slice(1);
+                        startApp();
+                    } else { throw new Error(res.message || "Невірний код"); }
+                } catch (e) {
+                    error.innerText = e.message; error.style.display = "block";
+                    btn.innerText = "Увійти"; btn.disabled = false;
                 }
-            } catch (e) {
-                errorDiv.innerText = "Помилка підключення";
-                errorDiv.style.display = 'block';
-            } finally {
-                btn.disabled = false;
-                btn.innerText = "Увійти";
             }
         }
 
-        async function loadData() {
+        async function loadDirect() {
             try {
-                const r = await fetch(`${SCRIPT_URL}?action=getData`);
-                allItems = await r.json();
-                render(allItems);
-            } catch (e) {
-                document.getElementById('catalog').innerHTML = "Помилка завантаження бази даних.";
-            }
+                const r = await fetch(`${scriptUrl}?action=verifyCode&email=${encodeURIComponent(currentUserEmail)}&code=session`);
+                const res = await r.json();
+                if (res.success && res.data) {
+                    allItems = res.data.slice(1);
+                    render();
+                } else {
+                    localStorage.removeItem('userEmail');
+                    location.reload();
+                }
+            } catch (e) { console.error("Session error", e); }
         }
 
-        function render(data) {
+        function startApp() {
+            document.getElementById('authOverlay').style.display = "none";
+            document.getElementById('appContent').style.display = "flex";
+            render();
+        }
+
+        function render() {
             const container = document.getElementById('catalog');
-            if (!data.length) {
-                container.innerHTML = "<center>Нічого не знайдено</center>";
-                return;
-            }
-            container.innerHTML = `<div class="brothers-grid">${data.map(p => `
+            if (allItems.length === 0) return;
+            
+            container.innerHTML = `<div class="brothers-grid">${allItems.map((p, i) => `
                 <div class="grid-item">
-                    <div class="grid-photo"><img src="${p[0] || 'https://via.placeholder.com/100'}" referrerpolicy="no-referrer"></div>
-                    <div class="grid-name">бр. ${p[4] || 'Без імені'}</div>
+                    <div class="grid-photo"><img src="${p[0]}" referrerpolicy="no-referrer" onerror="this.src='https://via.placeholder.com/100'"></div>
+                    <div class="grid-name">бр. ${p[4]}</div>
                 </div>`).join('')}</div>`;
         }
 
         function handleSearch() {
-            const q = document.getElementById('searchInput').value.toLowerCase();
-            const filtered = allItems.filter(p => 
-                (p[4] && p[4].toLowerCase().includes(q)) || 
-                (p[3] && p[3].toLowerCase().includes(q))
+            const term = document.getElementById('searchInput').value.toLowerCase();
+            const filtered = allItems.filter(item => 
+                (item[3]?.toLowerCase().includes(term)) || 
+                (item[4]?.toLowerCase().includes(term))
             );
-            render(filtered);
+            
+            const container = document.getElementById('catalog');
+            container.innerHTML = `<div class="brothers-grid">${filtered.map((p) => `
+                <div class="grid-item">
+                    <div class="grid-photo"><img src="${p[0]}" referrerpolicy="no-referrer"></div>
+                    <div class="grid-name">бр. ${p[4]}</div>
+                </div>`).join('')}</div>`;
         }
     </script>
 </body>
