@@ -299,43 +299,67 @@
                 </div>`;
         }
 
-        function calculateExperience(dateStr) {
-            if (!dateStr || dateStr === "-" || dateStr === "—" || dateStr.trim() === "") return null;
-            try {
-                let s = dateStr.toString().split('T')[0].split(' ')[0];
-                let parts = s.includes('.') ? s.split('.') : s.split('-');
-                let dateObj = parts[0].length === 4 ? new Date(parts[0], parts[1]-1, parts[2]) : new Date(parts[2], parts[1]-1, parts[0]);
-                
-                if (isNaN(dateObj.getTime())) return null;
-                let today = new Date();
-                let years = today.getFullYear() - dateObj.getFullYear();
-                if (years < 0) return null;
-                let suffix = "років";
-                if (years % 10 === 1 && years % 100 !== 11) suffix = "рік";
-                else if (years % 10 >= 2 && years % 10 <= 4 && (years % 100 < 10 || years % 100 >= 20)) suffix = "роки";
-                return years + " " + suffix;
-            } catch(e) { return null; }
-        }
+       function formatDateUk(dateInput, showYear = true) {
+    if (!dateInput || dateInput.toString().trim() === "" || dateInput === "-" || dateInput === "—") return "";
+    const months = ["січня", "лютого", "березня", "квітня", "травня", "червня", "липня", "серпня", "вересня", "жовтня", "листопада", "грудня"];
+    
+    try {
+        // КЛЮЧОВЕ ВИПРАВЛЕННЯ: Беремо лише частину з датою (YYYY-MM-DD), ігноруючи час T22:00...
+        let dateStr = dateInput.toString().split('T')[0].split(' ')[0];
+        let parts = dateStr.includes('.') ? dateStr.split('.') : dateStr.split('-');
+        let day, month, year;
 
-        function formatDateUk(dateInput, showYear = true) {
-            if (!dateInput || dateInput.toString().trim() === "" || dateInput === "-" || dateInput === "—") return "";
-            const months = ["січня", "лютого", "березня", "квітня", "травня", "червня", "липня", "серпня", "вересня", "жовтня", "листопада", "грудня"];
-            try {
-                let dateStr = dateInput.toString().split('T')[0].split(' ')[0];
-                let parts = dateStr.includes('.') ? dateStr.split('.') : dateStr.split('-');
-                let dateObj;
-                if (parts.length === 3) {
-                    dateObj = parts[0].length === 4 ? new Date(parts[0], parts[1] - 1, parts[2]) : new Date(parts[2], parts[1] - 1, parts[0]);
-                } else { dateObj = new Date(dateInput); }
-
-                if (!isNaN(dateObj.getTime())) {
-                    let res = dateObj.getDate() + " " + months[dateObj.getMonth()];
-                    if (showYear) res += " " + dateObj.getFullYear();
-                    return res;
-                }
-                return dateInput;
-            } catch (e) { return dateInput; }
+        if (parts.length === 3) {
+            if (parts[0].length === 4) { // YYYY-MM-DD
+                year = parseInt(parts[0]);
+                month = parseInt(parts[1]) - 1;
+                day = parseInt(parts[2]);
+            } else { // DD.MM.YYYY
+                year = parseInt(parts[2]);
+                month = parseInt(parts[1]) - 1;
+                day = parseInt(parts[0]);
+            }
+            
+            // Створюємо дату локально, без урахування UTC
+            let dateObj = new Date(year, month, day);
+            if (!isNaN(dateObj.getTime())) {
+                let res = day + " " + months[month];
+                if (showYear) res += " " + year;
+                return res;
+            }
         }
+        return dateInput;
+    } catch (e) { return dateInput; }
+}
+
+function calculateExperience(dateStr) {
+    if (!dateStr || dateStr === "-" || dateStr === "—" || dateStr.trim() === "") return null;
+    try {
+        let s = dateStr.toString().split('T')[0].split(' ')[0];
+        let parts = s.includes('.') ? s.split('.') : s.split('-');
+        let dateObj;
+        
+        if (parts[0].length === 4) {
+            dateObj = new Date(parts[0], parts[1]-1, parts[2]);
+        } else {
+            dateObj = new Date(parts[2], parts[1]-1, parts[0]);
+        }
+        
+        if (isNaN(dateObj.getTime())) return null;
+        let today = new Date();
+        let years = today.getFullYear() - dateObj.getFullYear();
+        
+        // Корекція, якщо річниця ще не настала в поточному році
+        let currentAnniversary = new Date(today.getFullYear(), dateObj.getMonth(), dateObj.getDate());
+        if (today < currentAnniversary) years--;
+        
+        if (years < 0) return null;
+        let suffix = "років";
+        if (years % 10 === 1 && years % 100 !== 11) suffix = "рік";
+        else if (years % 10 >= 2 && years % 10 <= 4 && (years % 100 < 10 || years % 100 >= 20)) suffix = "роки";
+        return years + " " + suffix;
+    } catch(e) { return null; }
+}
 
         function createDetail(label, value, isDate = true, showYear = true) {
             if (!value || value === "—" || value === "-" || value.toString().trim() === "") return "";
