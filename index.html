@@ -85,16 +85,16 @@
 </head>
 <body>
 
-    <div id="authOverlay">
-        <div class="auth-card">
-            <h2>Вхід</h2>
-            <p id="authHint" style="font-size: 0.9rem; color: #666; margin-bottom: 20px;">Введіть ваш email для доступу</p>
-            <input type="email" id="emailInput" class="auth-input" placeholder="example@gmail.com">
-            <input type="text" id="codeInput" class="auth-input" placeholder="Код з пошти" style="display:none;" maxlength="6">
-            <button id="authBtn" class="auth-btn" onclick="processAuth()">Отримати код</button>
-            <p id="errorLabel"></p>
-        </div>
+  <div id="authOverlay">
+    <div class="auth-card">
+        <h2>Вхід</h2>
+        <p id="authHint" style="font-size: 0.9rem; color: #666; margin-bottom: 20px;">Введіть ваш email для доступу</p>
+        <input type="email" id="emailInput" class="auth-input" placeholder="example@gmail.com">
+        <input type="text" id="codeInput" class="auth-input" placeholder="Код з пошти" style="display:none;" maxlength="6">
+        <button id="authBtn" class="auth-btn" onclick="processAuth()">Отримати код</button>
+        <p id="errorLabel" style="color:red; display:none; font-size: 0.85rem; margin-top:15px;"></p>
     </div>
+</div>
 
     <div id="appContent">
         <div class="header">
@@ -128,51 +128,62 @@
         };
 
         // ЛОГІКА АВТОРИЗАЦІЇ (з вчорашнього коду)
-        async function processAuth() {
-            const btn = document.getElementById('authBtn');
-            const emailInp = document.getElementById('emailInput');
-            const codeInp = document.getElementById('codeInput');
-            const error = document.getElementById('errorLabel');
-            
-            error.style.display = "none";
-            btn.disabled = true;
+      async function processAuth() {
+    const btn = document.getElementById('authBtn');
+    const emailInp = document.getElementById('emailInput');
+    const codeInp = document.getElementById('codeInput');
+    const error = document.getElementById('errorLabel');
+    
+    error.style.display = "none";
+    btn.disabled = true;
 
-            if (codeInp.style.display === "none") {
-                currentUserEmail = emailInp.value.trim().toLowerCase();
-                if (!currentUserEmail) { btn.disabled = false; return; }
-                
-                btn.innerText = "Надсилаємо...";
-                try {
-                    const r = await fetch(`${scriptUrl}?action=sendCode&email=${encodeURIComponent(currentUserEmail)}`);
-                    const res = await r.json();
-                    if (res.success) {
-                        emailInp.style.display = "none";
-                        codeInp.style.display = "block";
-                        btn.innerText = "Увійти";
-                        btn.disabled = false;
-                        document.getElementById('authHint').innerText = "Код надіслано на пошту";
-                    } else { throw new Error(res.message || "Помилка доступу"); }
-                } catch (e) {
-                    error.innerText = e.message; error.style.display = "block";
-                    btn.innerText = "Отримати код"; btn.disabled = false;
-                }
-            } else {
-                const code = codeInp.value.trim();
-                btn.innerText = "Перевірка...";
-                try {
-                    const r = await fetch(`${scriptUrl}?action=verifyCode&email=${encodeURIComponent(currentUserEmail)}&code=${code}`);
-                    const res = await r.json();
-                    if (res.success) {
-                        localStorage.setItem('userEmail', currentUserEmail);
-                        allItems = res.data.slice(1);
-                        startApp();
-                    } else { throw new Error(res.message || "Невірний код"); }
-                } catch (e) {
-                    error.innerText = e.message; error.style.display = "block";
-                    btn.innerText = "Увійти"; btn.disabled = false;
-                }
+    // ЕТАП 1: Надсилання коду на пошту
+    if (codeInp.style.display === "none") {
+        currentUserEmail = emailInp.value.trim().toLowerCase();
+        if (!currentUserEmail) { btn.disabled = false; return; }
+        
+        btn.innerText = "Надсилаємо...";
+        try {
+            const r = await fetch(`${scriptUrl}?action=sendCode&email=${encodeURIComponent(currentUserEmail)}`);
+            const res = await r.json();
+            if (res.success) {
+                emailInp.style.display = "none";
+                codeInp.style.display = "block";
+                btn.innerText = "Увійти";
+                btn.disabled = false;
+                document.getElementById('authHint').innerText = "Код надіслано на пошту";
+            } else { 
+                throw new Error(res.message || "Вашої пошти немає в списку дозволених"); 
             }
+        } catch (e) {
+            error.innerText = e.message; 
+            error.style.display = "block";
+            btn.innerText = "Отримати код"; 
+            btn.disabled = false;
         }
+    } 
+    // ЕТАП 2: Перевірка введеного коду
+    else {
+        const code = codeInp.value.trim();
+        btn.innerText = "Перевірка...";
+        try {
+            const r = await fetch(`${scriptUrl}?action=verifyCode&email=${encodeURIComponent(currentUserEmail)}&code=${code}`);
+            const res = await r.json();
+            if (res.success) {
+                localStorage.setItem('userEmail', currentUserEmail); // Зберігаємо сесію
+                allItems = res.data.slice(1); // Отримуємо дані без заголовків
+                startApp(); // Запускаємо основний інтерфейс
+            } else { 
+                throw new Error(res.message || "Невірний код"); 
+            }
+        } catch (e) {
+            error.innerText = e.message; 
+            error.style.display = "block";
+            btn.innerText = "Увійти"; 
+            btn.disabled = false;
+        }
+    }
+}
 
         async function loadDirect() {
             try {
