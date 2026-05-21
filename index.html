@@ -1,515 +1,548 @@
-<!DOCTYPE html>
-<html lang="uk">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Схематизм Провінції</title>
+<!DOCTYPE html> 
+<html lang="uk"> 
+<head> 
+     <meta charset="UTF-8"> 
+     <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+     <title>Схематизм Провінції</title> 
 
-    <meta name="apple-mobile-web-app-title" content="Схематизм">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+     <meta name="apple-mobile-web-app-title" content="Схематизм"> 
+     <meta name="apple-mobile-web-app-capable" content="yes"> 
+     <meta name="mobile-web-app-capable" content="yes"> 
+     <meta name="apple-mobile-web-app-status-bar-style" content="default"> 
 
-    <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/const33-cris/schematyzm/main/img/icon.png?v=2">
-    <link rel="icon" type="image/png" sizes="192x192" href="https://raw.githubusercontent.com/const33-cris/schematyzm/main/img/icon.png?v=2">
+     <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/const33-cris/schematyzm/main/img/icon.png?v=2"> 
 
-    <style>
-        :root {
-            --primary: #5d4037;
-            --text-main: #1c1e21;
-            --text-secondary: #606770;
-            --bg: #f0f2f5;
-            --accent-blue: #003366;
-        }
+     <link rel="icon" type="image/png" sizes="192x192" 
+href="https://raw.githubusercontent.com/const33-cris/schematyzm/main/img/icon.png?v=2">
+ 
 
-        body { 
-            font-family: 'Segoe UI', Roboto, Arial, sans-serif; 
-            background-color: var(--bg); 
-            margin: 0; padding: 0;
-            display: flex; flex-direction: column; align-items: center; 
-            min-height: 100vh; color: var(--text-main);
-        }
-        
-        .header { width: 100%; max-width: 600px; padding: 25px 15px 5px; text-align: center; box-sizing: border-box; }
-        
-        .title-main { 
-            font-size: 3rem; 
-            font-weight: 800; 
-            color: var(--primary); 
-            text-transform: uppercase; 
-            margin-bottom: 2px;
-            letter-spacing: 2px;
-        }
+     <style> 
+         :root { 
+             --primary: #5d4037; 
+             --text-main: #1c1e21; 
+             --text-secondary: #606770; 
+             --bg: #f0f2f5; 
+             --accent-blue: #003366; 
+         } 
 
-        .title-sub { 
-            font-size: 1.1rem;
-            font-weight: 400;
-            color: var(--primary); 
-            text-transform: uppercase; 
-            margin-bottom: 20px; 
-            letter-spacing: 1px;
-        }
-        
-        .search-container { position: relative; width: 100%; margin-bottom: 10px; }
-        #searchInput { 
-            width: 100%; padding: 12px 20px; border-radius: 30px; border: 1px solid #ddd; 
-            font-size: 1rem; box-shadow: 0 4px 10px rgba(0,0,0,0.05); outline: none; box-sizing: border-box;
-        }
+         body {  
+             font-family: 'Segoe UI', Roboto, Arial, sans-serif;  
+             background-color: var(--bg);  
+             margin: 0; padding: 0; 
+             display: flex; flex-direction: column; align-items: center;  
+             min-height: 100vh; color: var(--text-main); 
+         } 
+          
+         .header { width: 100%; max-width: 600px; padding: 25px 15px 5px; text-align: center; box-sizing: border-box; } 
+          
+         .title-main {  
+             font-size: 3rem;  
+             font-weight: 800;  
+             color: var(--primary);  
+             text-transform: uppercase;  
+             margin-bottom: 2px; 
+             letter-spacing: 2px; 
+         } 
 
-        .view-toggle {
-            margin: 5px 0 15px 0;
-            padding: 8px 20px;
-            font-weight: 700;
-            color: var(--accent-blue);
-            background-color: transparent;
-            border: 2px solid var(--primary);
-            border-radius: 25px;
-            cursor: pointer;
-            font-size: 0.95rem;
-            display: none; 
-            transition: all 0.3s ease;
-        }
+         .title-sub {  
+             font-size: 1.1rem; 
+             font-weight: 400; 
+             color: var(--primary);  
+             text-transform: uppercase;  
+             margin-bottom: 20px;  
+             letter-spacing: 1px; 
+         } 
+          
+         .search-container { position: relative; width: 100%; margin-bottom: 10px; } 
+         #searchInput {  
+             width: 100%; padding: 12px 20px; border-radius: 30px; border: 1px solid #ddd;  
+             font-size: 1rem; box-shadow: 0 4px 10px rgba(0,0,0,0.05); outline: none; box-sizing: border-box; 
+         } 
 
-        #searchSuggestions {
-            position: absolute; top: 100%; left: 0; right: 0; 
-            background: white; border-radius: 15px; margin-top: 5px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-            max-height: 250px; overflow-y: auto; display: none; z-index: 1000;
-        }
+         .view-toggle { 
+             margin: 5px 0 15px 0; 
+             padding: 8px 20px; 
+             font-weight: 700; 
+             color: var(--accent-blue); 
+             background-color: transparent; 
+             border: 2px solid var(--primary); 
+             border-radius: 25px; 
+             cursor: pointer; 
+             font-size: 0.95rem; 
+             display: none;  
+             transition: all 0.3s ease; 
+         } 
 
-        .suggestion-item { padding: 12px 20px; text-align: left; cursor: pointer; border-bottom: 1px solid #f0f2f5; }
-        .suggestion-item.active { background-color: #e8e1df; border-left: 5px solid var(--primary); font-weight: bold; }
+         #searchSuggestions { 
+             position: absolute; top: 100%; left: 0; right: 0;  
+             background: white; border-radius: 15px; margin-top: 5px; 
+             box-shadow: 0 10px 25px rgba(0,0,0,0.15); 
+             max-height: 250px; overflow-y: auto; display: none; z-index: 1000; 
+         } 
 
-        #catalog { width: 100%; max-width: 600px; padding: 0 5px 20px; box-sizing: border-box; }
-        
-        .card { 
-            background: white; border-radius: 28px; padding: 30px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.08); 
-            width: 100%; max-width: 500px; margin: 0 auto; box-sizing: border-box;
-        }
-        .card-header { display: flex; align-items: center; gap: 20px; margin-bottom: 15px; }
-        .photo-circle { 
-            width: 140px; height: 140px; border-radius: 50%; overflow: hidden; 
-            border: 4px solid white; box-shadow: 0 8px 20px rgba(0,0,0,0.15); 
-            background: #eee; flex-shrink: 0;
-        }
-        .photo-circle img { width: 100%; height: 100%; object-fit: cover; }
-        .name-box { display: flex; flex-direction: column; text-align: left; }
-        .legal-name { font-size: 2rem; font-weight: 800; color: var(--primary); margin: 0; line-height: 1.1; }
-        .surname-main { font-size: 1.4rem; font-weight: 500; color: var(--text-main); margin: 5px 0 0 0; }
+         .suggestion-item { padding: 12px 20px; text-align: left; cursor: pointer; border-bottom: 1px solid #f0f2f5; } 
+         .suggestion-item.active { background-color: #e8e1df; border-left: 5px solid var(--primary); font-weight: bold; } 
 
-        .experience-box { margin: 12px 0; display: flex; flex-direction: column; gap: 4px; font-size: 1.1rem; font-weight: 800; color: var(--accent-blue); text-align: center; }
+         #catalog { width: 100%; max-width: 600px; padding: 0 5px 20px; box-sizing: border-box; } 
+          
+         .card {  
+             background: white; border-radius: 28px; padding: 30px; 
+             box-shadow: 0 10px 30px rgba(0,0,0,0.08);  
+             width: 100%; max-width: 500px; margin: 0 auto; box-sizing: border-box; 
+         } 
+         .card-header { display: flex; align-items: center; gap: 20px; margin-bottom: 15px; } 
+         .photo-circle {  
+             width: 140px; height: 140px; border-radius: 50%; overflow: hidden;  
+             border: 4px solid white; box-shadow: 0 8px 20px rgba(0,0,0,0.15);  
+             background: #eee; flex-shrink: 0; 
+         } 
+         .photo-circle img { width: 100%; height: 100%; object-fit: cover; } 
+         .name-box { display: flex; flex-direction: column; text-align: left; } 
+         .legal-name { font-size: 2rem; font-weight: 800; color: var(--primary); margin: 0; line-height: 1.1; } 
+         .surname-main { font-size: 1.4rem; font-weight: 500; color: var(--text-main); margin: 5px 0 0 0; } 
 
-        .controls { display: flex; align-items: center; justify-content: center; gap: 20px; margin: 15px 0; width: 100%; }
-        button.nav-btn { padding: 8px 20px; font-size: 1.2rem; cursor: pointer; border-radius: 50px; border: none; background-color: var(--primary); color: white; font-weight: bold; }
-        button.nav-btn:disabled { background-color: #dcdcdc; color: #999; }
 
-        .details-grid { width: 100%; display: grid; gap: 12px; padding-top: 15px; border-top: 1px solid #f0f2f5; }
-        .detail-row { display: flex; flex-direction: column; text-align: left;}
-        .detail-label { font-size: 0.65rem; text-transform: uppercase; color: var(--text-secondary); font-weight: 600; }
-        .detail-value { font-size: 1.1rem; font-weight: 700; color: var(--text-main); }
+         .experience-box { margin: 12px 0; display: flex; 
+flex-direction: column; gap: 4px; font-size: 1.1rem; font-weight: 800; 
+color: var(--accent-blue); text-align: center; } 
 
-        .brothers-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
-            padding: 10px;
-            width: 100%;
-            justify-items: center;
-        }
+         .controls { display: flex; align-items: center; justify-content: center; gap: 20px; margin: 15px 0; width: 100%; } 
 
-        .grid-item { display: flex; flex-direction: column; align-items: center; cursor: pointer; transition: transform 0.3s ease; width: 100%; }
-        .grid-item:hover { transform: scale(1.05); }
+         button.nav-btn { padding: 8px 20px; font-size: 1.2rem; cursor: 
+pointer; border-radius: 50px; border: none; background-color: 
+var(--primary); color: white; font-weight: bold; } 
+         button.nav-btn:disabled { background-color: #dcdcdc; color: #999; } 
 
-        .grid-photo {
-            width: 110px; height: 110px; border-radius: 50%; overflow: hidden;
-            border: 3px solid white; box-shadow: 0 4px 12px rgba(0,0,0,0.12);
-            background: #eee; margin-bottom: 8px; display: flex; align-items: center; justify-content: center;
-        }
-        .grid-photo img { width: 100%; height: 100%; object-fit: cover; }
-        .grid-name { font-weight: 700; font-size: 0.9rem; color: var(--primary); text-align: center; line-height: 1.2; max-width: 120px; }
+         .details-grid { width: 100%; display: grid; gap: 12px; padding-top: 15px; border-top: 1px solid #f0f2f5; } 
+         .detail-row { display: flex; flex-direction: column; text-align: left;} 
+         .detail-label { font-size: 0.65rem; text-transform: uppercase; color: var(--text-secondary); font-weight: 600; } 
+         .detail-value { font-size: 1.1rem; font-weight: 700; color: var(--text-main); } 
 
-        /* Стилі для Модального Вікна Авторизації */
-        .auth-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.6); display: flex; align-items: center;
-            justify-content: center; z-index: 10000;
-        }
-        .auth-box {
-            background: white; padding: 30px; border-radius: 20px;
-            width: 90%; max-width: 400px; box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-            text-align: center; box-sizing: border-box;
-        }
-        .auth-box h3 { margin-top: 0; color: var(--primary); font-size: 1.5rem; }
-        .auth-box input {
-            width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ccc;
-            border-radius: 10px; font-size: 1rem; box-sizing: border-box; text-align: center;
-        }
-        .auth-box button {
-            width: 100%; padding: 12px; border: none; border-radius: 10px;
-            background: var(--primary); color: white; font-size: 1rem;
-            font-weight: bold; cursor: pointer; margin-top: 5px;
-        }
-        .auth-box button:disabled { background: #ccc; }
-        .auth-error { color: red; margin-top: 10px; font-size: 0.9rem; font-weight: 600; }
+         .brothers-grid { 
+             display: grid; 
+             grid-template-columns: repeat(3, 1fr); 
+             gap: 15px; 
+             padding: 10px; 
+             width: 100%; 
+             justify-items: center; 
+         } 
 
-        .patronymic {
-            opacity: 0.5;
-            font-weight: 400;
-            margin-left: 5px;
-        }
+         .grid-item { display: flex; flex-direction: column; 
+align-items: center; cursor: pointer; transition: transform 0.3s ease; 
+width: 100%; } 
+         .grid-item:hover { transform: scale(1.05); } 
 
-        @media (min-width: 768px) {
-            #catalog { max-width: 900px; margin: 0 auto; }
-            .brothers-grid { gap: 40px; padding: 20px; }
-            .grid-photo { width: 200px; height: 200px; border-width: 5px; }
-            .grid-name { font-size: 1.25rem; margin-top: 10px; max-width: 220px; }
-        }
-    </style>
-</head>
-<body>
+         .grid-photo { 
+             width: 110px; height: 110px; border-radius: 50%; overflow: hidden; 
+             border: 3px solid white; box-shadow: 0 4px 12px rgba(0,0,0,0.12); 
+             background: #eee; margin-bottom: 8px; display: flex; align-items: center; justify-content: center; 
+         } 
+         .grid-photo img { width: 100%; height: 100%; object-fit: cover; } 
 
-    <div id="authOverlay" class="auth-overlay">
-        <div class="auth-box">
-            <h3>Вхід до Схематизму</h3>
-            <div id="emailStep">
-                <p>Введіть ваш дозволений Email:</p>
-                <input type="email" id="authEmail" placeholder="example@gmail.com" autocomplete="email">
-                <button id="btnSendCode" onclick="requestVerificationCode()">Отримати код</button>
-            </div>
-            <div id="codeStep" style="display:none;">
-                <p>На вашу пошту надіслано 6-значний код. Введіть його сюди:</p>
-                <input type="text" id="authCode" placeholder="000000" maxlength="6">
-                <button id="btnVerifyCode" onclick="submitVerificationCode()">Підтвердити вхід</button>
-            </div>
-            <div id="authError" class="auth-error"></div>
+         .grid-name { font-weight: 700; font-size: 0.9rem; color: 
+var(--primary); text-align: center; line-height: 1.2; max-width: 120px; }
+ 
+         @media (min-width: 768px) { 
+             #catalog { max-width: 900px; margin: 0 auto; } 
+             .brothers-grid { gap: 40px; padding: 20px; } 
+             .grid-photo { width: 200px; height: 200px; border-width: 5px; } 
+             .grid-name { font-size: 1.25rem; margin-top: 10px; max-width: 220px; } 
+             .grid-item .prefix-br { 
+             font-size: 1em;  
+         } 
+         } 
+
+         /* Стилі для блоку авторизації */
+         .auth-container {
+             background: white; border-radius: 28px; padding: 35px 25px;
+             box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+             width: 100%; max-width: 400px; margin: 40px auto; 
+             box-sizing: border-box; text-align: center;
+         }
+         .auth-title { font-size: 1.6rem; font-weight: 800; color: var(--primary); margin-bottom: 10px; }
+         .auth-desc { font-size: 0.95rem; color: var(--text-secondary); margin-bottom: 25px; line-height: 1.4; }
+         .auth-input {
+             width: 100%; padding: 14px 20px; border-radius: 30px; border: 1px solid #ddd;
+             font-size: 1.05rem; outline: none; box-sizing: border-box; margin-bottom: 15px; text-align: center;
+         }
+         .auth-btn {
+             width: 100%; padding: 14px; border-radius: 30px; border: none;
+             background-color: var(--primary); color: white; font-size: 1.1rem;
+             font-weight: bold; cursor: pointer; transition: background 0.2s;
+         }
+         .auth-btn:hover { background-color: #4e342e; }
+         .auth-btn:disabled { background-color: #dcdcdc; color: #999; cursor: not-allowed; }
+         .auth-msg { margin-top: 15px; font-size: 0.95rem; font-weight: 600; }
+         .msg-error { color: #d32f2f; }
+         .msg-success { color: #388e3c; }
+         .msg-loading { color: var(--text-secondary); }
+         
+         /* Приховування основного контенту до авторизації */
+         .app-content { display: none; width: 100%; flex-direction: column; align-items: center; }
+     </style> 
+</head> 
+<body> 
+
+    <div id="authBlock" class="auth-container">
+        <div id="stepEmail">
+            <div class="auth-title">Авторизація</div>
+            <div class="auth-desc">Будь ласка, введіть ваш E-mail для отримання одноразового коду доступу.</div>
+            <input type="email" id="authEmail" class="auth-input" placeholder="yourname@domain.com" autocomplete="email">
+            <button id="btnSendCode" class="auth-btn" onclick="sendCode()">Отримати код</button>
         </div>
+        <div id="stepCode" style="display: none;">
+            <div class="auth-title">Введіть код</div>
+            <div class="auth-desc">На ваш E-mail надіслано 6-значний код підтвердження. Введіть його нижче:</div>
+            <input type="text" id="authCode" class="auth-input" placeholder="123456" maxlength="6" inputmode="numeric">
+            <button id="btnVerifyCode" class="auth-btn" onclick="verifyCode()">Увійти</button>
+        </div>
+        <div id="authMessage" class="auth-msg"></div>
     </div>
 
-    <div id="mainContent" style="display:none; width: 100%; max-width: 600px; text-align: center; display: flex; flex-direction: column; align-items: center;">
-        <div class="header">
-            <div class="title-main">СХЕМАТИЗМ</div>
-            <div class="title-sub">ПРОВІНЦІЇ СВ. АРХАНГЕЛА МИХАЇЛА</div>
-            
-            <div class="search-container">
-                <input type="text" id="searchInput" placeholder="Пошук за прізвищем або іменем..." oninput="handleSearch()" autocomplete="off">
-                <div id="searchSuggestions"></div>
-            </div>
+    <div id="appBlock" class="app-content">
+         <div class="header"> 
+             <div class="title-main">СХЕМАТИЗМ</div> 
+             <div class="title-sub">ПРОВІНЦІЇ СВ. АРХАНГЕЛА МИХАЇЛА</div> 
+              
+             <div class="search-container"> 
+                 <input type="text" id="searchInput" placeholder="Пошук за прізвищем або іменем..." oninput="handleSearch()" autocomplete="off"> 
+                 <div id="searchSuggestions"></div> 
+             </div> 
 
-            <button id="toggleLink" class="view-toggle" onclick="toggleView()">Усі брати</button>
-        </div>
+             <button id="toggleLink" class="view-toggle" onclick="toggleView()">Усі брати</button> 
+         </div> 
 
-        <div id="catalog">
-            <div style="padding: 50px; color: #999; text-align: center;">Завантаження даних...</div>
-        </div>
+         <div id="catalog"> 
+             <div style="padding: 50px; color: #999; text-align: center;">Завантаження даних...</div> 
+         </div> 
     </div>
 
-<script>
-    // Оновлено лінк на ваш актуальний Google Web App скрипт
-    const scriptUrl = 'https://script.google.com/macros/s/AKfycbyaQJMhRAc3ARyY8_0g2STjwY4R2p3xNZfeCxqfCcW-FlbqaEIbrVSqJ-3GYyoP_9Lw/exec';
-    
-    let allItems = [];
-    let idx = 0;
-    let isGridView = true; 
-    let userEmail = "";
+ <style> 
+     .patronymic { 
+         opacity: 0.5; 
+         font-weight: 400; 
+         margin-left: 5px; 
+     } 
+ </style> 
 
-    // Перевірка при старті сторінки
-    async function checkSession() {
-        const savedEmail = localStorage.getItem('user_email');
-        if (savedEmail) {
-            userEmail = savedEmail;
-            document.getElementById('authOverlay').style.display = 'none';
-            document.getElementById('mainContent').style.display = 'flex';
-            
-            // Запит даних через перевірку сесії
-            try {
-                const r = await fetch(`${scriptUrl}?action=verifyCode&email=${encodeURIComponent(userEmail)}&code=session`);
-                const result = await r.json();
-                if (result.success) {
-                    allItems = result.data;
-                    render();
-                } else {
-                    // Якщо сесія застаріла у таблиці
-                    logout();
-                }
-            } catch (e) {
-                document.getElementById('catalog').innerHTML = "<div style='color:red; text-align:center;'>Помилка мережі. Оновіть сторінку.</div>";
-            }
-        } else {
-            // Сесії немає — показуємо форму входу, а контент ховаємо
-            document.getElementById('authOverlay').style.display = 'flex';
-            document.getElementById('mainContent').style.setProperty('display', 'none', 'important');
-        }
-    }
+ <script> 
+    const scriptUrl = 'https://script.google.com/macros/s/AKfycbx5wF2-YSFjB2NTOzObml4ZLtuKlZdyl72uISyRL9LyFh8dVZLJzy2MEQWS0OsW1OX9/exec';
+     
+    let allItems = []; 
+    let idx = 0; 
+    let isGridView = true;  
 
-    // Крок 1: Запит коду на пошту
-    async function requestVerificationCode() {
-        const emailInput = document.getElementById('authEmail').value.toLowerCase().trim();
-        const errDiv = document.getElementById('authError');
-        const btn = document.getElementById('btnSendCode');
-        errDiv.innerText = "";
-
-        if (!emailInput || !emailInput.includes('@')) {
-            errDiv.innerText = "Будь ласка, введіть коректний email.";
-            return;
-        }
-
-        btn.disabled = true;
-        btn.innerText = "Надсилання...";
-
-        try {
-            const r = await fetch(`${scriptUrl}?action=sendCode&email=${encodeURIComponent(emailInput)}`);
-            const res = await r.json();
-            if (res.success) {
-                userEmail = emailInput;
-                document.getElementById('emailStep').style.display = 'none';
-                document.getElementById('codeStep').style.display = 'block';
-            } else {
-                errDiv.innerText = res.message || "Помилка доступу.";
-                btn.disabled = false;
-                btn.innerText = "Отримати код";
-            }
-        } catch(e) {
-            errDiv.innerText = "Помилка зв'язку з сервером Google Apps Script.";
-            btn.disabled = false;
-            btn.innerText = "Отримати код";
-        }
-    }
-
-    // Крок 2: Перевірка коду авторизації
-    async function submitVerificationCode() {
-        const codeInput = document.getElementById('authCode').value.trim();
-        const errDiv = document.getElementById('authError');
-        const btn = document.getElementById('btnVerifyCode');
-        errDiv.innerText = "";
-
-        if (codeInput.length < 6) {
-            errDiv.innerText = "Код повинен містити 6 цифр.";
-            return;
-        }
-
-        btn.disabled = true;
-        btn.innerText = "Перевірка...";
-
-        try {
-            const r = await fetch(`${scriptUrl}?action=verifyCode&email=${encodeURIComponent(userEmail)}&code=${encodeURIComponent(codeInput)}`);
-            const res = await r.json();
-            if (res.success) {
-                // Зберігаємо успішний сеанс
-                localStorage.setItem('user_email', userEmail);
-                document.getElementById('authOverlay').style.display = 'none';
-                document.getElementById('mainContent').style.display = 'flex';
-                allItems = res.data;
-                render();
-            } else {
-                errDiv.innerText = res.message || "Невірний код.";
-                btn.disabled = false;
-                btn.innerText = "Підтвердити вхід";
-            }
-        } catch(e) {
-            errDiv.innerText = "Помилка з'єднання під час перевірки.";
-            btn.disabled = false;
-            btn.innerText = "Підтвердити вхід";
-        }
-    }
-
-    function logout() {
-        localStorage.removeItem('user_email');
-        location.reload();
-    }
-
-    function toggleView() {
-        isGridView = !isGridView;
-        render();
-    }
-
-    function selectFromGrid(index) {
-        idx = index;
-        isGridView = false;
-        render();
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    function render() {
-        const catalog = document.getElementById('catalog');
-        const toggleBtn = document.getElementById('toggleLink');
-        if (allItems.length === 0) return;
-
-        if (isGridView) {
-            toggleBtn.style.display = "none";
-            renderGrid(catalog);
-        } else {
-            toggleBtn.style.display = "inline-block";
-            renderCard(catalog);
-        }
-    }
-
-    function renderGrid(container) {
-        container.innerHTML = `
-            <div class="brothers-grid">
-                ${allItems.map((p, i) => `
-                    <div class="grid-item" onclick="selectFromGrid(${i})">
-                        <div class="grid-photo">
-                            <img src="${p[0]}" referrerpolicy="no-referrer" onerror="this.src='https://via.placeholder.com/100?text=?'">
-                        </div>
-                        <div class="grid-name">бр. ${p[4]}</div>
-                    </div>
-                `).join('')}
-            </div>`;
-    }
-
-    function renderCard(container) {
-        const p = allItems[idx];
-        const monkExp = calculateExperience(p[11]);
-        const priestExp = calculateExperience(p[14]);
-
-        const firstName = p[5] || '—';
-        const fatherName = p[6] && p[6] !== "—" && p[6] !== "-" ? `<span class="patronymic">${p[6]}</span>` : "";
-        const fullNameWithPatronymic = firstName + fatherName;
-
-        container.innerHTML = `
-            <div class="card">
-                <div class="card-header">
-                    <div class="photo-circle">
-                        <img src="${p[0]}" referrerpolicy="no-referrer" onerror="this.src='https://via.placeholder.com/200?text=фото'">
-                    </div>
-                    <div class="name-box">
-                        <h2 class="legal-name">бр. ${p[4] || '—'}</h2>
-                        <div class="surname-main">${p[3] || '—'}</div>
-                    </div>
-                </div>
-                <div class="experience-box">
-                    ${monkExp ? `<div>${monkExp} чернечого життя</div>` : ''}
-                    ${priestExp ? `<div>${priestExp} священства</div>` : ''}
-                </div>
-                <div class="controls">
-                    <button class="nav-btn" onclick="change(-1)" ${idx === 0 ? 'disabled' : ''}>←</button>
-                    <span style="font-weight:700;">${idx + 1} / ${allItems.length}</span>
-                    <button class="nav-btn" onclick="change(1)" ${idx === allItems.length - 1 ? 'disabled' : ''}>→</button>
-                </div>
-                <div class="details-grid">
-                    <div class="detail-row">
-                        <div class="detail-label">Ім'я з Хрещення</div>
-                        <div class="detail-value">${fullNameWithPatronymic}</div>
-                    </div>
-                    ${createDetail("Іменини", p[8], true, true)}
-                    ${createDetail("День народження", p[7])}
-                    ${createDetail("Місце народження", p[9], false)}
-                    ${createDetail("Новіціат", p[10])}
-                    ${createDetail("Перші обіти", p[11])}
-                    ${createDetail("Вічні обіти", p[12])}
-                    ${createDetail("Дияконат", p[13])}
-                    ${createDetail("Священство", p[14])}
-                </div>
-            </div>`;
-    }
-
-    function calculateExperience(dateStr) {
-        if (!dateStr || dateStr === "-" || dateStr === "—" || dateStr.trim() === "") return null;
-        let s = dateStr.toString().trim().split('T')[0].split(' ')[0];
-        let parts = s.includes('.') ? s.split('.') : s.split('-');
-        let day, month, year;
-        if (parts[0].length === 4) { year = parseInt(parts[0]); month = parseInt(parts[1])-1; day = parseInt(parts[2]); }
-        else { day = parseInt(parts[0]); month = parseInt(parts[1])-1; year = parseInt(parts[2]); }
-        let dateObj = new Date(year, month, day);
-        if (isNaN(dateObj.getTime())) return null;
-        let today = new Date();
-        let years = today.getFullYear() - dateObj.getFullYear();
-        let currentAnniversary = new Date(today.getFullYear(), month, day);
-        if (today < currentAnniversary) years--;
-        if (years < 0) return null;
-        let suffix = "років";
-        if (years % 10 === 1 && years % 100 !== 11) suffix = "рік";
-        else if (years % 10 >= 2 && years % 10 <= 4 && (years % 100 < 10 || years % 100 >= 20)) suffix = "роки";
-        return years + " " + suffix;
-    }
-
-    function formatDateUk(dateInput, hideYear = false) {
+    // Допоміжна функція для точного розбору дати без багу часового поясу (день назад)
+    function parseSecureDate(dateInput) {
         if (!dateInput || dateInput.toString().trim() === "" || dateInput === "-") return null;
-        const months = ["січня", "лютого", "березня", "квітня", "травня", "червня", "липня", "серпня", "вересня", "жовтня", "листопада", "грудня"];
-        let s = dateInput.toString().trim().split('T')[0].split(' ')[0];
-        let parts = s.includes('.') ? s.split('.') : s.split('-');
-        if (parts.length < 3) return dateInput;
-        let d, m, y;
-        if (parts[0].length === 4) { y = parseInt(parts[0]); m = parseInt(parts[1])-1; d = parseInt(parts[2]); }
-        else { d = parseInt(parts[0]); m = parseInt(parts[1])-1; y = parseInt(parts[2]); }
-        if (m < 0 || m > 11) return dateInput;
-        return hideYear ? d + " " + months[m] : d + " " + months[m] + " " + y;
-    }
-
-    function createDetail(label, value, isDate = true, hideYear = false) {
-        let displayValue = isDate ? formatDateUk(value, hideYear) : value;
-        if (!displayValue || displayValue === "—" || displayValue === "-" || displayValue.toString().trim() === "") return "";
-        return `<div class="detail-row"><div class="detail-label">${label}</div><div class="detail-value">${displayValue}</div></div>`;
-    }
-
-    function change(d) { idx += d; render(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
-
-    function handleSearch() {
-        const term = document.getElementById('searchInput').value.toLowerCase();
-        const suggestions = document.getElementById('searchSuggestions');
-        if (term.length < 1) { suggestions.style.display = 'none'; return; }
         
-        let matches = allItems.filter(item => 
-            (item[3]?.toLowerCase().includes(term)) || 
-            (item[4]?.toLowerCase().includes(term))
-        );
-
-        matches.sort((a, b) => {
-            const aSurname = a[3]?.toLowerCase() || "";
-            const aName = a[4]?.toLowerCase() || "";
-            const bSurname = b[3]?.toLowerCase() || "";
-            const bName = b[4]?.toLowerCase() || "";
-            const aStarts = aSurname.startsWith(term) || aName.startsWith(term);
-            const bStarts = bSurname.startsWith(term) || bName.startsWith(term);
-            if (aStarts && !bStarts) return -1;
-            if (!aStarts && bStarts) return 1;
-            return 0;
-        });
-
-        if (matches.length > 0) {
-            suggestions.innerHTML = matches.map((item, i) => {
-                const originalIdx = allItems.findIndex(orig => orig === item);
-                return `
-                <div class="suggestion-item ${i === 0 ? 'active' : ''}" 
-                     onclick="selectPersonByIndex(${originalIdx})">
-                    <strong>бр. ${item[4]}</strong> ${item[3]}
-                </div>`}).join('');
-            suggestions.style.display = 'block';
-        } else { suggestions.style.display = 'none'; }
+        let d, m, y;
+        let str = dateInput.toString().trim();
+        
+        // Якщо це ISO рядок від Google Sheets (містить "T" або "Z")
+        if (str.includes('T') || str.includes('Z')) {
+            let pureObj = new Date(str);
+            if (!isNaN(pureObj.getTime())) {
+                // Використовуємо локальні методи замість UTC, щоб зберегти реальну календарну дату
+                return { day: pureObj.getDate(), month: pureObj.getMonth(), year: pureObj.getFullYear() };
+            }
+        }
+        
+        // Стандартний текстовий розбір для форматів DD.MM.YYYY або YYYY-MM-DD
+        let s = str.split('T')[0].split(' ')[0]; 
+        let parts = s.includes('.') ? s.split('.') : s.split('-'); 
+        if (parts.length < 3) return null; 
+        
+        if (parts[0].length === 4) { 
+            y = parseInt(parts[0]); m = parseInt(parts[1]) - 1; d = parseInt(parts[2]); 
+        } else { 
+            d = parseInt(parts[0]); m = parseInt(parts[1]) - 1; y = parseInt(parts[2]); 
+        }
+        return { day: d, month: m, year: y };
     }
 
-    function selectPersonByIndex(index) {
-        document.getElementById('searchInput').value = "";
-        document.getElementById('searchSuggestions').style.display = 'none';
-        idx = index; isGridView = false; render(); 
-    }
-
-    document.getElementById('searchInput').addEventListener('keydown', function(e) {
-        const suggestions = document.getElementById('searchSuggestions');
-        const items = suggestions.getElementsByClassName('suggestion-item');
-        if (items.length === 0) return;
-        let activeIdx = Array.from(items).findIndex(item => item.classList.contains('active'));
-        if (e.key === 'ArrowDown') {
-            e.preventDefault();
-            items[activeIdx].classList.remove('active');
-            activeIdx = (activeIdx + 1) % items.length;
-            items[activeIdx].classList.add('active');
-            items[activeIdx].scrollIntoView({ block: 'nearest' });
-        } else if (e.key === 'ArrowUp') {
-            e.preventDefault();
-            items[activeIdx].classList.remove('active');
-            activeIdx = (activeIdx - 1 + items.length) % items.length;
-            items[activeIdx].classList.add('active');
-            items[activeIdx].scrollIntoView({ block: 'nearest' });
-        } else if (e.key === 'Enter') {
-            e.preventDefault();
-            if (activeIdx >= 0) items[activeIdx].click();
+    // Перевірка сесії при завантаженні сторінки
+    window.addEventListener('DOMContentLoaded', () => {
+        const savedEmail = localStorage.getItem('allowed_email');
+        if (savedEmail) {
+            document.getElementById('authBlock').style.display = 'none';
+            document.getElementById('appBlock').style.display = 'flex';
+            load(savedEmail);
         }
     });
 
-    // Запускаємо перевірку сесії замість прямого load()
-    checkSession();
-</script>
-</body>
-</html>
+    // Авторизація: Крок 1 — відправка коду
+    async function sendCode() {
+        const emailInput = document.getElementById('authEmail').value.trim();
+        const msgBlock = document.getElementById('authMessage');
+        const btn = document.getElementById('btnSendCode');
+
+        if (!emailInput) {
+            showMsg('Будь ласка, введіть E-mail', 'error');
+            return;
+        }
+
+        btn.disabled = true;
+        showMsg('Надсилання запиту...', 'loading');
+
+        try {
+            const response = await fetch(`${scriptUrl}?action=sendCode&email=${encodeURIComponent(emailInput)}`);
+            const result = await response.json();
+
+            if (result.status === 'success') {
+                document.getElementById('stepEmail').style.display = 'none';
+                document.getElementById('stepCode').style.display = 'block';
+                showMsg('Код успішно надіслано!', 'success');
+            } else {
+                showMsg(result.message || 'Помилка доступу. Перевірте ваш E-mail.', 'error');
+                btn.disabled = false;
+            }
+        } catch (e) {
+            showMsg('Помилка з\'єднання з сервером.', 'error');
+            btn.disabled = false;
+        }
+    }
+
+    // Авторизація: Крок 2 — перевірка коду
+    async function verifyCode() {
+        const emailInput = document.getElementById('authEmail').value.trim();
+        const codeInput = document.getElementById('authCode').value.trim();
+        const btn = document.getElementById('btnVerifyCode');
+
+        if (!codeInput) {
+            showMsg('Введіть код підтвердження', 'error');
+            return;
+        }
+
+        btn.disabled = true;
+        showMsg('Перевірка коду...', 'loading');
+
+        try {
+            const response = await fetch(`${scriptUrl}?action=verifyCode&email=${encodeURIComponent(emailInput)}&code=${encodeURIComponent(codeInput)}`);
+            const result = await response.json();
+
+            if (result.status === 'success') {
+                localStorage.setItem('allowed_email', emailInput);
+                showMsg('Успішний вхід!', 'success');
+                setTimeout(() => {
+                    document.getElementById('authBlock').style.display = 'none';
+                    document.getElementById('appBlock').style.display = 'flex';
+                    load(emailInput);
+                }, 1000);
+            } else {
+                showMsg(result.message || 'Невірний код.', 'error');
+                btn.disabled = false;
+            }
+        } catch (e) {
+            showMsg('Помилка верифікації.', 'error');
+            btn.disabled = false;
+        }
+    }
+
+    function showMsg(text, type) {
+        const msgBlock = document.getElementById('authMessage');
+        msgBlock.innerText = text;
+        msgBlock.className = 'auth-msg ' + (type === 'error' ? 'msg-error' : type === 'success' ? 'msg-success' : 'msg-loading');
+    }
+
+    // Завантаження даних для авторизованого користувача
+    async function load(email) { 
+        try { 
+            const r = await fetch(`${scriptUrl}?action=getBrothersData&email=${encodeURIComponent(email)}`); 
+            allItems = await r.json(); 
+            render(); 
+        } catch (e) {  
+            document.getElementById('catalog').innerHTML = "<div style='color:red; text-align:center;'>Помилка завантаження. Спробуйте оновити сторінку.</div>";  
+        } 
+    } 
+
+    function toggleView() { 
+        isGridView = !isGridView; 
+        render(); 
+    } 
+
+    function selectFromGrid(index) { 
+        idx = index; 
+        isGridView = false; 
+        render(); 
+        window.scrollTo({ top: 0, behavior: 'smooth' }); 
+    } 
+
+    function render() { 
+        const catalog = document.getElementById('catalog'); 
+        const toggleBtn = document.getElementById('toggleLink'); 
+        if (allItems.length === 0) return; 
+
+        if (isGridView) { 
+            toggleBtn.style.display = "none"; 
+            renderGrid(catalog); 
+        } else { 
+            toggleBtn.style.display = "inline-block"; 
+            renderCard(catalog); 
+        } 
+    } 
+
+    function renderGrid(container) { 
+        container.innerHTML = ` 
+            <div class="brothers-grid"> 
+                ${allItems.map((p, i) => ` 
+                    <div class="grid-item" onclick="selectFromGrid(${i})"> 
+                        <div class="grid-photo"> 
+                            <img src="${p[0]}" referrerpolicy="no-referrer" onerror="this.src='https://via.placeholder.com/100?text=?'"> 
+                        </div> 
+                        <div class="grid-name">бр. ${p[4]}</div> 
+                    </div> 
+                `).join('')} 
+            </div>`; 
+    } 
+
+    function renderCard(container) { 
+        const p = allItems[idx]; 
+        const monkExp = calculateExperience(p[11]); 
+        const priestExp = calculateExperience(p[14]); 
+
+        const firstName = p[5] || '—'; 
+        const fatherName = p[6] && p[6] !== "—" && p[6] !== "-" ? `<span class="patronymic">${p[6]}</span>` : ""; 
+        const fullNameWithPatronymic = firstName + fatherName; 
+
+        container.innerHTML = ` 
+            <div class="card"> 
+                <div class="card-header"> 
+                    <div class="photo-circle"> 
+                        <img src="${p[0]}" referrerpolicy="no-referrer" onerror="this.src='https://via.placeholder.com/200?text=фото'"> 
+                    </div> 
+                    <div class="name-box"> 
+                        <h2 class="legal-name">бр. ${p[4] || '—'}</h2> 
+                        <div class="surname-main">${p[3] || '—'}</div> 
+                    </div> 
+                </div> 
+                <div class="experience-box"> 
+                    ${monkExp ? `<div>${monkExp} чернечого життя</div>` : ''} 
+                    ${priestExp ? `<div>${priestExp} священства</div>` : ''} 
+                </div> 
+                <div class="controls"> 
+                    <button class="nav-btn" onclick="change(-1)" ${idx === 0 ? 'disabled' : ''}>←</button> 
+                    <span style="font-weight:700;">${idx + 1} / ${allItems.length}</span> 
+                    <button class="nav-btn" onclick="change(1)" ${idx === allItems.length - 1 ? 'disabled' : ''}>→</button> 
+                </div> 
+                <div class="details-grid"> 
+                    <div class="detail-row"> 
+                        <div class="detail-label">Ім'я з Хрещення</div> 
+                        <div class="detail-value">${fullNameWithPatronymic}</div> 
+                    </div> 
+                    ${createDetail("Іменини", p[8], true, true)} 
+                    ${createDetail("День народження", p[7])} 
+                    ${createDetail("Місце народження", p[9], false)} 
+                    ${createDetail("Новіціат", p[10])} 
+                    ${createDetail("Перші обіти", p[11])} 
+                    ${createDetail("Вічні обіти", p[12])} 
+                    ${createDetail("Дияконат", p[13])} 
+                    ${createDetail("Священство", p[14])} 
+                </div> 
+            </div>`; 
+    } 
+
+    function calculateExperience(dateStr) { 
+        const parsed = parseSecureDate(dateStr);
+        if (!parsed) return null;
+        
+        let dateObj = new Date(parsed.year, parsed.month, parsed.day); 
+        if (isNaN(dateObj.getTime())) return null; 
+        
+        let today = new Date(); 
+        let years = today.getFullYear() - dateObj.getFullYear(); 
+        let currentAnniversary = new Date(today.getFullYear(), parsed.month, parsed.day); 
+        if (today < currentAnniversary) years--; 
+        if (years < 0) return null; 
+        
+        let suffix = "років"; 
+        if (years % 10 === 1 && years % 100 !== 11) suffix = "рік"; 
+        else if (years % 10 >= 2 && years % 10 <= 4 && (years % 100 < 10 || years % 100 >= 20)) suffix = "роки"; 
+        
+        return years + " " + suffix; 
+    } 
+
+    function formatDateUk(dateInput, hideYear = false) { 
+        const parsed = parseSecureDate(dateInput);
+        if (!parsed) return dateInput; 
+
+        const months = ["січня", "лютого", "березня", "квітня", "травня", "червня", "липня", "серпня", "вересня", "жовтня", "листопада", "грудня"]; 
+        if (parsed.month < 0 || parsed.month > 11) return dateInput; 
+        
+        return hideYear ? parsed.day + " " + months[parsed.month] : parsed.day + " " + months[parsed.month] + " " + parsed.year; 
+    } 
+
+    function createDetail(label, value, isDate = true, hideYear = false) { 
+        let displayValue = isDate ? formatDateUk(value, hideYear) : value; 
+        if (!displayValue || displayValue === "—" || displayValue === "-" || displayValue.toString().trim() === "") return ""; 
+
+        return `<div class="detail-row"><div class="detail-label">${label}</div><div class="detail-value">${displayValue}</div></div>`; 
+    } 
+
+    function change(d) { idx += d; render(); window.scrollTo({ top: 0, behavior: 'smooth' }); } 
+
+    function handleSearch() { 
+        const term = document.getElementById('searchInput').value.toLowerCase(); 
+        const suggestions = document.getElementById('searchSuggestions'); 
+        if (term.length < 1) { suggestions.style.display = 'none'; return; } 
+         
+        let matches = allItems.filter(item =>  
+            (item[3]?.toLowerCase().includes(term)) ||  
+            (item[4]?.toLowerCase().includes(term)) 
+        ); 
+
+        matches.sort((a, b) => { 
+            const aSurname = a[3]?.toLowerCase() || ""; 
+            const aName = a[4]?.toLowerCase() || ""; 
+            const bSurname = b[3]?.toLowerCase() || ""; 
+            const bName = b[4]?.toLowerCase() || ""; 
+            const aStarts = aSurname.startsWith(term) || aName.startsWith(term); 
+            const bStarts = bSurname.startsWith(term) || bName.startsWith(term); 
+            if (aStarts && !bStarts) return -1; 
+            if (!aStarts && bStarts) return 1; 
+            return 0; 
+        }); 
+
+        if (matches.length > 0) { 
+            suggestions.innerHTML = matches.map((item, i) => { 
+                const originalIdx = allItems.findIndex(orig => orig === item); 
+                return ` 
+                <div class="suggestion-item ${i === 0 ? 'active' : ''}"  
+                     onclick="selectPersonByIndex(${originalIdx})"> 
+                    <strong>бр. ${item[4]}</strong> ${item[3]} 
+                </div>`}).join(''); 
+            suggestions.style.display = 'block'; 
+        } else { suggestions.style.display = 'none'; } 
+    } 
+
+    function selectPersonByIndex(index) { 
+        document.getElementById('searchInput').value = ""; 
+        document.getElementById('searchSuggestions').style.display = 'none'; 
+        idx = index; isGridView = false; render();  
+    } 
+
+    document.getElementById('searchInput').addEventListener('keydown', function(e) { 
+        const suggestions = document.getElementById('searchSuggestions'); 
+        const items = suggestions.getElementsByClassName('suggestion-item'); 
+        if (items.length === 0) return; 
+        let activeIdx = Array.from(items).findIndex(item => item.classList.contains('active')); 
+        if (e.key === 'ArrowDown') { 
+            e.preventDefault(); 
+            items[activeIdx].classList.remove('active'); 
+            activeIdx = (activeIdx + 1) % items.length; 
+            items[activeIdx].classList.add('active'); 
+            items[activeIdx].scrollIntoView({ block: 'nearest' }); 
+        } else if (e.key === 'ArrowUp') { 
+            e.preventDefault(); 
+            items[activeIdx].classList.remove('active'); 
+            activeIdx = (activeIdx - 1 + items.length) % items.length; 
+            items[activeIdx].classList.add('active'); 
+            items[activeIdx].scrollIntoView({ block: 'nearest' }); 
+        } else if (e.key === 'Enter') { 
+            e.preventDefault(); 
+            if (activeIdx >= 0) items[activeIdx].click(); 
+        } 
+    }); 
+ </script> 
+ </body> 
+ </html>
