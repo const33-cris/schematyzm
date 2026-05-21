@@ -129,59 +129,193 @@
         .grid-photo img { width: 100%; height: 100%; object-fit: cover; }
         .grid-name { font-weight: 700; font-size: 0.9rem; color: var(--primary); text-align: center; line-height: 1.2; max-width: 120px; }
 
+        /* Стилі для Модального Вікна Авторизації */
+        .auth-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.6); display: flex; align-items: center;
+            justify-content: center; z-index: 10000;
+        }
+        .auth-box {
+            background: white; padding: 30px; border-radius: 20px;
+            width: 90%; max-width: 400px; box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            text-align: center; box-sizing: border-box;
+        }
+        .auth-box h3 { margin-top: 0; color: var(--primary); font-size: 1.5rem; }
+        .auth-box input {
+            width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ccc;
+            border-radius: 10px; font-size: 1rem; box-sizing: border-box; text-align: center;
+        }
+        .auth-box button {
+            width: 100%; padding: 12px; border: none; border-radius: 10px;
+            background: var(--primary); color: white; font-size: 1rem;
+            font-weight: bold; cursor: pointer; margin-top: 5px;
+        }
+        .auth-box button:disabled { background: #ccc; }
+        .auth-error { color: red; margin-top: 10px; font-size: 0.9rem; font-weight: 600; }
+
+        .patronymic {
+            opacity: 0.5;
+            font-weight: 400;
+            margin-left: 5px;
+        }
+
         @media (min-width: 768px) {
             #catalog { max-width: 900px; margin: 0 auto; }
             .brothers-grid { gap: 40px; padding: 20px; }
             .grid-photo { width: 200px; height: 200px; border-width: 5px; }
             .grid-name { font-size: 1.25rem; margin-top: 10px; max-width: 220px; }
-            .grid-item .prefix-br {
-            font-size: 1em; 
-        }
         }
     </style>
 </head>
 <body>
 
-    <div class="header">
-        <div class="title-main">СХЕМАТИЗМ</div>
-        <div class="title-sub">ПРОВІНЦІЇ СВ. АРХАНГЕЛА МИХАЇЛА</div>
-        
-        <div class="search-container">
-            <input type="text" id="searchInput" placeholder="Пошук за прізвищем або іменем..." oninput="handleSearch()" autocomplete="off">
-            <div id="searchSuggestions"></div>
+    <div id="authOverlay" class="auth-overlay">
+        <div class="auth-box">
+            <h3>Вхід до Схематизму</h3>
+            <div id="emailStep">
+                <p>Введіть ваш дозволений Email:</p>
+                <input type="email" id="authEmail" placeholder="example@gmail.com" autocomplete="email">
+                <button id="btnSendCode" onclick="requestVerificationCode()">Отримати код</button>
+            </div>
+            <div id="codeStep" style="display:none;">
+                <p>На вашу пошту надіслано 6-значний код. Введіть його сюди:</p>
+                <input type="text" id="authCode" placeholder="000000" maxlength="6">
+                <button id="btnVerifyCode" onclick="submitVerificationCode()">Підтвердити вхід</button>
+            </div>
+            <div id="authError" class="auth-error"></div>
+        </div>
+    </div>
+
+    <div id="mainContent" style="display:none; width: 100%; max-width: 600px; text-align: center; display: flex; flex-direction: column; align-items: center;">
+        <div class="header">
+            <div class="title-main">СХЕМАТИЗМ</div>
+            <div class="title-sub">ПРОВІНЦІЇ СВ. АРХАНГЕЛА МИХАЇЛА</div>
+            
+            <div class="search-container">
+                <input type="text" id="searchInput" placeholder="Пошук за прізвищем або іменем..." oninput="handleSearch()" autocomplete="off">
+                <div id="searchSuggestions"></div>
+            </div>
+
+            <button id="toggleLink" class="view-toggle" onclick="toggleView()">Усі брати</button>
         </div>
 
-        <button id="toggleLink" class="view-toggle" onclick="toggleView()">Усі брати</button>
+        <div id="catalog">
+            <div style="padding: 50px; color: #999; text-align: center;">Завантаження даних...</div>
+        </div>
     </div>
-
-    <div id="catalog">
-        <div style="padding: 50px; color: #999; text-align: center;">Завантаження даних...</div>
-    </div>
-
-  <style>
-    /* Додаємо стиль для напівпрозорого по батькові */
-    .patronymic {
-        opacity: 0.5;
-        font-weight: 400;
-        margin-left: 5px;
-    }
-</style>
 
 <script>
-    const scriptUrl = 'https://script.google.com/macros/s/AKfycbx5wF2-YSFjB2NTOzObml4ZLtuKlZdyl72uISyRL9LyFh8dVZLJzy2MEQWS0OsW1OX9/exec';
+    // Оновлено лінк на ваш актуальний Google Web App скрипт
+    const scriptUrl = 'https://script.google.com/macros/s/AKfycbyaQJMhRAc3ARyY8_0g2STjwY4R2p3xNZfeCxqfCcW-FlbqaEIbrVSqJ-3GYyoP_9Lw/exec';
     
     let allItems = [];
     let idx = 0;
     let isGridView = true; 
+    let userEmail = "";
 
-    async function load() {
-        try {
-            const r = await fetch(scriptUrl);
-            allItems = await r.json();
-            render();
-        } catch (e) { 
-            document.getElementById('catalog').innerHTML = "<div style='color:red; text-align:center;'>Помилка завантаження. Спробуйте оновити сторінку.</div>"; 
+    // Перевірка при старті сторінки
+    async function checkSession() {
+        const savedEmail = localStorage.getItem('user_email');
+        if (savedEmail) {
+            userEmail = savedEmail;
+            document.getElementById('authOverlay').style.display = 'none';
+            document.getElementById('mainContent').style.display = 'flex';
+            
+            // Запит даних через перевірку сесії
+            try {
+                const r = await fetch(`${scriptUrl}?action=verifyCode&email=${encodeURIComponent(userEmail)}&code=session`);
+                const result = await r.json();
+                if (result.success) {
+                    allItems = result.data;
+                    render();
+                } else {
+                    // Якщо сесія застаріла у таблиці
+                    logout();
+                }
+            } catch (e) {
+                document.getElementById('catalog').innerHTML = "<div style='color:red; text-align:center;'>Помилка мережі. Оновіть сторінку.</div>";
+            }
+        } else {
+            // Сесії немає — показуємо форму входу, а контент ховаємо
+            document.getElementById('authOverlay').style.display = 'flex';
+            document.getElementById('mainContent').style.setProperty('display', 'none', 'important');
         }
+    }
+
+    // Крок 1: Запит коду на пошту
+    async function requestVerificationCode() {
+        const emailInput = document.getElementById('authEmail').value.toLowerCase().trim();
+        const errDiv = document.getElementById('authError');
+        const btn = document.getElementById('btnSendCode');
+        errDiv.innerText = "";
+
+        if (!emailInput || !emailInput.includes('@')) {
+            errDiv.innerText = "Будь ласка, введіть коректний email.";
+            return;
+        }
+
+        btn.disabled = true;
+        btn.innerText = "Надсилання...";
+
+        try {
+            const r = await fetch(`${scriptUrl}?action=sendCode&email=${encodeURIComponent(emailInput)}`);
+            const res = await r.json();
+            if (res.success) {
+                userEmail = emailInput;
+                document.getElementById('emailStep').style.display = 'none';
+                document.getElementById('codeStep').style.display = 'block';
+            } else {
+                errDiv.innerText = res.message || "Помилка доступу.";
+                btn.disabled = false;
+                btn.innerText = "Отримати код";
+            }
+        } catch(e) {
+            errDiv.innerText = "Помилка зв'язку з сервером Google Apps Script.";
+            btn.disabled = false;
+            btn.innerText = "Отримати код";
+        }
+    }
+
+    // Крок 2: Перевірка коду авторизації
+    async function submitVerificationCode() {
+        const codeInput = document.getElementById('authCode').value.trim();
+        const errDiv = document.getElementById('authError');
+        const btn = document.getElementById('btnVerifyCode');
+        errDiv.innerText = "";
+
+        if (codeInput.length < 6) {
+            errDiv.innerText = "Код повинен містити 6 цифр.";
+            return;
+        }
+
+        btn.disabled = true;
+        btn.innerText = "Перевірка...";
+
+        try {
+            const r = await fetch(`${scriptUrl}?action=verifyCode&email=${encodeURIComponent(userEmail)}&code=${encodeURIComponent(codeInput)}`);
+            const res = await r.json();
+            if (res.success) {
+                // Зберігаємо успішний сеанс
+                localStorage.setItem('user_email', userEmail);
+                document.getElementById('authOverlay').style.display = 'none';
+                document.getElementById('mainContent').style.display = 'flex';
+                allItems = res.data;
+                render();
+            } else {
+                errDiv.innerText = res.message || "Невірний код.";
+                btn.disabled = false;
+                btn.innerText = "Підтвердити вхід";
+            }
+        } catch(e) {
+            errDiv.innerText = "Помилка з'єднання під час перевірки.";
+            btn.disabled = false;
+            btn.innerText = "Підтвердити вхід";
+        }
+    }
+
+    function logout() {
+        localStorage.removeItem('user_email');
+        location.reload();
     }
 
     function toggleView() {
@@ -226,11 +360,9 @@
 
     function renderCard(container) {
         const p = allItems[idx];
-        // Стаж тепер рахуємо за новими індексами (Перші обіти - 11, Священство - 14)
         const monkExp = calculateExperience(p[11]);
         const priestExp = calculateExperience(p[14]);
 
-        // Формуємо ім'я + напівпрозоре по батькові
         const firstName = p[5] || '—';
         const fatherName = p[6] && p[6] !== "—" && p[6] !== "-" ? `<span class="patronymic">${p[6]}</span>` : "";
         const fullNameWithPatronymic = firstName + fatherName;
@@ -376,7 +508,8 @@
         }
     });
 
-    load();
+    // Запускаємо перевірку сесії замість прямого load()
+    checkSession();
 </script>
 </body>
 </html>
