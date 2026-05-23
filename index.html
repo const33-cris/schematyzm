@@ -232,7 +232,7 @@ var(--primary); text-align: center; line-height: 1.2; max-width: 120px; }
     let idx = 0; 
     let isGridView = true;  
 
-       // Допоміжна функція для точного розбору дати без багу часового поясу (день назад) + фікс для Італії
+       // Допоміжна функція для точного розбору дати без багу часового поясу (день назад)
     function parseSecureDate(dateInput) {
         if (!dateInput || dateInput.toString().trim() === "" || dateInput === "-") return null;
         
@@ -244,38 +244,9 @@ var(--primary); text-align: center; line-height: 1.2; max-width: 120px; }
             let pureObj = new Date(str);
             if (!isNaN(pureObj.getTime())) {
                 // Використовуємо локальні методи замість UTC, щоб зберегти реальну календарну дату
-                d = pureObj.getDate();
-                m = pureObj.getMonth();
-                y = pureObj.getFullYear();
-            }
-        } else {
-            // Стандартний текстовий розбір для форматів DD.MM.YYYY або YYYY-MM-DD
-            let s = str.split('T')[0].split(' ')[0]; 
-            let parts = s.includes('.') ? s.split('.') : s.split('-'); 
-            if (parts.length < 3) return null; 
-            
-            if (parts[0].length === 4) { 
-                y = parseInt(parts[0]); m = parseInt(parts[1]) - 1; d = parseInt(parts[2]); 
-            } else { 
-                d = parseInt(parts[0]); m = parseInt(parts[1]) - 1; y = parseInt(parts[2]); 
+                return { day: pureObj.getDate(), month: pureObj.getMonth(), year: pureObj.getFullYear() };
             }
         }
-
-        if (d === undefined || m === undefined || y === undefined) return null;
-
-        // КОРЕКЦІЯ ДЛЯ ІТАЛІЇ: Перевіряємо часовий пояс пристрою користувача
-        const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-        if (userTimeZone === "Europe/Rome") {
-            // Створюємо тимчасовий об'єкт дати, додаємо 1 день і витягуємо правильні значення
-            let tempDate = new Date(y, m, d);
-            tempDate.setDate(tempDate.getDate() + 1);
-            d = tempDate.getDate();
-            m = tempDate.getMonth();
-            y = tempDate.getFullYear();
-        }
-
-        return { day: d, month: m, year: y };
-    }
         
         // Стандартний текстовий розбір для форматів DD.MM.YYYY або YYYY-MM-DD
         let s = str.split('T')[0].split(' ')[0]; 
