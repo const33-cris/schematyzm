@@ -32,9 +32,9 @@ href="https://raw.githubusercontent.com/const33-cris/schematyzm/main/img/icon.pn
              display: flex; flex-direction: column; align-items: center;  
              min-height: 100vh; color: var(--text-main); 
          } 
-          
+         
          .header { width: 100%; max-width: 600px; padding: 25px 15px 5px; text-align: center; box-sizing: border-box; } 
-          
+         
          .title-main {  
              font-size: 3rem;  
              font-weight: 800;  
@@ -52,7 +52,7 @@ href="https://raw.githubusercontent.com/const33-cris/schematyzm/main/img/icon.pn
              margin-bottom: 20px;  
              letter-spacing: 1px; 
          } 
-          
+         
          .search-container { position: relative; width: 100%; margin-bottom: 10px; } 
          #searchInput {  
              width: 100%; padding: 12px 20px; border-radius: 30px; border: 1px solid #ddd;  
@@ -84,7 +84,7 @@ href="https://raw.githubusercontent.com/const33-cris/schematyzm/main/img/icon.pn
          .suggestion-item.active { background-color: #e8e1df; border-left: 5px solid var(--primary); font-weight: bold; } 
 
          #catalog { width: 100%; max-width: 600px; padding: 0 5px 20px; box-sizing: border-box; } 
-          
+         
          .card {  
              background: white; border-radius: 28px; padding: 30px; 
              box-shadow: 0 10px 30px rgba(0,0,0,0.08);  
@@ -203,7 +203,7 @@ var(--primary); text-align: center; line-height: 1.2; max-width: 120px; }
          <div class="header"> 
              <div class="title-main">СХЕМАТИЗМ</div> 
              <div class="title-sub">ПРОВІНЦІЇ СВ. АРХАНГЕЛА МИХАЇЛА</div> 
-              
+             
              <div class="search-container"> 
                  <input type="text" id="searchInput" placeholder="Пошук за прізвищем або іменем..." oninput="handleSearch()" autocomplete="off"> 
                  <div id="searchSuggestions"></div> 
@@ -232,7 +232,7 @@ var(--primary); text-align: center; line-height: 1.2; max-width: 120px; }
     let idx = 0; 
     let isGridView = true;  
 
-      // Допоміжна функція для точного розбору дати без багу часового поясу (день назад) + фікс для Італії
+    // ОНОВЛЕНА ФУНКЦІЯ ПАРСИНГУ ДАТИ
     function parseSecureDate(dateInput) {
         if (!dateInput || dateInput.toString().trim() === "" || dateInput === "-") return null;
         
@@ -243,10 +243,15 @@ var(--primary); text-align: center; line-height: 1.2; max-width: 120px; }
         if (str.includes('T') || str.includes('Z')) {
             let pureObj = new Date(str);
             if (!isNaN(pureObj.getTime())) {
-                // Використовуємо локальні методи замість UTC, щоб зберегти реальну календарну дату
-                d = pureObj.getDate();
-                m = pureObj.getMonth();
-                y = pureObj.getFullYear();
+                // ГОЛОВНЕ ВИПРАВЛЕННЯ:
+                // Примусово конвертуємо час у Київський часовий пояс (звідки оригінальні дані).
+                // Це гарантує, що якщо за київським часом це 26 число, то і в США, і в Італії код розпізнає 26 число.
+                let kyivTimeStr = pureObj.toLocaleString("en-US", {timeZone: "Europe/Kyiv"});
+                let kyivDate = new Date(kyivTimeStr);
+
+                d = kyivDate.getDate();
+                m = kyivDate.getMonth();
+                y = kyivDate.getFullYear();
             }
         } else {
             // Стандартний текстовий розбір для форматів DD.MM.YYYY або YYYY-MM-DD
@@ -261,23 +266,12 @@ var(--primary); text-align: center; line-height: 1.2; max-width: 120px; }
             }
         }
 
-        if (d === undefined || m === undefined || y === undefined) return null;
-
-        // КОРЕКЦІЯ ДЛЯ ІТАЛІЇ: Перевіряємо часовий пояс пристрою користувача
-        const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-        if (userTimeZone === "Europe/Rome") {
-            // Створюємо тимчасовий об'єкт дати, додаємо 1 день і витягуємо правильні значення
-            let tempDate = new Date(y, m, d);
-            tempDate.setDate(tempDate.getDate() + 1);
-            d = tempDate.getDate();
-            m = tempDate.getMonth();
-            y = tempDate.getFullYear();
-        }
+        if (d === undefined || m === undefined || y === undefined || isNaN(d) || isNaN(m) || isNaN(y)) return null;
 
         return { day: d, month: m, year: y };
     }
         
-       // Перевірка сесії при завантаженні сторінки
+    // Перевірка сесії при завантаженні сторінки
     window.addEventListener('DOMContentLoaded', () => {
         const savedEmail = localStorage.getItem('allowed_email');
         if (savedEmail) {
